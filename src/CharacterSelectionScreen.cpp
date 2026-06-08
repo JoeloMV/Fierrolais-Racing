@@ -21,10 +21,13 @@ bool CharacterSelectionScreen::loadFont() {
 
 void CharacterSelectionScreen::initializeCharacters() {
     characters.clear();
-    for (int i = 0; i < NUM_CHARACTERS; ++i) {
+    // 1. Aquí están los 10 nombres de los personajes
+    std::vector<std::string> names = {"Mecha\nCorta", "Alucin", "Checo\nPerez", "Licenciado", "Poeta", "Programador", "Salta\nmontes", "Vaquero", "Chenms\nMamado", "Fierrolais"};
+    
+    for (int i = 0; i < 10; ++i) { // Cambiado a 10
         Character c;
         c.id = i;
-        c.name = "Personaje " + std::to_string(i + 1);
+        c.name = names[i];
         characters.push_back(c);
     }
 }
@@ -43,10 +46,13 @@ CharacterSelectionScreen::CharacterSelectionScreen()
     titleText->setFillColor(sf::Color::White);
     titleText->setPosition(sf::Vector2f(250, 50));
     
-    // Crear textos para cada personaje
-    for (int i = 0; i < NUM_CHARACTERS; ++i) {
-        sf::Text charText(*font, characters[i].name, 25);
-        charText.setPosition(sf::Vector2f(500, 150 + i * (CHARACTER_BOX_SIZE + CHARACTER_SPACING)));
+    // Crear textos para cada personaje acomodados en la cuadrícula
+    for (int i = 0; i < 10; ++i) {
+        sf::Text charText(*font, characters[i].name, 18); // Letra un poco más chica para que quepa
+        float posX = 100.0f + (i % 5) * 140.0f; // 5 columnas
+        float posY = 150.0f + (i / 5) * 180.0f; // 2 filas
+        
+        charText.setPosition(sf::Vector2f(posX, posY + 110.0f)); // Texto abajito del cuadro
         charText.setFillColor(sf::Color::White);
         characterTexts.push_back(charText);
     }
@@ -54,11 +60,11 @@ CharacterSelectionScreen::CharacterSelectionScreen()
     // Textos de estado
     player1StatusText = std::make_shared<sf::Text>(*font, "", 20);
     player1StatusText->setFillColor(sf::Color::Blue);
-    player1StatusText->setPosition(sf::Vector2f(50, 300));
+    player1StatusText->setPosition(sf::Vector2f(50, 550)); // Movido más abajo para que no estorbe
     
     player2StatusText = std::make_shared<sf::Text>(*font, "", 20);
     player2StatusText->setFillColor(sf::Color::Red);
-    player2StatusText->setPosition(sf::Vector2f(1000, 300));
+    player2StatusText->setPosition(sf::Vector2f(800, 550)); // Movido más abajo
     
     updateDisplay();
 }
@@ -82,11 +88,9 @@ void CharacterSelectionScreen::reset() {
 
 void CharacterSelectionScreen::updateDisplay() {
     // Actualizar colores de personajes basado en selección
-    for (int i = 0; i < NUM_CHARACTERS; ++i) {
+    for (int i = 0; i < 10; ++i) { // Cambiado a 10
         if (i == player1Selection || i == player2Selection) {
-            // Este personaje está siendo apuntado
             if (i == player1Selection && i == player2Selection) {
-                // Ambos lo apuntan - mostrar ambos colores alternando o algo (por ahora solo el del primero)
                 characterTexts[i].setFillColor(sf::Color::Cyan);
             } else if (i == player1Selection) {
                 characterTexts[i].setFillColor(sf::Color::Blue);
@@ -98,7 +102,6 @@ void CharacterSelectionScreen::updateDisplay() {
         }
     }
     
-    // Actualizar estado de jugadores
     std::string p1Status = player1Name + (player1Confirmed ? " (Confirmado)" : "");
     player1StatusText->setString(p1Status);
     
@@ -108,30 +111,23 @@ void CharacterSelectionScreen::updateDisplay() {
 
 void CharacterSelectionScreen::handleInput(const sf::Event& event) {
     if (const auto* keyEvent = event.getIf<sf::Event::KeyPressed>()) {
-        // Controles Jugador 1 (WASD)
-        if (keyEvent->code == sf::Keyboard::Key::W) {
-            if (!player1Confirmed && player1Selection > 0) {
-                player1Selection--;
-                updateDisplay();
-            }
-        } else if (keyEvent->code == sf::Keyboard::Key::S) {
-            if (!player1Confirmed && player1Selection < NUM_CHARACTERS - 1) {
-                player1Selection++;
-                updateDisplay();
-            }
+        
+        // Controles Jugador 1 (WASD) - Ahora en cuadrícula
+        if (!player1Confirmed) {
+            if (keyEvent->code == sf::Keyboard::Key::W && player1Selection >= 5) player1Selection -= 5; // Sube fila
+            if (keyEvent->code == sf::Keyboard::Key::S && player1Selection < 5) player1Selection += 5;  // Baja fila
+            if (keyEvent->code == sf::Keyboard::Key::A && (player1Selection % 5) > 0) player1Selection--; // Izquierda
+            if (keyEvent->code == sf::Keyboard::Key::D && (player1Selection % 5) < 4) player1Selection++; // Derecha
+            updateDisplay();
         }
         
-        // Controles Jugador 2 (Flechas)
-        if (keyEvent->code == sf::Keyboard::Key::Up) {
-            if (!player2Confirmed && player2Selection > 0) {
-                player2Selection--;
-                updateDisplay();
-            }
-        } else if (keyEvent->code == sf::Keyboard::Key::Down) {
-            if (!player2Confirmed && player2Selection < NUM_CHARACTERS - 1) {
-                player2Selection++;
-                updateDisplay();
-            }
+        // Controles Jugador 2 (Flechas) - Ahora en cuadrícula
+        if (!player2Confirmed) {
+            if (keyEvent->code == sf::Keyboard::Key::Up && player2Selection >= 5) player2Selection -= 5;
+            if (keyEvent->code == sf::Keyboard::Key::Down && player2Selection < 5) player2Selection += 5;
+            if (keyEvent->code == sf::Keyboard::Key::Left && (player2Selection % 5) > 0) player2Selection--;
+            if (keyEvent->code == sf::Keyboard::Key::Right && (player2Selection % 5) < 4) player2Selection++;
+            updateDisplay();
         }
         
         // Confirmar (Enter o Space para ambos)
@@ -158,11 +154,13 @@ void CharacterSelectionScreen::render(sf::RenderWindow& window) {
         window.draw(*titleText);
     }
     
-    // Dibujar personajes en el centro
-    for (int i = 0; i < NUM_CHARACTERS; ++i) {
-        // Dibujar rectángulo
-        sf::RectangleShape box(sf::Vector2f(CHARACTER_BOX_SIZE, CHARACTER_BOX_SIZE));
-        box.setPosition(sf::Vector2f(450, 150 + i * (CHARACTER_BOX_SIZE + CHARACTER_SPACING)));
+    // Dibujar los 10 personajes en cuadrícula
+    for (int i = 0; i < 10; ++i) { // Cambiado a 10
+        float posX = 100.0f + (i % 5) * 140.0f; // Matemáticas de las columnas
+        float posY = 150.0f + (i / 5) * 180.0f; // Matemáticas de las filas
+        
+        sf::RectangleShape box(sf::Vector2f(100.0f, 100.0f)); // Tamaño fijo del cuadro
+        box.setPosition(sf::Vector2f(posX, posY));
         
         // Color según selección
         if (i == player1Selection && i == player2Selection) {
@@ -172,7 +170,7 @@ void CharacterSelectionScreen::render(sf::RenderWindow& window) {
         } else if (i == player2Selection) {
             box.setFillColor(sf::Color::Red);   // Solo P2
         } else {
-            box.setFillColor(sf::Color(50, 50, 50));  // Gris oscuro
+            box.setFillColor(sf::Color(50, 50, 50));  // Gris oscuro para los no seleccionados
         }
         
         box.setOutlineThickness(2.f);
@@ -186,15 +184,8 @@ void CharacterSelectionScreen::render(sf::RenderWindow& window) {
         window.draw(charText);
     }
     
-    // Preview P1 (izquierda)
-    if (player1StatusText) {
-        window.draw(*player1StatusText);
-    }
-    
-    // Preview P2 (derecha)
-    if (player2StatusText) {
-        window.draw(*player2StatusText);
-    }
+    if (player1StatusText) window.draw(*player1StatusText);
+    if (player2StatusText) window.draw(*player2StatusText);
     
     // Instrucciones
     sf::Text instructions(*font, "P1: WASD/Enter | P2: Flechas/Enter", 20);
