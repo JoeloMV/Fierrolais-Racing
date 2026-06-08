@@ -62,6 +62,8 @@ void Game::handleEvents() {
             handleMenuInput(*event);
         } else if (currentState == GameState::OPTIONS) {
             handleOptionsInput(*event);
+        } else if (currentState == GameState::CREDITS) {
+            handleCreditsInput(*event);
         }
     }
 }
@@ -94,6 +96,7 @@ void Game::handleMenuInput(const sf::Event& event) {
                     std::cout << "Abriendo opciones..." << std::endl;
                     break;
                 case 2:
+                    previousState = GameState::MENU;
                     currentState = GameState::CREDITS;
                     std::cout << "Mostrando créditos..." << std::endl;
                     break;
@@ -125,6 +128,16 @@ void Game::handleOptionsInput(const sf::Event& event) {
     }
 }
 
+void Game::handleCreditsInput(const sf::Event& event) {
+    if (const auto* keyEvent = event.getIf<sf::Event::KeyPressed>()) {
+        if (keyEvent->code == sf::Keyboard::Key::Escape) {
+            currentState = previousState;
+            menu.reset();
+            std::cout << "Volviendo al menú..." << std::endl;
+        }
+    }
+}
+
 void Game::update() {
     switch (currentState) {
         case GameState::SPLASH:
@@ -139,6 +152,7 @@ void Game::update() {
         case GameState::PLAYING:
             break;
         case GameState::CREDITS:
+            creditsScreen.update();
             break;
         case GameState::QUIT:
             isRunning = false;
@@ -162,8 +176,7 @@ void Game::render() {
             window.display();
             break;
         case GameState::CREDITS:
-            window.clear(sf::Color::Magenta);
-            window.display();
+            creditsScreen.render(window);
             break;
         case GameState::QUIT:
             break;

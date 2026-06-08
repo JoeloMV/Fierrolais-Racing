@@ -10,6 +10,7 @@
 #include "Menu.h"
 #include "SplashScreen.h"
 #include "OptionsMenu.h"
+#include "CreditsScreen.h"
 
 enum class GameState {
     SPLASH,
@@ -29,6 +30,7 @@ private:
     Menu menu;
     SplashScreen splashScreen;
     OptionsMenu optionsMenu;
+    CreditsScreen creditsScreen;
     std::shared_ptr<sf::Music> backgroundMusic;
     
     void loadBackgroundMusic();
@@ -44,6 +46,7 @@ public:
     void handleMenuInput(const sf::Event& event);
     void handleSplashInput(const sf::Event& event);
     void handleOptionsInput(const sf::Event& event);
+    void handleCreditsInput(const sf::Event& event);
 };
 
 #endif // GAME_H
