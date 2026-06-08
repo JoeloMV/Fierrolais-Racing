@@ -11,10 +11,15 @@
 #include "SplashScreen.h"
 #include "OptionsMenu.h"
 #include "CreditsScreen.h"
+#include "NameInputScreen.h"
+#include "CharacterSelectionScreen.h"
 
 enum class GameState {
     SPLASH,
     MENU,
+    NAME_INPUT_P1,
+    NAME_INPUT_P2,
+    CHARACTER_SELECTION,
     PLAYING,
     OPTIONS,
     CREDITS,
@@ -31,7 +36,12 @@ private:
     SplashScreen splashScreen;
     OptionsMenu optionsMenu;
     CreditsScreen creditsScreen;
+    NameInputScreen nameInputScreen;
+    CharacterSelectionScreen characterSelectionScreen;
     std::shared_ptr<sf::Music> backgroundMusic;
+    
+    std::string player1Name;
+    std::string player2Name;
     
     void loadBackgroundMusic();
     
@@ -42,6 +52,8 @@ public:
     void run();
     void update();
     void render();
+    void handleNameInputInput(const sf::Event& event);
+    void handleCharacterSelectionInput(const sf::Event& event);
     void handleEvents();
     void handleMenuInput(const sf::Event& event);
     void handleSplashInput(const sf::Event& event);

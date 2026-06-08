@@ -60,6 +60,10 @@ void Game::handleEvents() {
             handleSplashInput(*event);
         } else if (currentState == GameState::MENU) {
             handleMenuInput(*event);
+        } else if (currentState == GameState::NAME_INPUT_P1 || currentState == GameState::NAME_INPUT_P2) {
+            handleNameInputInput(*event);
+        } else if (currentState == GameState::CHARACTER_SELECTION) {
+            handleCharacterSelectionInput(*event);
         } else if (currentState == GameState::OPTIONS) {
             handleOptionsInput(*event);
         } else if (currentState == GameState::CREDITS) {
@@ -86,8 +90,9 @@ void Game::handleMenuInput(const sf::Event& event) {
             int selected = menu.getSelectedOption();
             switch (selected) {
                 case 0:
-                    currentState = GameState::PLAYING;
-                    std::cout << "Iniciando juego..." << std::endl;
+                    currentState = GameState::NAME_INPUT_P1;
+                    nameInputScreen.reset(1);
+                    std::cout << "Ingresando nombre Jugador 1..." << std::endl;
                     break;
                 case 1:
                     previousState = GameState::MENU;
@@ -128,6 +133,42 @@ void Game::handleOptionsInput(const sf::Event& event) {
     }
 }
 
+void Game::handleNameInputInput(const sf::Event& event) {
+    if (const auto* keyEvent = event.getIf<sf::Event::KeyPressed>()) {
+        if (keyEvent->code == sf::Keyboard::Key::Enter) {
+            if (nameInputScreen.isNameConfirmed()) {
+                if (currentState == GameState::NAME_INPUT_P1) {
+                    player1Name = nameInputScreen.getPlayerName();
+                    currentState = GameState::NAME_INPUT_P2;
+                    nameInputScreen.reset(2);
+                    std::cout << "Jugador 1: " << player1Name << std::endl;
+                    std::cout << "Ingresando nombre Jugador 2..." << std::endl;
+                } else if (currentState == GameState::NAME_INPUT_P2) {
+                    player2Name = nameInputScreen.getPlayerName();
+                    currentState = GameState::CHARACTER_SELECTION;
+                    characterSelectionScreen.setPlayerNames(player1Name, player2Name);
+                    characterSelectionScreen.reset();
+                    std::cout << "Jugador 2: " << player2Name << std::endl;
+                    std::cout << "Seleccionando personajes..." << std::endl;
+                }
+            }
+        }
+    }
+    
+    // Pasar eventos al input screen
+    nameInputScreen.handleInput(event);
+}
+
+void Game::handleCharacterSelectionInput(const sf::Event& event) {
+    characterSelectionScreen.handleInput(event);
+    
+    if (characterSelectionScreen.areBothConfirmed()) {
+        // Ambos jugadores confirmaron - iniciar juego
+        currentState = GameState::PLAYING;
+        std::cout << "Iniciando juego..." << std::endl;
+    }
+}
+
 void Game::handleCreditsInput(const sf::Event& event) {
     if (const auto* keyEvent = event.getIf<sf::Event::KeyPressed>()) {
         if (keyEvent->code == sf::Keyboard::Key::Escape) {
@@ -145,6 +186,13 @@ void Game::update() {
             break;
         case GameState::MENU:
             menu.update();
+            break;
+        case GameState::NAME_INPUT_P1:
+        case GameState::NAME_INPUT_P2:
+            nameInputScreen.update();
+            break;
+        case GameState::CHARACTER_SELECTION:
+            characterSelectionScreen.update();
             break;
         case GameState::OPTIONS:
             optionsMenu.update();
@@ -167,6 +215,13 @@ void Game::render() {
             break;
         case GameState::MENU:
             menu.render(window);
+            break;
+        case GameState::NAME_INPUT_P1:
+        case GameState::NAME_INPUT_P2:
+            nameInputScreen.render(window);
+            break;
+        case GameState::CHARACTER_SELECTION:
+            characterSelectionScreen.render(window);
             break;
         case GameState::OPTIONS:
             optionsMenu.render(window);
