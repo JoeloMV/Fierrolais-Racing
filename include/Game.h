@@ -4,10 +4,15 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
+#include <SFML/Audio.hpp>
 #include <optional>
+#include <memory>
 #include "Menu.h"
+#include "SplashScreen.h"
+#include "OptionsMenu.h"
 
 enum class GameState {
+    SPLASH,
     MENU,
     PLAYING,
     OPTIONS,
@@ -20,7 +25,13 @@ private:
     sf::RenderWindow window;
     bool isRunning;
     GameState currentState;
+    GameState previousState;
     Menu menu;
+    SplashScreen splashScreen;
+    OptionsMenu optionsMenu;
+    std::shared_ptr<sf::Music> backgroundMusic;
+    
+    void loadBackgroundMusic();
     
 public:
     Game();
@@ -31,6 +42,8 @@ public:
     void render();
     void handleEvents();
     void handleMenuInput(const sf::Event& event);
+    void handleSplashInput(const sf::Event& event);
+    void handleOptionsInput(const sf::Event& event);
 };
 
 #endif // GAME_H
