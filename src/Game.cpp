@@ -64,6 +64,13 @@ void Game::handleEvents() {
             handleNameInputInput(*event);
         } else if (currentState == GameState::CHARACTER_SELECTION) {
             handleCharacterSelectionInput(*event);
+        } else if (currentState == GameState::CAR_SELECTION) {
+            // Pasamos los controles a la selección de carros
+            carSelectionScreen.handleInput(*event);
+            if (carSelectionScreen.areBothConfirmed()) {
+                currentState = GameState::PLAYING;
+                std::cout << "Iniciando juego..." << std::endl;
+            }
         } else if (currentState == GameState::OPTIONS) {
             handleOptionsInput(*event);
         } else if (currentState == GameState::CREDITS) {
@@ -163,9 +170,10 @@ void Game::handleCharacterSelectionInput(const sf::Event& event) {
     characterSelectionScreen.handleInput(event);
     
     if (characterSelectionScreen.areBothConfirmed()) {
-        // Ambos jugadores confirmaron - iniciar juego
-        currentState = GameState::PLAYING;
-        std::cout << "Iniciando juego..." << std::endl;
+        // Ambos jugadores confirmaron - pasamos a seleccionar carros
+        currentState = GameState::CAR_SELECTION;
+        carSelectionScreen.reset();
+        std::cout << "Seleccionando carros..." << std::endl;
     }
 }
 
@@ -193,6 +201,9 @@ void Game::update() {
             break;
         case GameState::CHARACTER_SELECTION:
             characterSelectionScreen.update();
+            break;
+        case GameState::CAR_SELECTION:
+            // La pantalla de selección de carros se actualiza mediante inputs, así que aquí no hace falta nada
             break;
         case GameState::OPTIONS:
             optionsMenu.update();
@@ -222,6 +233,12 @@ void Game::render() {
             break;
         case GameState::CHARACTER_SELECTION:
             characterSelectionScreen.render(window);
+            break;
+        case GameState::CAR_SELECTION:
+            // Limpiamos, dibujamos la pantalla de carros y mostramos
+            window.clear(sf::Color::Black);
+            carSelectionScreen.render(window);
+            window.display();
             break;
         case GameState::OPTIONS:
             optionsMenu.render(window);

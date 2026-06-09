@@ -13,6 +13,7 @@
 #include "CreditsScreen.h"
 #include "NameInputScreen.h"
 #include "CharacterSelectionScreen.h"
+#include "CarSelectionScreen.h"
 
 enum class GameState {
     SPLASH,
@@ -20,6 +21,7 @@ enum class GameState {
     NAME_INPUT_P1,
     NAME_INPUT_P2,
     CHARACTER_SELECTION,
+    CAR_SELECTION,
     PLAYING,
     OPTIONS,
     CREDITS,
@@ -38,6 +40,7 @@ private:
     CreditsScreen creditsScreen;
     NameInputScreen nameInputScreen;
     CharacterSelectionScreen characterSelectionScreen;
+    CarSelectionScreen carSelectionScreen;
     std::shared_ptr<sf::Music> backgroundMusic;
     
     std::string player1Name;
