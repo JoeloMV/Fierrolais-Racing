@@ -148,15 +148,15 @@ bool CharacterSelectionScreen::areBothConfirmed() const {
 }
 
 void CharacterSelectionScreen::render(sf::RenderWindow& window) {
-   static sf::Texture alucinTexture;
-    // Eliminamos el static sf::Sprite de aquí
+   static sf::Texture alucinTexture; // Eliminamos el static sf::Sprite de aquí
+   static sf::Texture mechaTexture; // Nueva textura para Mecha Corta
     static bool textureLoaded = false;
 
     if (!textureLoaded) {
-        // Cambiamos openFromFile por loadFromFile
-        if (alucinTexture.loadFromFile("assets/alucin.png")) { 
+     alucinTexture.loadFromFile("assets/alucin.png");
+        mechaTexture.loadFromFile("assets/mecha corta.jpeg");  
             textureLoaded = true;
-        }
+        
     }
     window.clear(sf::Color::Black);
     
@@ -187,7 +187,13 @@ void CharacterSelectionScreen::render(sf::RenderWindow& window) {
         box.setOutlineColor(sf::Color::White);
         
         window.draw(box);
-    
+    // Si es el cuadro 0 (Mecha Corta) y la textura cargó bien
+    if (i == 0 && textureLoaded) {
+        sf::Sprite mechaSprite(mechaTexture); 
+        mechaSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
+        mechaSprite.setPosition(sf::Vector2f(posX, posY)); 
+        window.draw(mechaSprite);
+    }
     // Si es el cuadro 1 (Alucin) y la textura cargó bien, lo dibujamos
     if (i == 1 && textureLoaded) {
         sf::Sprite alucinSprite(alucinTexture); // Creamos el sprite directamente con su textura
