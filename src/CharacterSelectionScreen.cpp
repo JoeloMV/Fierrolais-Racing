@@ -157,6 +157,7 @@ void CharacterSelectionScreen::render(sf::RenderWindow& window) {
    static sf::Texture saltamontesTexture; // <- ¡Salta montes al volante!
    static sf::Texture vaqueroTexture; // <- ¡Llegó el Vaquero!
    static sf::Texture mamadoTexture; // <- ¡Llegó el músculo a la carrera!
+   static sf::Texture fierrolaisTexture; // <- ¡El protagonista entra a la pista!
     static bool textureLoaded = false;
 
     if (!textureLoaded) {
@@ -169,6 +170,7 @@ void CharacterSelectionScreen::render(sf::RenderWindow& window) {
         saltamontesTexture.loadFromFile("assets/Salta Montes.jpeg");
         vaqueroTexture.loadFromFile("assets/Vaquero.png");
         mamadoTexture.loadFromFile("assets/mamado.png");
+        fierrolaisTexture.loadFromFile("assets/fierrolais.jpeg");
             textureLoaded = true;
         
     }
@@ -264,7 +266,14 @@ void CharacterSelectionScreen::render(sf::RenderWindow& window) {
         mamadoSprite.setPosition(sf::Vector2f(posX, posY)); 
         window.draw(mamadoSprite);
     }
+    // Si es el cuadro 9 (Fierrolais) y la textura cargó bien
+    if (i == 9 && textureLoaded) {
+        sf::Sprite fierrolaisSprite(fierrolaisTexture); 
+        fierrolaisSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
+        fierrolaisSprite.setPosition(sf::Vector2f(posX, posY)); 
+        window.draw(fierrolaisSprite);
     }
+ }
     
     // Dibujar texto de personajes
     for (const auto& charText : characterTexts) {
