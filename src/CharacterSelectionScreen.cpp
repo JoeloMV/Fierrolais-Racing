@@ -148,6 +148,16 @@ bool CharacterSelectionScreen::areBothConfirmed() const {
 }
 
 void CharacterSelectionScreen::render(sf::RenderWindow& window) {
+   static sf::Texture alucinTexture;
+    // Eliminamos el static sf::Sprite de aquí
+    static bool textureLoaded = false;
+
+    if (!textureLoaded) {
+        // Cambiamos openFromFile por loadFromFile
+        if (alucinTexture.loadFromFile("assets/alucin.png")) { 
+            textureLoaded = true;
+        }
+    }
     window.clear(sf::Color::Black);
     
     if (titleText) {
@@ -177,6 +187,14 @@ void CharacterSelectionScreen::render(sf::RenderWindow& window) {
         box.setOutlineColor(sf::Color::White);
         
         window.draw(box);
+    
+    // Si es el cuadro 1 (Alucin) y la textura cargó bien, lo dibujamos
+    if (i == 1 && textureLoaded) {
+        sf::Sprite alucinSprite(alucinTexture); // Creamos el sprite directamente con su textura
+        alucinSprite.setScale(sf::Vector2f(0.5f, 0.5f)); // Usamos sf::Vector2f para la escala
+        alucinSprite.setPosition(sf::Vector2f(posX, posY)); // Usamos sf::Vector2f para la posición
+        window.draw(alucinSprite);
+    }
     }
     
     // Dibujar texto de personajes
