@@ -156,6 +156,7 @@ void CharacterSelectionScreen::render(sf::RenderWindow& window) {
    static sf::Texture programadorTexture; // <- ¡El Programador entra en acción!
    static sf::Texture saltamontesTexture; // <- ¡Salta montes al volante!
    static sf::Texture vaqueroTexture; // <- ¡Llegó el Vaquero!
+   static sf::Texture mamadoTexture; // <- ¡Llegó el músculo a la carrera!
     static bool textureLoaded = false;
 
     if (!textureLoaded) {
@@ -167,6 +168,7 @@ void CharacterSelectionScreen::render(sf::RenderWindow& window) {
         programadorTexture.loadFromFile("assets/programador.png");
         saltamontesTexture.loadFromFile("assets/Salta Montes.jpeg");
         vaqueroTexture.loadFromFile("assets/Vaquero.png");
+        mamadoTexture.loadFromFile("assets/mamado.png");
             textureLoaded = true;
         
     }
@@ -254,6 +256,13 @@ void CharacterSelectionScreen::render(sf::RenderWindow& window) {
         vaqueroSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
         vaqueroSprite.setPosition(sf::Vector2f(posX, posY)); 
         window.draw(vaqueroSprite);
+    }
+    // Si es el cuadro 8 (Chenms Mamado) y la textura cargó bien
+    if (i == 8 && textureLoaded) {
+        sf::Sprite mamadoSprite(mamadoTexture); 
+        mamadoSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
+        mamadoSprite.setPosition(sf::Vector2f(posX, posY)); 
+        window.draw(mamadoSprite);
     }
     }
     
