@@ -152,13 +152,15 @@ void CharacterSelectionScreen::render(sf::RenderWindow& window) {
    static sf::Texture mechaTexture; // Nueva textura para Mecha Corta
    static sf::Texture checoTexture; // <- ¡Agrega esta nueva textura para Checo Pérez!
    static sf::Texture licenciadoTexture; // <- ¡El Licenciado se une al equipo!
+   static sf::Texture poetaTexture; // <- ¡Llegó el Poeta!
     static bool textureLoaded = false;
 
     if (!textureLoaded) {
      alucinTexture.loadFromFile("assets/alucin.png");
         mechaTexture.loadFromFile("assets/mecha corta.jpeg");  
-        checoTexture.loadFromFile("assets/checo perez.png"); // <- Carga a Checo Pérez aquí
-        licenciadoTexture.loadFromFile("assets/licenciado.jpeg"); // <- Carga aquí
+        checoTexture.loadFromFile("assets/checo perez.png"); 
+        licenciadoTexture.loadFromFile("assets/licenciado.jpeg"); 
+        poetaTexture.loadFromFile("assets/poeta.png");
             textureLoaded = true;
         
     }
@@ -218,6 +220,13 @@ void CharacterSelectionScreen::render(sf::RenderWindow& window) {
         licenciadoSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
         licenciadoSprite.setPosition(sf::Vector2f(posX, posY)); 
         window.draw(licenciadoSprite);
+    }
+    // Si es el cuadro 4 (Poeta) y la textura cargó bien
+    if (i == 4 && textureLoaded) {
+        sf::Sprite poetaSprite(poetaTexture); 
+        poetaSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
+        poetaSprite.setPosition(sf::Vector2f(posX, posY)); 
+        window.draw(poetaSprite);
     }
     }
     
