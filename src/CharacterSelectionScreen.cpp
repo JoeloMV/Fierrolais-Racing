@@ -154,6 +154,7 @@ void CharacterSelectionScreen::render(sf::RenderWindow& window) {
    static sf::Texture licenciadoTexture; // <- ¡El Licenciado se une al equipo!
    static sf::Texture poetaTexture; // <- ¡Llegó el Poeta!
    static sf::Texture programadorTexture; // <- ¡El Programador entra en acción!
+   static sf::Texture saltamontesTexture; // <- ¡Salta montes al volante!
     static bool textureLoaded = false;
 
     if (!textureLoaded) {
@@ -163,6 +164,7 @@ void CharacterSelectionScreen::render(sf::RenderWindow& window) {
         licenciadoTexture.loadFromFile("assets/licenciado.jpeg"); 
         poetaTexture.loadFromFile("assets/poeta.png");
         programadorTexture.loadFromFile("assets/programador.png");
+        saltamontesTexture.loadFromFile("assets/Salta Montes.jpeg");
             textureLoaded = true;
         
     }
@@ -236,6 +238,13 @@ void CharacterSelectionScreen::render(sf::RenderWindow& window) {
         programadorSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
         programadorSprite.setPosition(sf::Vector2f(posX, posY)); 
         window.draw(programadorSprite);
+    }
+    // Si es el cuadro 6 (Salta montes) y la textura cargó bien
+    if (i == 6 && textureLoaded) {
+        sf::Sprite saltamontesSprite(saltamontesTexture); 
+        saltamontesSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
+        saltamontesSprite.setPosition(sf::Vector2f(posX, posY)); 
+        window.draw(saltamontesSprite);
     }
     }
     
