@@ -153,6 +153,7 @@ void CharacterSelectionScreen::render(sf::RenderWindow& window) {
    static sf::Texture checoTexture; // <- ¡Agrega esta nueva textura para Checo Pérez!
    static sf::Texture licenciadoTexture; // <- ¡El Licenciado se une al equipo!
    static sf::Texture poetaTexture; // <- ¡Llegó el Poeta!
+   static sf::Texture programadorTexture; // <- ¡El Programador entra en acción!
     static bool textureLoaded = false;
 
     if (!textureLoaded) {
@@ -161,6 +162,7 @@ void CharacterSelectionScreen::render(sf::RenderWindow& window) {
         checoTexture.loadFromFile("assets/checo perez.png"); 
         licenciadoTexture.loadFromFile("assets/licenciado.jpeg"); 
         poetaTexture.loadFromFile("assets/poeta.png");
+        programadorTexture.loadFromFile("assets/programador.png");
             textureLoaded = true;
         
     }
@@ -227,6 +229,13 @@ void CharacterSelectionScreen::render(sf::RenderWindow& window) {
         poetaSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
         poetaSprite.setPosition(sf::Vector2f(posX, posY)); 
         window.draw(poetaSprite);
+    }
+    // Si es el cuadro 5 (Programador) y la textura cargó bien
+    if (i == 5 && textureLoaded) {
+        sf::Sprite programadorSprite(programadorTexture); 
+        programadorSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
+        programadorSprite.setPosition(sf::Vector2f(posX, posY)); 
+        window.draw(programadorSprite);
     }
     }
     
