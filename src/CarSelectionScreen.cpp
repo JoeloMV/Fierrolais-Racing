@@ -42,8 +42,8 @@ bool CarSelectionScreen::loadFont() {
 
 void CarSelectionScreen::initializeCars() {
     cars = {
-        {0, "Rayo"}, {1, "Trueno"}, {2, "Relampago"},
-        {3, "Tornado"}, {4, "Huracan"}, {5, "Ciclon"}
+        {0, "Fierrari F-Ocho"}, {1, "Lamborgota veneno"}, {2, "Ford Firulais"},
+        {3, "Puerche 9-Once"}, {4, "Dodge Chanclenger"}
     };
 
     carTexts.clear(); // Limpiamos la memoria por si acaso

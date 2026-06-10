@@ -8,23 +8,34 @@
 class Player {
 private:
     sf::RectangleShape car;
-    float speed;
-    float velocityX;
-    float velocityY;
     std::string name;
     int playerID; // 1 para Player 1, 2 para Player 2
+
+    float speed;
+    float maxSpeed;
+    float acceleration;
+    float friction;
+    float turnSpeed;
+    float angle; 
+
+    // En SFML 3 las teclas se guardan con sf::Keyboard::Key
+    sf::Keyboard::Key keyUp;
+    sf::Keyboard::Key keyDown;
+    sf::Keyboard::Key keyLeft;
+    sf::Keyboard::Key keyRight;
 
 public:
     Player(int id, float x, float y, const std::string& playerName);
     
-    void handleInput(const sf::Event& event);
     void update();
     void render(sf::RenderWindow& window);
     
-    sf::RectangleShape& getShape();
-    float getSpeed() const;
-    void setPosition(float x, float y);
-    sf::Vector2f getPosition() const;
+    sf::RectangleShape& getShape() { return car; }
+    float getSpeed() const { return speed; }
+    
+    // CORRECCIÓN SFML 3: Usar llaves {x, y} para convertir a sf::Vector2f
+    void setPosition(float x, float y) { car.setPosition({x, y}); }
+    sf::Vector2f getPosition() const { return car.getPosition(); }
 };
 
 #endif // PLAYER_H
