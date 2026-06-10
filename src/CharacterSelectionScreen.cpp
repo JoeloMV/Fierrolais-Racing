@@ -150,11 +150,13 @@ bool CharacterSelectionScreen::areBothConfirmed() const {
 void CharacterSelectionScreen::render(sf::RenderWindow& window) {
    static sf::Texture alucinTexture; // Eliminamos el static sf::Sprite de aquí
    static sf::Texture mechaTexture; // Nueva textura para Mecha Corta
+   static sf::Texture checoTexture; // <- ¡Agrega esta nueva textura para Checo Pérez!
     static bool textureLoaded = false;
 
     if (!textureLoaded) {
      alucinTexture.loadFromFile("assets/alucin.png");
         mechaTexture.loadFromFile("assets/mecha corta.jpeg");  
+        checoTexture.loadFromFile("assets/checo perez.png"); // <- Carga a Checo Pérez aquí
             textureLoaded = true;
         
     }
@@ -200,6 +202,13 @@ void CharacterSelectionScreen::render(sf::RenderWindow& window) {
         alucinSprite.setScale(sf::Vector2f(0.5f, 0.5f)); // Usamos sf::Vector2f para la escala
         alucinSprite.setPosition(sf::Vector2f(posX, posY)); // Usamos sf::Vector2f para la posición
         window.draw(alucinSprite);
+    }
+    // Si es el cuadro 2 (Checo Pérez) y la textura cargó bien
+    if (i == 2 && textureLoaded) {
+        sf::Sprite checoSprite(checoTexture); 
+        checoSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
+        checoSprite.setPosition(sf::Vector2f(posX, posY)); 
+        window.draw(checoSprite);
     }
     }
     
