@@ -15,10 +15,10 @@ CarSelectionScreen::CarSelectionScreen() {
     player2StatusText = std::make_shared<sf::Text>(*font);
 
     // Asignamos los textos principales de forma segura
-    titleText->setString("SELECCIONA TU NAVE");
+    titleText->setString("SELECCIONA TU NAVE PARA LA CARRERA");
     titleText->setCharacterSize(50);
     titleText->setFillColor(sf::Color::White);
-    titleText->setPosition({150.0f, 50.0f}); 
+    titleText->setPosition({75.0f, 5.0f}); 
 
     player1StatusText->setCharacterSize(24);
     player1StatusText->setPosition({50.0f, 500.0f});
