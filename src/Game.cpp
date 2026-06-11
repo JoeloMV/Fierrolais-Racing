@@ -28,10 +28,20 @@ void Game::loadBackgroundMusic() {
     std::cerr << "Advertencia: No se pudo cargar el archivo de música" << std::endl;
 }
 
-Game::Game() : window(sf::VideoMode(sf::Vector2u(1200, 700)), "Fierrolais Racing"), isRunning(true), currentState(GameState::SPLASH), previousState(GameState::SPLASH) {
+Game::Game() : window(sf::VideoMode(sf::Vector2u(1200, 700)), "Fierrolais Racing"), isRunning(true), currentState(GameState::SPLASH), previousState(GameState::SPLASH), pistaSprite(pistaTexture) {
     window.setFramerateLimit(60);
     loadBackgroundMusic();
     optionsMenu.setBackgroundMusic(backgroundMusic);
+   // Cargamos la imagen de la pista
+    if (!pistaTexture.loadFromFile("assets/pista.png")) {
+        std::cerr << "Error al cargar pista.png" << std::endl;
+    }
+
+    // Le decimos al sprite el tamaño de la imagen (626 x 417)
+    pistaSprite.setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(626, 417)));
+
+    // Ajustamos la escala al formato de SFML 3 usando sf::Vector2f
+    pistaSprite.setScale(sf::Vector2f(1200.0f / 626.0f, 700.0f / 417.0f));
 }
 
 Game::~Game() {
@@ -244,8 +254,9 @@ void Game::render() {
             optionsMenu.render(window);
             break;
         case GameState::PLAYING:
-            window.clear(sf::Color::Green);
-            window.display();
+            window.clear(sf::Color::Black); // Limpiamos el fondo en negro
+            window.draw(pistaSprite);       // Dibujamos la pista estirada
+            window.display();               // Mostramos los cambios en la pantalla
             break;
         case GameState::CREDITS:
             creditsScreen.render(window);

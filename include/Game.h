@@ -42,6 +42,8 @@ private:
     CharacterSelectionScreen characterSelectionScreen;
     CarSelectionScreen carSelectionScreen;
     std::shared_ptr<sf::Music> backgroundMusic;
+    sf::Texture pistaTexture;
+    sf::Sprite pistaSprite;
     
     std::string player1Name;
     std::string player2Name;
