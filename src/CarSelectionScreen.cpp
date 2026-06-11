@@ -17,7 +17,7 @@ CarSelectionScreen::CarSelectionScreen() {
     // Asignamos los textos principales de forma segura
     titleText->setString("SELECCIONA TU NAVE PARA LA CARRERA");
     titleText->setCharacterSize(50);
-    titleText->setFillColor(sf::Color::White);
+    titleText->setFillColor(sf::Color::Blue);
     titleText->setPosition({75.0f, 5.0f}); 
 
     player1StatusText->setCharacterSize(24);
