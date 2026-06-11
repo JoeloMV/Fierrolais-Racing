@@ -17,6 +17,10 @@ private:
     std::shared_ptr<sf::Font> font;
     std::vector<Car> cars;
     sf::Texture puercheTexture;
+    sf::Texture fierrariTexture;   // <-- Nueva
+    sf::Texture lamborgotaTexture; // <-- Nueva
+    sf::Texture fordTexture;       // <-- Nueva
+    sf::Texture dodgeTexture;      // <-- Nueva
 
     int player1Selection;
     int player2Selection;
@@ -29,7 +33,7 @@ private:
     std::shared_ptr<sf::Text> player2StatusText;
 
     // Vamos a poner 6 carros para elegir
-    static const int NUM_CARS = 6;
+    static const int NUM_CARS = 5;
     static const int CAR_BOX_WIDTH = 120;
     static const int CAR_BOX_HEIGHT = 80;
 

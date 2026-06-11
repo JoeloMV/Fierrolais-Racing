@@ -100,12 +100,15 @@ void CarSelectionScreen::handleInput(const sf::Event& event) {
     updateDisplay();
 }
 void CarSelectionScreen::render(sf::RenderWindow& window) {
-    // 1. Cargar la foto del Puerche (solo se carga una vez para no trabar el juego)
-    static bool textureLoaded = false;
-    if (!textureLoaded) {
-        puercheTexture.loadFromFile("assets/puerche.png");
-        textureLoaded = true;
-    }
+   static bool texturesLoaded = false;
+if (!texturesLoaded) {
+    puercheTexture.loadFromFile("assets/puerche.png");
+    fierrariTexture.loadFromFile("assets/fierrari.png");
+    lamborgotaTexture.loadFromFile("assets/lamborgota.png");
+    fordTexture.loadFromFile("assets/ford.png");
+    dodgeTexture.loadFromFile("assets/dodge.png");
+    texturesLoaded = true;
+}
 
     // 2. Dibujar los textos originales
     window.draw(*titleText);
@@ -115,18 +118,43 @@ void CarSelectionScreen::render(sf::RenderWindow& window) {
     for (const auto& text : carTexts) {
         window.draw(text);
     }
+// 3. ¡Dibujar los carros dinámicos sobre el texto seleccionado!
+    if (texturesLoaded && !carTexts.empty()) {
+        
+        // --- JUGADOR 1 ---
+        // 1. Primero creamos un "puntero" para elegir qué textura usar
+        sf::Texture* p1Texture = &puercheTexture; 
+        if (player1Selection == 0) p1Texture = &fierrariTexture;
+        else if (player1Selection == 1) p1Texture = &lamborgotaTexture;
+        else if (player1Selection == 2) p1Texture = &fordTexture;
+        else if (player1Selection == 3) p1Texture = &puercheTexture;
+        else if (player1Selection == 4) p1Texture = &dodgeTexture;
 
-    // 3. ¡Dibujar la nave fotorrealista!
-    if (textureLoaded && carTexts.size() > 3) {
-        sf::Sprite puercheSprite(puercheTexture);
-        puercheSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
-        
-        // Tomamos la posición del texto "Puerche 9-Once" y le restamos a la "y" para que el carro quede arriba
-        float carX = carTexts[3].getPosition().x;
-        float carY = carTexts[3].getPosition().y - 120; 
-        
-        puercheSprite.setPosition(sf::Vector2f(carX, carY));
-        window.draw(puercheSprite);
+        // 2. Ahora sí, creamos el sprite dándole la textura de golpe. ¡Así SFML no se queja!
+        sf::Sprite p1CarSprite(*p1Texture);
+        p1CarSprite.setScale(sf::Vector2f(0.4f, 0.4f)); 
+        float p1CarX = carTexts[player1Selection].getPosition().x;
+        float p1CarY = carTexts[player1Selection].getPosition().y - 100;
+        p1CarSprite.setPosition(sf::Vector2f(p1CarX, p1CarY));
+        window.draw(p1CarSprite);
+
+
+        // --- JUGADOR 2 ---
+        // 1. Hacemos lo mismo para el Jugador 2
+        sf::Texture* p2Texture = &lamborgotaTexture; 
+        if (player2Selection == 0) p2Texture = &fierrariTexture;
+        else if (player2Selection == 1) p2Texture = &lamborgotaTexture;
+        else if (player2Selection == 2) p2Texture = &fordTexture;
+        else if (player2Selection == 3) p2Texture = &puercheTexture;
+        else if (player2Selection == 4) p2Texture = &dodgeTexture;
+
+        // 2. Creamos el sprite del Jugador 2 con su textura directa
+        sf::Sprite p2CarSprite(*p2Texture);
+        p2CarSprite.setScale(sf::Vector2f(0.4f, 0.4f));
+        float p2CarX = carTexts[player2Selection].getPosition().x;
+        float p2CarY = carTexts[player2Selection].getPosition().y - 100;
+        p2CarSprite.setPosition(sf::Vector2f(p2CarX, p2CarY));
+        window.draw(p2CarSprite);
     }
 }
     bool CarSelectionScreen::areBothConfirmed() const {
