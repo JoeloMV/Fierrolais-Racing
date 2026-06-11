@@ -54,9 +54,19 @@ void CarSelectionScreen::initializeCars() {
         text.setCharacterSize(20);
         text.setFillColor(sf::Color::White);
         
-        float x = 100.0f + (i % 3) * 200.0f;
-        float y = 200.0f + (i / 3) * 150.0f;
-        text.setPosition({x, y}); 
+      float x = 0.0f;
+        float y = 0.0f;
+
+        // Posiciones manuales fijas para que todo quede centrado y arriba
+        switch(i) {
+            case 0: x = 120.0f; y = 180.0f; break; // Fierrari (Arriba Izquierda)
+            case 1: x = 440.0f; y = 180.0f; break; // Lamborgota (Arriba Centro)
+            case 2: x = 760.0f; y = 180.0f; break; // Ford (Arriba Derecha)
+            case 3: x = 280.0f; y = 380.0f; break; // Puerche (Abajo Izquierda centrado)
+            case 4: x = 600.0f; y = 380.0f; break; // Dodge (Abajo Derecha centrado)
+        }
+
+        text.setPosition(sf::Vector2f(x, y));
         
         carTexts.push_back(text);
     }
@@ -134,7 +144,7 @@ if (!texturesLoaded) {
         sf::Sprite p1CarSprite(*p1Texture);
         p1CarSprite.setScale(sf::Vector2f(0.4f, 0.4f)); 
         float p1CarX = carTexts[player1Selection].getPosition().x;
-        float p1CarY = carTexts[player1Selection].getPosition().y - 100;
+        float p1CarY = carTexts[player1Selection].getPosition().y - 120;
         p1CarSprite.setPosition(sf::Vector2f(p1CarX, p1CarY));
         window.draw(p1CarSprite);
 
@@ -152,7 +162,7 @@ if (!texturesLoaded) {
         sf::Sprite p2CarSprite(*p2Texture);
         p2CarSprite.setScale(sf::Vector2f(0.4f, 0.4f));
         float p2CarX = carTexts[player2Selection].getPosition().x;
-        float p2CarY = carTexts[player2Selection].getPosition().y - 100;
+        float p2CarY = carTexts[player2Selection].getPosition().y - 120;
         p2CarSprite.setPosition(sf::Vector2f(p2CarX, p2CarY));
         window.draw(p2CarSprite);
     }
