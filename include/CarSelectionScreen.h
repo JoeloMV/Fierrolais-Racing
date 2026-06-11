@@ -16,6 +16,7 @@ class CarSelectionScreen {
 private:
     std::shared_ptr<sf::Font> font;
     std::vector<Car> cars;
+    sf::Texture puercheTexture;
 
     int player1Selection;
     int player2Selection;

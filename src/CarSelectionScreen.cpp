@@ -99,18 +99,37 @@ void CarSelectionScreen::handleInput(const sf::Event& event) {
     }
     updateDisplay();
 }
-
 void CarSelectionScreen::render(sf::RenderWindow& window) {
+    // 1. Cargar la foto del Puerche (solo se carga una vez para no trabar el juego)
+    static bool textureLoaded = false;
+    if (!textureLoaded) {
+        puercheTexture.loadFromFile("assets/puerche.png");
+        textureLoaded = true;
+    }
+
+    // 2. Dibujar los textos originales
     window.draw(*titleText);
     window.draw(*player1StatusText);
     window.draw(*player2StatusText);
-    
+
     for (const auto& text : carTexts) {
         window.draw(text);
     }
-}
 
-bool CarSelectionScreen::areBothConfirmed() const {
+    // 3. ¡Dibujar la nave fotorrealista!
+    if (textureLoaded && carTexts.size() > 3) {
+        sf::Sprite puercheSprite(puercheTexture);
+        puercheSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
+        
+        // Tomamos la posición del texto "Puerche 9-Once" y le restamos a la "y" para que el carro quede arriba
+        float carX = carTexts[3].getPosition().x;
+        float carY = carTexts[3].getPosition().y - 120; 
+        
+        puercheSprite.setPosition(sf::Vector2f(carX, carY));
+        window.draw(puercheSprite);
+    }
+}
+    bool CarSelectionScreen::areBothConfirmed() const {
     return player1Confirmed && player2Confirmed;
 }
 

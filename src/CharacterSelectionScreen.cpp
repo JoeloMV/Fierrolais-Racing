@@ -272,7 +272,7 @@ void CharacterSelectionScreen::render(sf::RenderWindow& window) {
         fierrolaisSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
         fierrolaisSprite.setPosition(sf::Vector2f(posX, posY)); 
         window.draw(fierrolaisSprite);
-    }
+    }  
  }
     
     // Dibujar texto de personajes

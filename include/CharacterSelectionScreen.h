@@ -15,6 +15,7 @@ struct Character {
 class CharacterSelectionScreen {
 private:
     std::shared_ptr<sf::Font> font;
+    sf::Texture puercheTexture;
     std::vector<Character> characters;
     
     int player1Selection;
