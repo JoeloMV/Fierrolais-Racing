@@ -47,12 +47,14 @@ Game::Game() : window(sf::VideoMode(sf::Vector2u(1200, 700)), "Fierrolais Racing
     if (!carroTexture.loadFromFile("assets/images/fierrarif8.png")) {
         std::cerr << "Error al cargar el carro" << std::endl;
     }
-    carroSprite.setTexture(carroTexture);
+    carroSprite = sf::Sprite(carroTexture);
     
-    // Lo hacemos un poco más pequeño para que quepa en el carril
+    carroSprite.setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(100, 150)));
+    
+   // Lo hacemos pequeño para que quepa en la pista
     carroSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
-    
-    // Lo ponemos en la línea de salida (Coordenadas X, Y)
+
+    // Lo regresamos a la línea de meta
     carroSprite.setPosition(sf::Vector2f(600.0f, 500.0f));
 }
 Game::~Game() {
