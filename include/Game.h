@@ -44,7 +44,8 @@ private:
     std::shared_ptr<sf::Music> backgroundMusic;
     sf::Texture pistaTexture;
     sf::Sprite pistaSprite;
-    
+    sf::Texture carroTexture;
+    sf::Sprite carroSprite;
     std::string player1Name;
     std::string player2Name;
     

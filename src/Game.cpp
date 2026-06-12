@@ -28,7 +28,7 @@ void Game::loadBackgroundMusic() {
     std::cerr << "Advertencia: No se pudo cargar el archivo de música" << std::endl;
 }
 
-Game::Game() : window(sf::VideoMode(sf::Vector2u(1200, 700)), "Fierrolais Racing"), isRunning(true), currentState(GameState::SPLASH), previousState(GameState::SPLASH), pistaSprite(pistaTexture) {
+Game::Game() : window(sf::VideoMode(sf::Vector2u(1200, 700)), "Fierrolais Racing"), isRunning(true), currentState(GameState::SPLASH), previousState(GameState::SPLASH), pistaSprite(pistaTexture), carroSprite(carroTexture) {
     window.setFramerateLimit(60);
     loadBackgroundMusic();
     optionsMenu.setBackgroundMusic(backgroundMusic);
@@ -42,8 +42,19 @@ Game::Game() : window(sf::VideoMode(sf::Vector2u(1200, 700)), "Fierrolais Racing
 
     // Ajustamos la escala al formato de SFML 3 usando sf::Vector2f
     pistaSprite.setScale(sf::Vector2f(1200.0f / 626.0f, 700.0f / 417.0f));
-}
 
+// --- Cargar el Carro ---
+    if (!carroTexture.loadFromFile("assets/images/fierrarif8.png")) {
+        std::cerr << "Error al cargar el carro" << std::endl;
+    }
+    carroSprite.setTexture(carroTexture);
+    
+    // Lo hacemos un poco más pequeño para que quepa en el carril
+    carroSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
+    
+    // Lo ponemos en la línea de salida (Coordenadas X, Y)
+    carroSprite.setPosition(sf::Vector2f(600.0f, 500.0f));
+}
 Game::~Game() {
     if (backgroundMusic) {
         backgroundMusic->stop();
@@ -255,7 +266,8 @@ void Game::render() {
             break;
         case GameState::PLAYING:
             window.clear(sf::Color::Black); // Limpiamos el fondo en negro
-            window.draw(pistaSprite);       // Dibujamos la pista estirada
+            window.draw(pistaSprite);
+            window.draw(carroSprite);       
             window.display();               // Mostramos los cambios en la pantalla
             break;
         case GameState::CREDITS:
