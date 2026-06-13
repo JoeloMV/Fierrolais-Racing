@@ -279,97 +279,100 @@ void Game::update() {
         case GameState::PLAYING: {
             float dt = 1.0f / 60.0f; 
 
-            // 1. 📍 GUARDAR LAS POSICIONES VIEJAS ANTES DE MOVER (Por si chocan)
+            // 1. 📍 GUARDAR LAS POSICIONES VIEJAS ANTES DE MOVER
             sf::Vector2f oldPos1 = carroSprite.getPosition();
             sf::Vector2f oldPos2 = carro2Sprite.getPosition();
 
             // ==========================================
-            // 🔥 CONTROL JUGADOR 1
+            // 🔥 CONTROL Y MOVIMIENTO JUGADOR 1 (Como ya lo tenías)
             // ==========================================
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) angle -= turnSpeed * dt;
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)) angle += turnSpeed * dt;
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)) {
-                speed += accel * dt;
-                if (speed > maxSpeed) speed = maxSpeed;
+                speed += accel * dt; if (speed > maxSpeed) speed = maxSpeed;
             } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down)) {
-                speed -= accel * dt;
-                if (speed < -maxSpeed / 2.0f) speed = -maxSpeed / 2.0f;
+                speed -= accel * dt; if (speed < -maxSpeed / 2.0f) speed = -maxSpeed / 2.0f;
             } else {
                 if (speed > 0) { speed -= decel * dt; if (speed < 0) speed = 0; } 
                 else if (speed < 0) { speed += decel * dt; if (speed > 0) speed = 0; }
             }
-
             float radianes = angle * 3.14159265f / 180.0f;
             carroSprite.move(sf::Vector2f(std::cos(radianes) * speed * dt, std::sin(radianes) * speed * dt));
             carroSprite.setRotation(sf::degrees(angle + 90.0f));
 
             // ==========================================
-            // 🔥 CONTROL JUGADOR 2
+            // 🔥 CONTROL Y MOVIMIENTO JUGADOR 2 (Como ya lo tenías)
             // ==========================================
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) angle2 -= turnSpeed * dt;
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) angle2 += turnSpeed * dt;
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
-                speed2 += accel * dt;
-                if (speed2 > maxSpeed) speed2 = maxSpeed;
+                speed2 += accel * dt; if (speed2 > maxSpeed) speed2 = maxSpeed;
             } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
-                speed2 -= accel * dt;
-                if (speed2 < -maxSpeed / 2.0f) speed2 = -maxSpeed / 2.0f;
+                speed2 -= accel * dt; if (speed2 < -maxSpeed / 2.0f) speed2 = -maxSpeed / 2.0f;
             } else {
                 if (speed2 > 0) { speed2 -= decel * dt; if (speed2 < 0) speed2 = 0; } 
                 else if (speed2 < 0) { speed2 += decel * dt; if (speed2 > 0) speed2 = 0; }
             }
-
             float radianes2 = angle2 * 3.14159265f / 180.0f;
             carro2Sprite.move(sf::Vector2f(std::cos(radianes2) * speed2 * dt, std::sin(radianes2) * speed2 * dt));
             carro2Sprite.setRotation(sf::degrees(angle2 + 90.0f));
 
+         // =======================================================
+            // 🚧 SISTEMA DE COLISIONES GEMELAS (P1 y P2 IDÉNTICOS) 🚧
             // =======================================================
-            // 🚧 SISTEMA DE COLISIONES CON EL PASTO VERDE (LÍMITES) 🚧
-            // =======================================================
-            // --- JUGADOR 1 ---
+            
+            // --- JUGADOR 1 (Carro Rojo) ---
             sf::Vector2f pos1 = carroSprite.getPosition();
-            // Convertimos la posición de la pantalla (1200x700) al tamaño real de la imagen original de la pista (626x417)
             int imgX1 = static_cast<int>(pos1.x * (626.0f / 1200.0f));
             int imgY1 = static_cast<int>(pos1.y * (417.0f / 700.0f));
 
             if (imgX1 >= 0 && imgX1 < 626 && imgY1 >= 0 && imgY1 < 417) {
-                sf::Color pixel1 = pistaImage.getPixel(sf::Vector2u(imgX1, imgY1));
-                // Si hay mucho verde en ese pixel, significa que es pasto
-                if (pixel1.g > 100 && pixel1.g > pixel1.r + 20 && pixel1.g > pixel1.b + 20) {
-                    carroSprite.setPosition(oldPos1); // ¡Rebota hacia atrás!
-                    speed = 0.0f;                     // Frena el motor
+                sf::Color p1 = pistaImage.getPixel(sf::Vector2u(imgX1, imgY1));
+                
+                // REGLAS SÚPER ESTRICTAS DE FUERA DE PISTA:
+                // 1. El pasto real es muy verde, ignoramos cualquier verde mezclado.
+                bool esPasto1 = (p1.g > 150 && p1.r < 140 && p1.b < 120); 
+                // 2. El lago es de un azul muy brillante, ignoramos los bordes azules oscuros.
+                bool esAgua1  = (p1.b > 180 && p1.r < 100); 
+                // 3. La arena es beige (tiene azul). Ignoramos el amarillo puro de la pista.
+                bool esArena1 = (p1.r > 180 && p1.g > 170 && p1.b > 120 && p1.b < 190);
+
+                if (esPasto1 || esAgua1 || esArena1) {
+                    carroSprite.setPosition(oldPos1); 
+                    speed = speed * -0.2f; 
                 }
             } else {
-                // Si intenta salirse de la pantalla, también lo rebotamos
                 carroSprite.setPosition(oldPos1);
-                speed = 0.0f;
+                speed = speed * -0.2f;
             }
 
-            // --- JUGADOR 2 ---
+            // --- JUGADOR 2 (Carro Gris) ---
             sf::Vector2f pos2 = carro2Sprite.getPosition();
             int imgX2 = static_cast<int>(pos2.x * (626.0f / 1200.0f));
             int imgY2 = static_cast<int>(pos2.y * (417.0f / 700.0f));
 
             if (imgX2 >= 0 && imgX2 < 626 && imgY2 >= 0 && imgY2 < 417) {
-                sf::Color pixel2 = pistaImage.getPixel(sf::Vector2u(imgX2, imgY2));
-                // Si es pasto verde:
-                if (pixel2.g > 100 && pixel2.g > pixel2.r + 20 && pixel2.g > pixel2.b + 20) {
-                    carro2Sprite.setPosition(oldPos2); // ¡Rebota hacia atrás!
-                    speed2 = 0.0f;                     // Frena el motor
+                sf::Color p2 = pistaImage.getPixel(sf::Vector2u(imgX2, imgY2));
+                
+                // REGLAS IDÉNTICAS PARA QUE EL JUGADOR 2 TENGA LA MISMA VENTAJA:
+                bool esPasto2 = (p2.g > 150 && p2.r < 140 && p2.b < 120); 
+                bool esAgua2  = (p2.b > 180 && p2.r < 100); 
+                bool esArena2 = (p2.r > 180 && p2.g > 170 && p2.b > 120 && p2.b < 190);
+
+                if (esPasto2 || esAgua2 || esArena2) {
+                    carro2Sprite.setPosition(oldPos2); 
+                    speed2 = speed2 * -0.2f; 
                 }
             } else {
-                // Límite de pantalla
                 carro2Sprite.setPosition(oldPos2);
-                speed2 = 0.0f;
+                speed2 = speed2 * -0.2f;
             }
-
             break;
         }
         case GameState::CREDITS:
             creditsScreen.update();
             break;
         case GameState::QUIT:
-            isRunning = false;
             break;
     }
 }
