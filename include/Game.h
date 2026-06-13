@@ -46,6 +46,8 @@ private:
     sf::Sprite pistaSprite;
     sf::Texture carroTexture;
     sf::Sprite carroSprite;
+    sf::Texture carro2Texture;
+    sf::Sprite carro2Sprite;
     std::string player1Name;
     std::string player2Name;
     
