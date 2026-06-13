@@ -7,7 +7,8 @@
 
 class Player {
 private:
-    sf::RectangleShape car;
+    sf::Texture carTexture; 
+    sf::Sprite car;
     std::string name;
     int playerID; // 1 para Player 1, 2 para Player 2
 
@@ -30,7 +31,7 @@ public:
     void update();
     void render(sf::RenderWindow& window);
     
-    sf::RectangleShape& getShape() { return car; }
+    sf::Sprite& getShape() { return car; }
     float getSpeed() const { return speed; }
     
     // CORRECCIÓN SFML 3: Usar llaves {x, y} para convertir a sf::Vector2f

@@ -28,7 +28,7 @@ void Game::loadBackgroundMusic() {
     std::cerr << "Advertencia: No se pudo cargar el archivo de música" << std::endl;
 }
 
-Game::Game() : window(sf::VideoMode(sf::Vector2u(1200, 700)), "Fierrolais Racing"), isRunning(true), currentState(GameState::SPLASH), previousState(GameState::SPLASH), pistaSprite(pistaTexture), carroSprite(carroTexture) {
+Game::Game() : window(sf::VideoMode(sf::Vector2u(1200, 700)), "Fierrolais Racing"), isRunning(true), currentState(GameState::SPLASH), previousState(GameState::SPLASH), pistaSprite(pistaTexture), carroSprite(carroTexture), carro2Sprite(carro2Texture) {
     window.setFramerateLimit(60);
     loadBackgroundMusic();
     optionsMenu.setBackgroundMusic(backgroundMusic);
@@ -62,21 +62,18 @@ Game::Game() : window(sf::VideoMode(sf::Vector2u(1200, 700)), "Fierrolais Racing
     // X = 385.0f (detrás de la meta), Y = 125.0f (más abajo, en el asfalto)
    carroSprite.setPosition(sf::Vector2f(470.0f, 127.0f));
    // --- CÓDIGO DEL CARRO 2 ---
-if (!carro2Texture.loadFromFile("activos/carro2.png")) {
-    std::cerr << "Error al cargar activos/carro2.png" << std::endl;
+if (!carro2Texture.loadFromFile("assets/carro2.png")) {
+    std::cerr << "Error al cargar assets/carro2.png" << std::endl;
 }
-carro2Sprite = sf::Sprite(carro2Texture);
 
 // Centramos el eje del carro 2 (Sintaxis SFML 3)
 sf::FloatRect bounds2 = carro2Sprite.getLocalBounds();
 carro2Sprite.setOrigin(sf::Vector2f(bounds2.size.x / 2.0f, bounds2.size.y / 2.0f));
 
-// Misma escala y rotación para que se vea simétrico
+// Escala, rotación y posición en la pista
 carro2Sprite.setScale(sf::Vector2f(0.14f, 0.14f));
 carro2Sprite.setRotation(sf::degrees(270.0f));
-
-// Posición: Misma X para salir alineados, pero bajamos la Y al siguiente carril
-carro2Sprite.setPosition(sf::Vector2f(470.0f, 190.0f));
+carro2Sprite.setPosition(sf::Vector2f(470.0f, 120.0f));
 }
 Game::~Game() {
     if (backgroundMusic) {
@@ -290,7 +287,8 @@ void Game::render() {
         case GameState::PLAYING:
             window.clear(sf::Color::Black); // Limpiamos el fondo en negro
             window.draw(pistaSprite);
-            window.draw(carroSprite);       
+            window.draw(carroSprite); 
+            window.draw(carro2Sprite);      
             window.display();               // Mostramos los cambios en la pantalla
             break;
         case GameState::CREDITS:
