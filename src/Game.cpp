@@ -42,38 +42,6 @@ Game::Game() : window(sf::VideoMode(sf::Vector2u(1200, 700)), "Fierrolais Racing
 
     // Ajustamos la escala al formato de SFML 3 usando sf::Vector2f
     pistaSprite.setScale(sf::Vector2f(1200.0f / 626.0f, 700.0f / 417.0f));
-
-// --- NUEVO CÓDIGO DEL CARRO ---
-    // Cargamos la textura directamente porque ya es transparente
-    if (!carroTexture.loadFromFile("assets/carro1.png")) {
-        std::cerr << "Error al cargar assets/carro1.png" << std::endl;
-    }
-    carroSprite = sf::Sprite(carroTexture);
-
-    // MUY IMPORTANTE: Centramos el eje del carro (Sintaxis actualizada para SFML 3)
-    sf::FloatRect bounds = carroSprite.getLocalBounds();
-    carroSprite.setOrigin(sf::Vector2f(bounds.size.x / 2.0f, bounds.size.y / 2.0f));
-    
-   // Lo hacemos pequeño para que quepa en la pista
-    // Lo hacemos mucho más pequeño para que quepa en su carril
-    carroSprite.setScale(sf::Vector2f(0.13f, 0.13f));
-    carroSprite.setRotation(sf::degrees(270.0f));
-
-    // X = 385.0f (detrás de la meta), Y = 125.0f (más abajo, en el asfalto)
-   carroSprite.setPosition(sf::Vector2f(470.0f, 127.0f));
-   // --- CÓDIGO DEL CARRO 2 ---
-if (!carro2Texture.loadFromFile("assets/carro2.png")) {
-    std::cerr << "Error al cargar assets/carro2.png" << std::endl;
-}
-
-// Centramos el eje del carro 2 (Sintaxis SFML 3)
-sf::FloatRect bounds2 = carro2Sprite.getLocalBounds();
-carro2Sprite.setOrigin(sf::Vector2f(bounds2.size.x / 2.0f, bounds2.size.y / 2.0f));
-
-// Escala, rotación y posición en la pista
-carro2Sprite.setScale(sf::Vector2f(0.23f, 0.23f));
-carro2Sprite.setRotation(sf::degrees(270.0f));
-carro2Sprite.setPosition(sf::Vector2f(435.0f, 190.0f));
 }
 Game::~Game() {
     if (backgroundMusic) {
@@ -106,13 +74,11 @@ void Game::handleEvents() {
         } else if (currentState == GameState::CHARACTER_SELECTION) {
             handleCharacterSelectionInput(*event);
         } else if (currentState == GameState::CAR_SELECTION) {
-            // Pasamos los controles a la selección de carros
             carSelectionScreen.handleInput(*event);
             if (carSelectionScreen.areBothConfirmed()) {
                 currentState = GameState::PLAYING;
                 std::cout << "Iniciando juego..." << std::endl;
 
-                // --- AQUÍ CARGAMOS LOS CARROS QUE ELIGIERON ---
                 int p1 = carSelectionScreen.getPlayer1Selection();
                 int p2 = carSelectionScreen.getPlayer2Selection();
 
@@ -124,27 +90,51 @@ void Game::handleEvents() {
                     "assets/carro5.png"
                 };
 
-                // Le ponemos la imagen elegida a cada textura (protegido por si el índice es válido)
+                // ========================================================
+                // 🛠️ EL MOLDE: AQUÍ SE CONTROLA EL TAMANO UNIFICADO 🛠️
+                // ========================================================
+                // No importa el archivo, todos se forzarán a estas medidas exactas.
+                float anchoDeseado = 61.0f; 
+                float largoDeseado = 83.0f;
+
+                // --- PROCESAMIENTO JUGADOR 1 ---
                 if (p1 >= 0 && p1 < rutasCarros.size()) {
                     carroTexture.loadFromFile(rutasCarros[p1]);
                     carroSprite.setTexture(carroTexture, true);
                     
-                    // Ajustamos la escala dinámicamente según el carro elegido por el Jugador 1
-                    if (p1 == 0) carroSprite.setScale(sf::Vector2f(0.13f, 0.13f));
-                    else if (p1 == 1) carroSprite.setScale(sf::Vector2f(0.23f, 0.23f));
-                    else carroSprite.setScale(sf::Vector2f(0.15f, 0.15f));
+                    // Encontramos el centro de la imagen para que gire derecho
+                    sf::FloatRect bounds = carroSprite.getLocalBounds();
+                    carroSprite.setOrigin(sf::Vector2f(bounds.size.x / 2.0f, bounds.size.y / 2.0f));
+                    carroSprite.setRotation(sf::degrees(270.0f));
+
+                    // FÓRMULA DE ESCALA AUTOMÁTICA (Tamaño Deseado / Tamaño Real)
+                    float escalaX = anchoDeseado / bounds.size.x;
+                    float escalaY = largoDeseado / bounds.size.y;
+                    carroSprite.setScale(sf::Vector2f(escalaX, escalaY));
+
+                    // Posición base (Modifícala tú después a tu gusto)
+                    carroSprite.setPosition(sf::Vector2f(472.0f, 125.0f));
                 }
 
+                // --- PROCESAMIENTO JUGADOR 2 ---
                 if (p2 >= 0 && p2 < rutasCarros.size()) {
                     carro2Texture.loadFromFile(rutasCarros[p2]);
                     carro2Sprite.setTexture(carro2Texture, true);
                     
-                    // Ajustamos la escala dinámicamente según el carro elegido por el Jugador 2
-                    if (p2 == 0) carro2Sprite.setScale(sf::Vector2f(0.13f, 0.13f));
-                    else if (p2 == 1) carro2Sprite.setScale(sf::Vector2f(0.23f, 0.23f));
-                    else carro2Sprite.setScale(sf::Vector2f(0.15f, 0.15f));
+                    // Encontramos el centro de la imagen para que gire derecho
+                    sf::FloatRect bounds2 = carro2Sprite.getLocalBounds();
+                    carro2Sprite.setOrigin(sf::Vector2f(bounds2.size.x / 2.0f, bounds2.size.y / 2.0f));
+                    carro2Sprite.setRotation(sf::degrees(270.0f));
+
+                    // FÓRMULA DE ESCALA AUTOMÁTICA (Mismos tamaños exactos del molde)
+                    float escalaX2 = anchoDeseado / bounds2.size.x;
+                    float escalaY2 = largoDeseado / bounds2.size.y;
+                    carro2Sprite.setScale(sf::Vector2f(escalaX2, escalaY2));
+
+                    // Posición base (Modifícala tú después a tu gusto)
+                    carro2Sprite.setPosition(sf::Vector2f(472.0f, 160.0f));
                 }
-            } 
+            }
         } else if (currentState == GameState::OPTIONS) {
             handleOptionsInput(*event);
         } else if (currentState == GameState::CREDITS) {
@@ -152,7 +142,6 @@ void Game::handleEvents() {
         }
     }
 }
-
 void Game::handleSplashInput(const sf::Event& event) {
     if (event.getIf<sf::Event::KeyPressed>()) {
         currentState = GameState::MENU;
