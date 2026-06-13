@@ -61,6 +61,22 @@ Game::Game() : window(sf::VideoMode(sf::Vector2u(1200, 700)), "Fierrolais Racing
 
     // X = 385.0f (detrás de la meta), Y = 125.0f (más abajo, en el asfalto)
    carroSprite.setPosition(sf::Vector2f(470.0f, 127.0f));
+   // --- CÓDIGO DEL CARRO 2 ---
+if (!carro2Texture.loadFromFile("activos/carro2.png")) {
+    std::cerr << "Error al cargar activos/carro2.png" << std::endl;
+}
+carro2Sprite = sf::Sprite(carro2Texture);
+
+// Centramos el eje del carro 2 (Sintaxis SFML 3)
+sf::FloatRect bounds2 = carro2Sprite.getLocalBounds();
+carro2Sprite.setOrigin(sf::Vector2f(bounds2.size.x / 2.0f, bounds2.size.y / 2.0f));
+
+// Misma escala y rotación para que se vea simétrico
+carro2Sprite.setScale(sf::Vector2f(0.14f, 0.14f));
+carro2Sprite.setRotation(sf::degrees(270.0f));
+
+// Posición: Misma X para salir alineados, pero bajamos la Y al siguiente carril
+carro2Sprite.setPosition(sf::Vector2f(470.0f, 190.0f));
 }
 Game::~Game() {
     if (backgroundMusic) {
