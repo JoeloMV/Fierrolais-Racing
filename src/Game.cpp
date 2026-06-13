@@ -1,7 +1,7 @@
 #include "Game.h"
 #include <iostream>
 #include <vector>
-
+#include <cmath>
 void Game::loadBackgroundMusic() {
     backgroundMusic = std::make_shared<sf::Music>();
     
@@ -271,8 +271,77 @@ void Game::update() {
         case GameState::OPTIONS:
             optionsMenu.update();
             break;
-        case GameState::PLAYING:
+        case GameState::PLAYING: {
+            // Como el juego corre limitado a 60 FPS fijos, definimos un tiempo por cuadro constante
+            float dt = 1.0f / 60.0f; 
+
+            // ==========================================
+            // 🔥 CONTROL JUGADOR 1 (Flechas de dirección)
+            // ==========================================
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) {
+                angle -= turnSpeed * dt;
+            }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)) {
+                angle += turnSpeed * dt;
+            }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)) {
+                speed += accel * dt;
+                if (speed > maxSpeed) speed = maxSpeed;
+            } 
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down)) {
+                speed -= accel * dt;
+                if (speed < -maxSpeed / 2.0f) speed = -maxSpeed / 2.0f; // Reversa
+            } 
+            else {
+                if (speed > 0) {
+                    speed -= decel * dt;
+                    if (speed < 0) speed = 0;
+                } else if (speed < 0) {
+                    speed += decel * dt;
+                    if (speed > 0) speed = 0;
+                }
+            }
+
+            // Mover el carro libremente usando el ángulo matemático
+            float radianes = angle * 3.14159265f / 180.0f;
+            carroSprite.move(sf::Vector2f(std::cos(radianes) * speed * dt, std::sin(radianes) * speed * dt));
+            carroSprite.setRotation(sf::degrees(angle + 90.0f));
+
+
+            // ==========================================
+            // 🔥 CONTROL JUGADOR 2 (Teclas W, A, S, D)
+            // ==========================================
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
+                angle2 -= turnSpeed * dt;
+            }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
+                angle2 += turnSpeed * dt;
+            }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
+                speed2 += accel * dt;
+                if (speed2 > maxSpeed) speed2 = maxSpeed;
+            } 
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
+                speed2 -= accel * dt;
+                if (speed2 < -maxSpeed / 2.0f) speed2 = -maxSpeed / 2.0f;
+            } 
+            else {
+                if (speed2 > 0) {
+                    speed2 -= decel * dt;
+                    if (speed2 < 0) speed2 = 0;
+                } else if (speed2 < 0) {
+                    speed2 += decel * dt;
+                    if (speed2 > 0) speed2 = 0;
+                }
+            }
+
+            // Mover el carro 2 libremente usando el ángulo matemático
+            float radianes2 = angle2 * 3.14159265f / 180.0f;
+            carro2Sprite.move(sf::Vector2f(std::cos(radianes2) * speed2 * dt, std::sin(radianes2) * speed2 * dt));
+            carro2Sprite.setRotation(sf::degrees(angle2 + 90.0f));
+
             break;
+        }
         case GameState::CREDITS:
             creditsScreen.update();
             break;

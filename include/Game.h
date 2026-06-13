@@ -48,6 +48,19 @@ private:
     sf::Sprite carroSprite;
     sf::Texture carro2Texture;
     sf::Sprite carro2Sprite;
+    // --- FÍSICAS JUGADOR 1 ---
+    float speed = 0.0f;
+    float angle = 180.0f; // Inicia en 180 para apuntar a la meta
+
+    // --- FÍSICAS JUGADOR 2 ---
+    float speed2 = 0.0f;
+    float angle2 = 180.0f;
+
+    // --- CONFIGURACIÓN DE LOS MOTORES ---
+    const float maxSpeed = 300.0f;   // Velocidad máxima
+    const float accel = 200.0f;      // Qué tan rápido acelera
+    const float decel = 150.0f;      // Desaceleración / Fricción
+    const float turnSpeed = 150.0f;  // Qué tan rápido da las vueltas
     std::string player1Name;
     std::string player2Name;
     
