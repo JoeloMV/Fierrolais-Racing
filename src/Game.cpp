@@ -43,29 +43,24 @@ Game::Game() : window(sf::VideoMode(sf::Vector2u(1200, 700)), "Fierrolais Racing
     // Ajustamos la escala al formato de SFML 3 usando sf::Vector2f
     pistaSprite.setScale(sf::Vector2f(1200.0f / 626.0f, 700.0f / 417.0f));
 
-// Cargamos la imagen primero
-sf::Image carroImage;
-if (!carroImage.loadFromFile("assets/images/fierrarif8.png")) {
-    std::cerr << "Error al cargar la imagen del carro" << std::endl;
-}
-
-// Hacemos que el color blanco puro sea transparente
-carroImage.createMaskFromColor(sf::Color::White);
-
-// Pasamos la imagen limpia a la textura
-if (!carroTexture.loadFromImage(carroImage)) {
-    std::cerr << "Error al crear la textura del carro" << std::endl;
-}
+// --- NUEVO CÓDIGO DEL CARRO ---
+    // Cargamos la textura directamente porque ya es transparente
+    if (!carroTexture.loadFromFile("assets/carro1.png")) {
+        std::cerr << "Error al cargar assets/carro1.png" << std::endl;
+    }
     carroSprite = sf::Sprite(carroTexture);
-    
-   carroSprite.setTextureRect(sf::IntRect(sf::Vector2i(173, 44), sf::Vector2i(158, 311)));
+
+    // MUY IMPORTANTE: Centramos el eje del carro (Sintaxis actualizada para SFML 3)
+    sf::FloatRect bounds = carroSprite.getLocalBounds();
+    carroSprite.setOrigin(sf::Vector2f(bounds.size.x / 2.0f, bounds.size.y / 2.0f));
     
    // Lo hacemos pequeño para que quepa en la pista
-    carroSprite.setScale(sf::Vector2f(0.18f, 0.18f));
+    // Lo hacemos mucho más pequeño para que quepa en su carril
+    carroSprite.setScale(sf::Vector2f(0.14f, 0.14f));
     carroSprite.setRotation(sf::degrees(270.0f));
 
-    // Lo regresamos a la línea de meta
-    carroSprite.setPosition(sf::Vector2f(273.4f, 89.5f));
+    // X = 385.0f (detrás de la meta), Y = 125.0f (más abajo, en el asfalto)
+   carroSprite.setPosition(sf::Vector2f(470.0f, 127.0f));
 }
 Game::~Game() {
     if (backgroundMusic) {
