@@ -56,7 +56,7 @@ Game::Game() : window(sf::VideoMode(sf::Vector2u(1200, 700)), "Fierrolais Racing
     
    // Lo hacemos pequeño para que quepa en la pista
     // Lo hacemos mucho más pequeño para que quepa en su carril
-    carroSprite.setScale(sf::Vector2f(0.14f, 0.14f));
+    carroSprite.setScale(sf::Vector2f(0.13f, 0.13f));
     carroSprite.setRotation(sf::degrees(270.0f));
 
     // X = 385.0f (detrás de la meta), Y = 125.0f (más abajo, en el asfalto)
@@ -71,9 +71,9 @@ sf::FloatRect bounds2 = carro2Sprite.getLocalBounds();
 carro2Sprite.setOrigin(sf::Vector2f(bounds2.size.x / 2.0f, bounds2.size.y / 2.0f));
 
 // Escala, rotación y posición en la pista
-carro2Sprite.setScale(sf::Vector2f(0.14f, 0.14f));
+carro2Sprite.setScale(sf::Vector2f(0.23f, 0.23f));
 carro2Sprite.setRotation(sf::degrees(270.0f));
-carro2Sprite.setPosition(sf::Vector2f(470.0f, 120.0f));
+carro2Sprite.setPosition(sf::Vector2f(435.0f, 190.0f));
 }
 Game::~Game() {
     if (backgroundMusic) {
@@ -111,7 +111,40 @@ void Game::handleEvents() {
             if (carSelectionScreen.areBothConfirmed()) {
                 currentState = GameState::PLAYING;
                 std::cout << "Iniciando juego..." << std::endl;
-            }
+
+                // --- AQUÍ CARGAMOS LOS CARROS QUE ELIGIERON ---
+                int p1 = carSelectionScreen.getPlayer1Selection();
+                int p2 = carSelectionScreen.getPlayer2Selection();
+
+                std::vector<std::string> rutasCarros = {
+                    "assets/carro1.png",
+                    "assets/carro2.png",
+                    "assets/carro3.png",
+                    "assets/carro4.png",
+                    "assets/carro5.png"
+                };
+
+                // Le ponemos la imagen elegida a cada textura (protegido por si el índice es válido)
+                if (p1 >= 0 && p1 < rutasCarros.size()) {
+                    carroTexture.loadFromFile(rutasCarros[p1]);
+                    carroSprite.setTexture(carroTexture, true);
+                    
+                    // Ajustamos la escala dinámicamente según el carro elegido por el Jugador 1
+                    if (p1 == 0) carroSprite.setScale(sf::Vector2f(0.13f, 0.13f));
+                    else if (p1 == 1) carroSprite.setScale(sf::Vector2f(0.23f, 0.23f));
+                    else carroSprite.setScale(sf::Vector2f(0.15f, 0.15f));
+                }
+
+                if (p2 >= 0 && p2 < rutasCarros.size()) {
+                    carro2Texture.loadFromFile(rutasCarros[p2]);
+                    carro2Sprite.setTexture(carro2Texture, true);
+                    
+                    // Ajustamos la escala dinámicamente según el carro elegido por el Jugador 2
+                    if (p2 == 0) carro2Sprite.setScale(sf::Vector2f(0.13f, 0.13f));
+                    else if (p2 == 1) carro2Sprite.setScale(sf::Vector2f(0.23f, 0.23f));
+                    else carro2Sprite.setScale(sf::Vector2f(0.15f, 0.15f));
+                }
+            } 
         } else if (currentState == GameState::OPTIONS) {
             handleOptionsInput(*event);
         } else if (currentState == GameState::CREDITS) {
