@@ -2,6 +2,13 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+// ==========================================
+// VARIABLES GLOBALES DE VUELTAS
+// ==========================================
+int vueltasP1 = 0;
+int vueltasP2 = 0;
+bool p1PasoMitad = false;
+bool p2PasoMitad = false;
 
 void Game::loadBackgroundMusic() {
     backgroundMusic = std::make_shared<sf::Music>();
@@ -113,7 +120,7 @@ void Game::handleEvents() {
                 // 🛠️ EL MOLDE: AQUÍ SE CONTROLA EL TAMANO UNIFICADO 🛠️
                 // ========================================================
                 // No importa el archivo, todos se forzarán a estas medidas exactas.
-                float anchoDeseado = 61.0f; 
+                float anchoDeseado = 60.0f; 
                 float largoDeseado = 83.0f;
 
                 // --- PROCESAMIENTO JUGADOR 1 ---
@@ -132,7 +139,7 @@ void Game::handleEvents() {
                     carroSprite.setScale(sf::Vector2f(escalaX, escalaY));
 
                     // Posición base (Modifícala tú después a tu gusto)
-                    carroSprite.setPosition(sf::Vector2f(472.0f, 125.0f));
+                    carroSprite.setPosition(sf::Vector2f(472.0f, 124.0f));
                 }
 
                 // --- PROCESAMIENTO JUGADOR 2 ---
@@ -151,7 +158,7 @@ void Game::handleEvents() {
                     carro2Sprite.setScale(sf::Vector2f(escalaX2, escalaY2));
 
                     // Posición base (Modifícala tú después a tu gusto)
-                    carro2Sprite.setPosition(sf::Vector2f(472.0f, 160.0f));
+                    carro2Sprite.setPosition(sf::Vector2f(472.0f, 161.0f));
                 }
             }
         } else if (currentState == GameState::OPTIONS) {
@@ -404,6 +411,36 @@ void Game::update() {
                 carro2Sprite.setPosition(oldPos2);
                 speed2 = speed2 * -0.2f;
             }
+            // ==========================================
+        // 🏁 SISTEMA DE VUELTAS Y ANTI-TRAMPAS 🏁
+        // ==========================================
+        // Coordenadas actualizadas para SFML 3: (Posición X, Y), (Ancho, Alto)
+      sf::FloatRect lineaMeta(sf::Vector2f(350.0f, 100.0f), sf::Vector2f(20.0f, 150.0f));   
+        sf::FloatRect checkpoint(sf::Vector2f(500.0f, 600.0f), sf::Vector2f(200.0f, 100.0f));
+
+        // --- JUGADOR 1 (ROJO) ---
+        if (carroSprite.getGlobalBounds().findIntersection(checkpoint)) {
+            p1PasoMitad = true; 
+        }
+        if (carroSprite.getGlobalBounds().findIntersection(lineaMeta)) {
+            if (p1PasoMitad == true) {
+                vueltasP1++; 
+                p1PasoMitad = false; 
+                std::cout << "¡Jugador 1 completó la vuelta! Llevas: " << vueltasP1 << std::endl;
+            }
+        }
+
+        // --- JUGADOR 2 (GRIS) ---
+        if (carro2Sprite.getGlobalBounds().findIntersection(checkpoint)) {
+            p2PasoMitad = true; 
+        }
+        if (carro2Sprite.getGlobalBounds().findIntersection(lineaMeta)) {
+            if (p2PasoMitad == true) {
+                vueltasP2++; 
+                p2PasoMitad = false; 
+                std::cout << "¡Jugador 2 completó la vuelta! Llevas: " << vueltasP2 << std::endl;
+            }
+        }
             break;
         }
         case GameState::CREDITS:
