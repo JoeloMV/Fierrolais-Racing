@@ -23,6 +23,7 @@ enum class GameState {
     CHARACTER_SELECTION,
     CAR_SELECTION,
     PLAYING,
+    COUNTDOWN,
     OPTIONS,
     CREDITS,
     QUIT
@@ -45,6 +46,9 @@ private:
     sf::Texture pistaTexture;
     sf::Sprite pistaSprite;
     sf::Image pistaImage;
+    sf::Font fuente;
+    sf::Text textoCuentaRegresiva;
+    float tiempoCuentaRegresiva = 3.5f;
     sf::Texture carroTexture;
     sf::Sprite carroSprite;
     sf::Texture carro2Texture;

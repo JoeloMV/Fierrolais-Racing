@@ -17,7 +17,7 @@ void Game::loadBackgroundMusic() {
         "assets/music/musica.flac"
     };
     
-    for (const auto& path : musicPaths) {
+  for (const auto& path : musicPaths) {
         if (backgroundMusic->openFromFile(path)) {
             std::cout << "Música cargada desde: " << path << std::endl;
             backgroundMusic->setLooping(true);
@@ -25,14 +25,28 @@ void Game::loadBackgroundMusic() {
             return;
         }
     }
-    
-    std::cerr << "Advertencia: No se pudo cargar el archivo de música" << std::endl;
-}
 
-Game::Game() : window(sf::VideoMode(sf::Vector2u(1200, 700)), "Fierrolais Racing"), isRunning(true), currentState(GameState::SPLASH), previousState(GameState::SPLASH), pistaSprite(pistaTexture), carroSprite(carroTexture), carro2Sprite(carro2Texture) {
+    std::cerr << "Advertencia: No se pudo cargar el archivo de música" << std::endl;
+} // <--- ESTA LLAVE CIERRA DEFINITIVAMENTE void Game::loadBackgroundMusic()
+
+Game::Game() : window(sf::VideoMode(sf::Vector2u(1200, 700)), "Fierrolais Racing"), isRunning(true), currentState(GameState::SPLASH), previousState(GameState::SPLASH), pistaSprite(pistaTexture), carroSprite(carroTexture), carro2Sprite(carro2Texture), textoCuentaRegresiva(fuente)
+{
     window.setFramerateLimit(60);
     loadBackgroundMusic();
     optionsMenu.setBackgroundMusic(backgroundMusic);
+
+    // --- CONFIGURACIÓN DE LA CUENTA REGRESIVA ---
+    if (!fuente.openFromFile("assets/arial.ttf")) {
+        std::cerr << "Error al cargar la fuente arial.ttf" << std::endl;
+    }
+    
+    textoCuentaRegresiva.setFont(fuente);
+    textoCuentaRegresiva.setCharacterSize(100); // Tamaño grande
+    textoCuentaRegresiva.setFillColor(sf::Color::Yellow);
+    
+    // Posición aproximada al centro de la pantalla
+    // (Ajusta los números si tu ventana tiene otro tamaño)
+    textoCuentaRegresiva.setPosition(sf::Vector2f(550.0f, 300.0f));
    // Cargamos la imagen de la pista
     if (!pistaTexture.loadFromFile("assets/pista.png")) {
         std::cerr << "Error al cargar pista.png" << std::endl;
@@ -276,6 +290,29 @@ void Game::update() {
         case GameState::OPTIONS:
             optionsMenu.update();
             break;
+            case GameState::COUNTDOWN: {
+            // Restamos el tiempo (asumiendo que tu juego va a 60 frames por segundo)
+            float dt = 1.0f / 60.0f; 
+            tiempoCuentaRegresiva -= dt;
+
+            // Cambiamos el texto y color dependiendo del tiempo
+            if (tiempoCuentaRegresiva > 2.0f) {
+                textoCuentaRegresiva.setString("3");
+            } else if (tiempoCuentaRegresiva > 1.0f) {
+                textoCuentaRegresiva.setString("2");
+                textoCuentaRegresiva.setFillColor(sf::Color(255, 165, 0)); // Naranja
+            } else if (tiempoCuentaRegresiva > 0.0f) {
+                textoCuentaRegresiva.setString("1");
+                textoCuentaRegresiva.setFillColor(sf::Color::Red);
+            } else if (tiempoCuentaRegresiva > -1.0f) {
+                textoCuentaRegresiva.setString("!YA!");
+                textoCuentaRegresiva.setFillColor(sf::Color::Green);
+            } else {
+                // Cuando el tiempo se acaba, pasamos al estado de juego normal
+                currentState = GameState::PLAYING; 
+            }
+            break;
+        }
         case GameState::PLAYING: {
             float dt = 1.0f / 60.0f; 
 
@@ -333,9 +370,9 @@ void Game::update() {
                 // 1. El pasto real es muy verde, ignoramos cualquier verde mezclado.
                 bool esPasto1 = (p1.g > 150 && p1.r < 140 && p1.b < 120); 
                 // 2. El lago es de un azul muy brillante, ignoramos los bordes azules oscuros.
-                bool esAgua1  = (p1.b > 180 && p1.r < 100); 
+                bool esAgua1 = (p1.b > 210 && p1.g > 150 && p1.r < 100);
                 // 3. La arena es beige (tiene azul). Ignoramos el amarillo puro de la pista.
-                bool esArena1 = (p1.r > 180 && p1.g > 170 && p1.b > 120 && p1.b < 190);
+                bool esArena1 = (p1.r > 190 && p1.g > 160 && p1.g < 230 && p1.b > 130 && p1.b < 180);
 
                 if (esPasto1 || esAgua1 || esArena1) {
                     carroSprite.setPosition(oldPos1); 
@@ -356,8 +393,8 @@ void Game::update() {
                 
                 // REGLAS IDÉNTICAS PARA QUE EL JUGADOR 2 TENGA LA MISMA VENTAJA:
                 bool esPasto2 = (p2.g > 150 && p2.r < 140 && p2.b < 120); 
-                bool esAgua2  = (p2.b > 180 && p2.r < 100); 
-                bool esArena2 = (p2.r > 180 && p2.g > 170 && p2.b > 120 && p2.b < 190);
+                bool esAgua2 = (p2.b > 210 && p2.g > 150 && p2.r < 100);
+                bool esArena2 = (p2.r > 190 && p2.g > 160 && p2.g < 230 && p2.b > 130 && p2.b < 180);
 
                 if (esPasto2 || esAgua2 || esArena2) {
                     carro2Sprite.setPosition(oldPos2); 
@@ -401,13 +438,16 @@ void Game::render() {
         case GameState::OPTIONS:
             optionsMenu.render(window);
             break;
-        case GameState::PLAYING:
-            window.clear(sf::Color::Black); // Limpiamos el fondo en negro
-            window.draw(pistaSprite);
-            window.draw(carroSprite); 
-            window.draw(carro2Sprite);      
-            window.display();               // Mostramos los cambios en la pantalla
-            break;
+       case GameState::COUNTDOWN:
+    case GameState::PLAYING: {
+        window.clear(sf::Color::Black); // Limpiamos el fondo
+        window.draw(pistaSprite);
+        window.draw(carroSprite);
+        window.draw(carro2Sprite);
+        window.draw(textoCuentaRegresiva);
+        window.display(); // Mostramos los cambios
+        break;
+    }
         case GameState::CREDITS:
             creditsScreen.render(window);
             break;
