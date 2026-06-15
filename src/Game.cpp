@@ -115,15 +115,18 @@ void Game::handleEvents() {
             // 2. Tu función original intacta
             handleNameInput(*event);
 
-            // 3. Captura dinámica del jugador 1
+            // // 3. Captura dinámica del jugador 1
             if (estadoAnterior == GameState::NAME_INPUT_P1 && currentState == GameState::NAME_INPUT_P2) {
                 nombreGuardadoJ1 = nameInputScreen.getPlayerName();
                 if (nombreGuardadoJ1.empty()) nombreGuardadoJ1 = "Jugador 1";
-            } 
-            // 4. Captura dinámica del jugador 2
+                player1Name = nombreGuardadoJ1; // <--- AGREGAR ESTA LÍNEA
+            }
+            
+            // // 4. Captura dinámica del jugador 2
             else if (estadoAnterior == GameState::NAME_INPUT_P2 && currentState == GameState::CHARACTER_SELECTION) {
                 nombreGuardadoJ2 = nameInputScreen.getPlayerName();
                 if (nombreGuardadoJ2.empty()) nombreGuardadoJ2 = "Jugador 2";
+                player2Name = nombreGuardadoJ2; // <--- AGREGAR ESTA LÍNEA
             }
         } else if (currentState == GameState::CHARACTER_SELECTION) {
             handleCharacterSelectionInput(*event);
@@ -525,41 +528,49 @@ void Game::render() {
             optionsMenu.render(window);
             break;
        case GameState::COUNTDOWN:
-     case GameState::PLAYING:
-    {
-        window.clear(sf::Color::Black);
-        window.draw(pistaSprite);
-        window.draw(carroSprite);
-        window.draw(carro2Sprite);
-        window.draw(textoCuentaRegresiva);
-        // --- Marcador Jugador 1 ---
-        sf::Text marcadorP1(fuenteMarcador);
-        if (vueltasP1 >= 3) {
-            marcadorP1.setString(player1Name + " HA GANADO EL JUEGO!");
-            marcadorP1.setFillColor(sf::Color::Yellow);
-        } else {
-            marcadorP1.setString(player1Name + " lleva: " + std::to_string(vueltasP1) + " / 3 vueltas");
-            marcadorP1.setFillColor(sf::Color::Red);
-        }
-        marcadorP1.setCharacterSize(30);
-        marcadorP1.setPosition(sf::Vector2f(860.0f, 20.0f));
-        window.draw(marcadorP1);
+    case GameState::PLAYING: {
+            window.clear(sf::Color::Black);
+            window.draw(pistaSprite);
+            window.draw(carroSprite);
+            window.draw(carro2Sprite);
+            window.draw(textoCuentaRegresiva);
 
-        // --- Marcador Jugador 2 ---
-        sf::Text marcadorP2(fuenteMarcador);
-        if (vueltasP2 >= 3) {
-            marcadorP2.setString(player2Name + " HA GANADO EL JUEGO!");
-            marcadorP2.setFillColor(sf::Color::Yellow);
-        } else {
-            marcadorP2.setString(player2Name + " lleva: " + std::to_string(vueltasP2) + " / 3 vueltas");
+            // --- Marcador Jugador 1 (Lado Derecho - Rojo) ---
+            sf::Text marcadorP1(fuenteMarcador);
+            marcadorP1.setCharacterSize(30);
+            marcadorP1.setFillColor(sf::Color::Red);
+            marcadorP1.setPosition(sf::Vector2f(860.f, 20.f));
+            marcadorP1.setString(player1Name + " lleva: " + std::to_string(vueltasP1) + " / 3 vueltas");
+            window.draw(marcadorP1);
+
+            // --- Marcador Jugador 2 (Lado Izquierdo - Azul) ---
+            sf::Text marcadorP2(fuenteMarcador);
+            marcadorP2.setCharacterSize(30);
             marcadorP2.setFillColor(sf::Color::Blue);
-        }
-        marcadorP2.setCharacterSize(30);
-        marcadorP2.setPosition(sf::Vector2f(30.0f, 20.0f));
-        window.draw(marcadorP2);
-        window.display();
+            marcadorP2.setPosition(sf::Vector2f(30.f, 20.f));
+            marcadorP2.setString(player2Name + " lleva: " + std::to_string(vueltasP2) + " / 3 vueltas");
+            window.draw(marcadorP2);
+
+            // --- Anuncio de Ganador Fijo y Centrado ---
+            if (vueltasP1 >= 3 || vueltasP2 >= 3) {
+                sf::Text textoGanador(fuenteMarcador);
+                textoGanador.setCharacterSize(50); // Tamaño destacado para el centro
+                textoGanador.setFillColor(sf::Color::Yellow);
+                
+               if (vueltasP1 >= 3) {
+                textoGanador.setString("\"" + player1Name + "\" ES EL GANADOR DEL JUEGO");
+            } else {
+                textoGanador.setString("\"" + player2Name + "\" ES EL GANADOR DEL JUEGO");
+            }
+                
+                // Posicionamiento en una coordenada fija y segura del centro de la pantalla
+                textoGanador.setPosition(sf::Vector2f(350.f, 300.f));
+                window.draw(textoGanador);
+            }
+
+            window.display();
             break;
-    }
+        }
         case GameState::CREDITS:
             creditsScreen.render(window);
             break;
