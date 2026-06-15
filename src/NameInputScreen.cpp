@@ -18,7 +18,7 @@ bool NameInputScreen::loadFont() {
     return false;
 }
 
-NameInputScreen::NameInputScreen() : currentPlayer(1) {
+NameInputScreen::NameInputScreen() : currentPlayer(1), enterPressed(false){
     if (!loadFont()) {
         std::cerr << "Error: No se pudo cargar la fuente" << std::endl;
     }
@@ -40,6 +40,7 @@ NameInputScreen::~NameInputScreen() {
 void NameInputScreen::reset(int player) {
     currentPlayer = player;
     playerName.clear();
+    enterPressed = false;
     updateDisplay();
 }
 
@@ -77,12 +78,17 @@ void NameInputScreen::handleInput(const sf::Event& event) {
                 playerName.pop_back();
                 updateDisplay();
             }
+        } 
+        else if (keyEvent->code == sf::Keyboard::Key::Enter) {
+            if (!playerName.empty()) {
+                enterPressed = true; // Abrimos el candado
+            }
         }
     }
 }
 
 bool NameInputScreen::isNameConfirmed() const {
-    return !playerName.empty();
+    return enterPressed; // Retorna si presionaste Enter
 }
 
 void NameInputScreen::render(sf::RenderWindow& window) {

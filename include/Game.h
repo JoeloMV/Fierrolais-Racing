@@ -78,7 +78,7 @@ public:
     void run();
     void update();
     void render();
-    void handleNameInputInput(const sf::Event& event);
+    void handleNameInput(const sf::Event& event);
     void handleCharacterSelectionInput(const sf::Event& event);
     void handleEvents();
     void handleMenuInput(const sf::Event& event);

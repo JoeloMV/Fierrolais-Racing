@@ -9,6 +9,9 @@ int vueltasP1 = 0;
 int vueltasP2 = 0;
 bool p1PasoMitad = false;
 bool p2PasoMitad = false;
+sf::Font fuenteMarcador;
+std::string nombreGuardadoJ1 = "Jugador 1";
+std::string nombreGuardadoJ2 = "Jugador 2";
 
 void Game::loadBackgroundMusic() {
     backgroundMusic = std::make_shared<sf::Music>();
@@ -23,6 +26,11 @@ void Game::loadBackgroundMusic() {
         "assets/music/musica.wav",
         "assets/music/musica.flac"
     };
+    // Cargar fuente para el marcador en pantalla
+    if (!fuenteMarcador.openFromFile("C:/Windows/Fonts/arial.ttf")) {
+        // Si no la encuentra ahí, intenta en la carpeta del proyecto
+        fuenteMarcador.openFromFile("assets/arial.ttf");
+    }
     
   for (const auto& path : musicPaths) {
         if (backgroundMusic->openFromFile(path)) {
@@ -95,8 +103,23 @@ void Game::handleEvents() {
             handleSplashInput(*event);
         } else if (currentState == GameState::MENU) {
             handleMenuInput(*event);
-        } else if (currentState == GameState::NAME_INPUT_P1 || currentState == GameState::NAME_INPUT_P2) {
-            handleNameInputInput(*event);
+      } else if (currentState == GameState::NAME_INPUT_P1 || currentState == GameState::NAME_INPUT_P2) {
+            // 1. Memorizamos el estado actual antes de procesar
+            GameState estadoAnterior = currentState;
+
+            // 2. Tu función original intacta
+            handleNameInput(*event);
+
+            // 3. Captura dinámica del jugador 1
+            if (estadoAnterior == GameState::NAME_INPUT_P1 && currentState == GameState::NAME_INPUT_P2) {
+                nombreGuardadoJ1 = nameInputScreen.getPlayerName();
+                if (nombreGuardadoJ1.empty()) nombreGuardadoJ1 = "Jugador 1";
+            } 
+            // 4. Captura dinámica del jugador 2
+            else if (estadoAnterior == GameState::NAME_INPUT_P2 && currentState == GameState::CHARACTER_SELECTION) {
+                nombreGuardadoJ2 = nameInputScreen.getPlayerName();
+                if (nombreGuardadoJ2.empty()) nombreGuardadoJ2 = "Jugador 2";
+            }
         } else if (currentState == GameState::CHARACTER_SELECTION) {
             handleCharacterSelectionInput(*event);
         } else if (currentState == GameState::CAR_SELECTION) {
@@ -229,7 +252,7 @@ void Game::handleOptionsInput(const sf::Event& event) {
     }
 }
 
-void Game::handleNameInputInput(const sf::Event& event) {
+void Game::handleNameInput(const sf::Event& event) {
     if (const auto* keyEvent = event.getIf<sf::Event::KeyPressed>()) {
         if (keyEvent->code == sf::Keyboard::Key::Enter) {
             if (nameInputScreen.isNameConfirmed()) {
@@ -284,10 +307,22 @@ void Game::update() {
         case GameState::MENU:
             menu.update();
             break;
-        case GameState::NAME_INPUT_P1:
-        case GameState::NAME_INPUT_P2:
-            nameInputScreen.update();
-            break;
+       case GameState::NAME_INPUT_P1:
+    // ... tu código anterior ...
+    if (nameInputScreen.isNameConfirmed()) { // 👈 Cambiado a isNameConfirmed()
+        player1Name = nameInputScreen.getPlayerName(); 
+        currentState = GameState::NAME_INPUT_P2;      
+        nameInputScreen.reset(2); // 👈 Le enviamos el '2' como argumento para el siguiente jugador                     
+    }
+    break;
+
+case GameState::NAME_INPUT_P2:
+    // ... tu código anterior ...
+    if (nameInputScreen.isNameConfirmed()) { // 👈 Cambiado a isNameConfirmed()
+        player2Name = nameInputScreen.getPlayerName(); 
+        currentState = GameState::CAR_SELECTION;      
+    }
+    break;
         case GameState::CHARACTER_SELECTION:
             characterSelectionScreen.update();
             break;
@@ -461,6 +496,8 @@ void Game::render() {
             break;
         case GameState::NAME_INPUT_P1:
         case GameState::NAME_INPUT_P2:
+        nameInputScreen.render(window);
+        break;
             nameInputScreen.render(window);
             break;
         case GameState::CHARACTER_SELECTION:
@@ -476,13 +513,41 @@ void Game::render() {
             optionsMenu.render(window);
             break;
        case GameState::COUNTDOWN:
-    case GameState::PLAYING: {
-        window.clear(sf::Color::Black); // Limpiamos el fondo
+     case GameState::PLAYING:
+    {
+        window.clear(sf::Color::Black);
         window.draw(pistaSprite);
         window.draw(carroSprite);
         window.draw(carro2Sprite);
         window.draw(textoCuentaRegresiva);
-        window.display(); // Mostramos los cambios
+
+        // --- Marcador Jugador 1 ---
+        sf::Text marcadorP1(fuenteMarcador);
+        if (vueltasP1 >= 3) {
+            marcadorP1.setString(player1Name + " HA GANADO EL JUEGO!");
+            marcadorP1.setFillColor(sf::Color::Yellow);
+        } else {
+            marcadorP1.setString(player1Name + " lleva: " + std::to_string(vueltasP1) + " / 3 vueltas");
+            marcadorP1.setFillColor(sf::Color::Red);
+        }
+        marcadorP1.setCharacterSize(24);
+        marcadorP1.setPosition(sf::Vector2f(30.0f, 20.0f));
+        window.draw(marcadorP1);
+
+        // --- Marcador Jugador 2 ---
+        sf::Text marcadorP2(fuenteMarcador);
+        if (vueltasP2 >= 3) {
+            marcadorP2.setString(player2Name + " HA GANADO EL JUEGO!");
+            marcadorP2.setFillColor(sf::Color::Yellow);
+        } else {
+            marcadorP2.setString(player2Name + " lleva: " + std::to_string(vueltasP2) + " / 3 vueltas");
+            marcadorP2.setFillColor(sf::Color::White);
+        }
+        marcadorP2.setCharacterSize(24);
+        marcadorP2.setPosition(sf::Vector2f(30.0f, 55.0f));
+        window.draw(marcadorP2);
+
+        window.display();
         break;
     }
         case GameState::CREDITS:

@@ -10,6 +10,7 @@ class NameInputScreen {
 private:
     std::shared_ptr<sf::Font> font;
     std::string playerName;
+    bool enterPressed;
     int currentPlayer;  // 1 o 2
     std::shared_ptr<sf::Text> titleText;
     std::shared_ptr<sf::Text> inputText;
