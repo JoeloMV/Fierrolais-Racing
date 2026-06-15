@@ -186,7 +186,7 @@ void Game::handleEvents() {
             }
         } else if (currentState == GameState::OPTIONS) {
             handleOptionsInput(*event);
-        } else if (currentState == GameState::CREDITS) {
+        currentState = GameState::CREDITS;
             handleCreditsInput(*event);
         }
     }
@@ -530,8 +530,8 @@ void Game::render() {
             marcadorP1.setString(player1Name + " lleva: " + std::to_string(vueltasP1) + " / 3 vueltas");
             marcadorP1.setFillColor(sf::Color::Red);
         }
-        marcadorP1.setCharacterSize(24);
-        marcadorP1.setPosition(sf::Vector2f(30.0f, 20.0f));
+        marcadorP1.setCharacterSize(30);
+        marcadorP1.setPosition(sf::Vector2f(860.0f, 20.0f));
         window.draw(marcadorP1);
 
         // --- Marcador Jugador 2 ---
@@ -541,14 +541,13 @@ void Game::render() {
             marcadorP2.setFillColor(sf::Color::Yellow);
         } else {
             marcadorP2.setString(player2Name + " lleva: " + std::to_string(vueltasP2) + " / 3 vueltas");
-            marcadorP2.setFillColor(sf::Color::White);
+            marcadorP2.setFillColor(sf::Color::Blue);
         }
-        marcadorP2.setCharacterSize(24);
-        marcadorP2.setPosition(sf::Vector2f(30.0f, 55.0f));
+        marcadorP2.setCharacterSize(30);
+        marcadorP2.setPosition(sf::Vector2f(30.0f, 20.0f));
         window.draw(marcadorP2);
-
         window.display();
-        break;
+            break;
     }
         case GameState::CREDITS:
             creditsScreen.render(window);
