@@ -361,7 +361,7 @@ case GameState::NAME_INPUT_P2:
                 textoCuentaRegresiva.setFillColor(sf::Color::Green);
                 textoCuentaRegresiva.setPosition(sf::Vector2f(300.f, 300.f));
             } 
-            else if (tiempoTranscurrido > 6.0f) {
+            else if (tiempoTranscurrido > 4.5f) {
                 // Después de 6 segundos pasa al juego
                 currentState = GameState::PLAYING;
                 textoCuentaRegresiva.setString(""); // Limpia el texto
@@ -564,7 +564,7 @@ void Game::render() {
             }
                 
                 // Posicionamiento en una coordenada fija y segura del centro de la pantalla
-                textoGanador.setPosition(sf::Vector2f(350.f, 300.f));
+                textoGanador.setPosition(sf::Vector2f(200.f, 300.f));
                 window.draw(textoGanador);
             }
 
