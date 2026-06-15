@@ -53,6 +53,7 @@ private:
     sf::Sprite carroSprite;
     sf::Texture carro2Texture;
     sf::Sprite carro2Sprite;
+    sf::Clock relojCuenta;
     // --- FÍSICAS JUGADOR 1 ---
     float speed = 0.0f;
     float angle = 180.0f; // Inicia en 180 para apuntar a la meta

@@ -2,6 +2,8 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <SFML/System/Clock.hpp>
+
 // ==========================================
 // VARIABLES GLOBALES DE VUELTAS
 // ==========================================
@@ -31,7 +33,10 @@ void Game::loadBackgroundMusic() {
         // Si no la encuentra ahí, intenta en la carpeta del proyecto
         fuenteMarcador.openFromFile("assets/arial.ttf");
     }
-    
+    textoCuentaRegresiva.setFont(fuenteMarcador);
+   textoCuentaRegresiva.setCharacterSize(100); // Número grandote
+   textoCuentaRegresiva.setFillColor(sf::Color::Yellow); // Color amarillo Mario Kart
+   textoCuentaRegresiva.setPosition(sf::Vector2f(500.0f, 300.0f)); // Al centro de la pista (ajusta según tu ventana)
   for (const auto& path : musicPaths) {
         if (backgroundMusic->openFromFile(path)) {
             std::cout << "Música cargada desde: " << path << std::endl;
@@ -124,8 +129,9 @@ void Game::handleEvents() {
             handleCharacterSelectionInput(*event);
         } else if (currentState == GameState::CAR_SELECTION) {
             carSelectionScreen.handleInput(*event);
-            if (carSelectionScreen.areBothConfirmed()) {
-                currentState = GameState::PLAYING;
+            if (carSelectionScreen.areBothConfirmed()) 
+            currentState = GameState::COUNTDOWN;
+            relojCuenta.restart();{
                 std::cout << "Iniciando juego..." << std::endl;
 
                 int p1 = carSelectionScreen.getPlayer1Selection();
@@ -298,7 +304,7 @@ void Game::handleCreditsInput(const sf::Event& event) {
         }
     }
 }
-
+sf::Clock relojCuenta;
 void Game::update() {
     switch (currentState) {
         case GameState::SPLASH:
@@ -333,26 +339,32 @@ case GameState::NAME_INPUT_P2:
             optionsMenu.update();
             break;
             case GameState::COUNTDOWN: {
-            // Restamos el tiempo (asumiendo que tu juego va a 60 frames por segundo)
-            float dt = 1.0f / 60.0f; 
-            tiempoCuentaRegresiva -= dt;
+            float tiempoTranscurrido = relojCuenta.getElapsedTime().asSeconds();
+            int cuenta = 3 - static_cast<int>(tiempoTranscurrido);
 
-            // Cambiamos el texto y color dependiendo del tiempo
-            if (tiempoCuentaRegresiva > 2.0f) {
-                textoCuentaRegresiva.setString("3");
-            } else if (tiempoCuentaRegresiva > 1.0f) {
-                textoCuentaRegresiva.setString("2");
-                textoCuentaRegresiva.setFillColor(sf::Color(255, 165, 0)); // Naranja
-            } else if (tiempoCuentaRegresiva > 0.0f) {
-                textoCuentaRegresiva.setString("1");
-                textoCuentaRegresiva.setFillColor(sf::Color::Red);
-            } else if (tiempoCuentaRegresiva > -1.0f) {
-                textoCuentaRegresiva.setString("!YA!");
+            // 1. FORZAMOS la fuente y el tamaño para que sea imposible que se vuelva invisible
+            textoCuentaRegresiva.setFont(fuenteMarcador);
+            textoCuentaRegresiva.setCharacterSize(100);
+
+            if (cuenta > 0) {
+                // Muestra 3, 2, 1 en blanco
+                textoCuentaRegresiva.setString(std::to_string(cuenta));
+                textoCuentaRegresiva.setFillColor(sf::Color::White);
+                textoCuentaRegresiva.setPosition(sf::Vector2f(600.f, 300.f));
+            } 
+            else if (cuenta == 0) {
+                // Muestra ¡YA! en verde
+                textoCuentaRegresiva.setString("Gooooooooooo");
                 textoCuentaRegresiva.setFillColor(sf::Color::Green);
-            } else {
-                // Cuando el tiempo se acaba, pasamos al estado de juego normal
-                currentState = GameState::PLAYING; 
+                textoCuentaRegresiva.setPosition(sf::Vector2f(300.f, 300.f));
+            } 
+            else if (tiempoTranscurrido > 6.0f) {
+                // Después de 6 segundos pasa al juego
+                currentState = GameState::PLAYING;
+                textoCuentaRegresiva.setString(""); // Limpia el texto
             }
+
+            // ¡ELIMINAMOS EL window.draw QUE ESTABA AQUÍ!
             break;
         }
         case GameState::PLAYING: {
@@ -520,7 +532,6 @@ void Game::render() {
         window.draw(carroSprite);
         window.draw(carro2Sprite);
         window.draw(textoCuentaRegresiva);
-
         // --- Marcador Jugador 1 ---
         sf::Text marcadorP1(fuenteMarcador);
         if (vueltasP1 >= 3) {
