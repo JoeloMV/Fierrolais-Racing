@@ -148,7 +148,7 @@ void Game::handleEvents() {
 
                 // --- PROCESAMIENTO JUGADOR 1 ---
                 if (p1 >= 0 && p1 < rutasCarros.size()) {
-                    carroTexture.loadFromFile(rutasCarros[p1]);
+                    carroTexture.loadFromFile(rutasCarros[p2]);
                     carroSprite.setTexture(carroTexture, true);
                     
                     // Encontramos el centro de la imagen para que gire derecho
@@ -167,7 +167,7 @@ void Game::handleEvents() {
 
                 // --- PROCESAMIENTO JUGADOR 2 ---
                 if (p2 >= 0 && p2 < rutasCarros.size()) {
-                    carro2Texture.loadFromFile(rutasCarros[p2]);
+                    carro2Texture.loadFromFile(rutasCarros[p1]);
                     carro2Sprite.setTexture(carro2Texture, true);
                     
                     // Encontramos el centro de la imagen para que gire derecho
@@ -320,7 +320,7 @@ case GameState::NAME_INPUT_P2:
     // ... tu código anterior ...
     if (nameInputScreen.isNameConfirmed()) { // 👈 Cambiado a isNameConfirmed()
         player2Name = nameInputScreen.getPlayerName(); 
-        currentState = GameState::CAR_SELECTION;      
+        currentState = GameState::CHARACTER_SELECTION;     
     }
     break;
         case GameState::CHARACTER_SELECTION:

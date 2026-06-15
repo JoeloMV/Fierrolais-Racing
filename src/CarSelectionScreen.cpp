@@ -22,11 +22,11 @@ CarSelectionScreen::CarSelectionScreen() {
 
     player1StatusText->setCharacterSize(24);
     player1StatusText->setPosition({50.0f, 500.0f});
-    player1StatusText->setFillColor(sf::Color::White);
+    player1StatusText->setFillColor(sf::Color::Blue);
 
     player2StatusText->setCharacterSize(24);
     player2StatusText->setPosition({600.0f, 500.0f});
-    player2StatusText->setFillColor(sf::Color::White);
+    player2StatusText->setFillColor(sf::Color::Red);
 
     initializeCars();
     updateDisplay();
@@ -75,8 +75,8 @@ void CarSelectionScreen::initializeCars() {
 void CarSelectionScreen::updateDisplay() {
     for (size_t i = 0; i < carTexts.size(); ++i) {
         carTexts[i].setFillColor(sf::Color::White);
-        if (i == (size_t)player1Selection) carTexts[i].setFillColor(sf::Color::Red);
-        if (i == (size_t)player2Selection) carTexts[i].setFillColor(sf::Color::Blue);
+        if (i == (size_t)player1Selection) carTexts[i].setFillColor(sf::Color::Blue);
+        if (i == (size_t)player2Selection) carTexts[i].setFillColor(sf::Color::Red);
         if (i == (size_t)player1Selection && i == (size_t)player2Selection) carTexts[i].setFillColor(sf::Color::Magenta);
     }
 

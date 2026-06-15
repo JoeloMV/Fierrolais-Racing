@@ -5,7 +5,7 @@
 const float PI = 3.14159265f;
 
 // CORRECCIÓN PARA SFML 3: car(carTexture) inicializa el Sprite enlazado correctamente
-Player::Player(int id, float x, float y, const std::string& playerName)
+Player::Player(int id, float x, float y, const std::string& playerName, int carSelection)
     : playerID(id), name(playerName), speed(0.0f), angle(0.0f), car(carTexture) {
 
     maxSpeed = 7.0f;
@@ -14,9 +14,16 @@ Player::Player(int id, float x, float y, const std::string& playerName)
     turnSpeed = 3.5f;
 
     // --- CARGA DINÁMICA DE SPRITES ---
-    // Si es el Jugador 1 carga carro1, de lo contrario carga carro2
-    std::string archivoCarro = (playerID == 1) ? "assets/carro1.png" : "assets/carro2.png";
-
+    std::string archivoCarro;
+    
+    switch (carSelection) {
+        case 0: archivoCarro = "assets/fierrari.png"; break;
+        case 1: archivoCarro = "assets/lamborgota.png"; break;
+        case 2: archivoCarro = "assets/ford.png"; break;
+        case 3: archivoCarro = "assets/puerche.png"; break;
+        case 4: archivoCarro = "assets/dodge.png"; break;
+        default: archivoCarro = "assets/carro1.png"; break; // Por seguridad
+    }
     if (!carTexture.loadFromFile(archivoCarro)) {
         std::cerr << "Error al cargar " << archivoCarro << std::endl;
     }

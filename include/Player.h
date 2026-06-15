@@ -26,7 +26,7 @@ private:
     sf::Keyboard::Key keyRight;
 
 public:
-    Player(int id, float x, float y, const std::string& playerName);
+    Player(int id, float x, float y, const std::string& playerName, int carSelection);
     
     void update();
     void render(sf::RenderWindow& window);
