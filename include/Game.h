@@ -25,6 +25,7 @@ enum class GameState {
     PLAYING,
     COUNTDOWN,
     OPTIONS,
+    GAME_OVER,
     CREDITS,
     QUIT
 };

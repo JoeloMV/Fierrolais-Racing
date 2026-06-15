@@ -1,11 +1,12 @@
 #include "Game.h"
+#include "GameOverScreen.h" // <-- NUEVO: Incluimos la pantalla final
 #include <iostream>
 #include <vector>
 #include <cmath>
 #include <SFML/System/Clock.hpp>
 
 // ==========================================
-// VARIABLES GLOBALES DE VUELTAS
+// VARIABLES GLOBALES
 // ==========================================
 int vueltasP1 = 0;
 int vueltasP2 = 0;
@@ -14,6 +15,7 @@ bool p2PasoMitad = false;
 sf::Font fuenteMarcador;
 std::string nombreGuardadoJ1 = "Jugador 1";
 std::string nombreGuardadoJ2 = "Jugador 2";
+GameOverScreen gameOver; // <-- NUEVO: Creamos la pantalla final
 
 void Game::loadBackgroundMusic() {
     backgroundMusic = std::make_shared<sf::Music>();
@@ -34,10 +36,11 @@ void Game::loadBackgroundMusic() {
         fuenteMarcador.openFromFile("assets/arial.ttf");
     }
     textoCuentaRegresiva.setFont(fuenteMarcador);
-   textoCuentaRegresiva.setCharacterSize(100); // Número grandote
-   textoCuentaRegresiva.setFillColor(sf::Color::Yellow); // Color amarillo Mario Kart
-   textoCuentaRegresiva.setPosition(sf::Vector2f(500.0f, 300.0f)); // Al centro de la pista (ajusta según tu ventana)
-  for (const auto& path : musicPaths) {
+    textoCuentaRegresiva.setCharacterSize(100); // Número grandote
+    textoCuentaRegresiva.setFillColor(sf::Color::Yellow); // Color amarillo Mario Kart
+    textoCuentaRegresiva.setPosition(sf::Vector2f(500.0f, 300.0f)); // Al centro de la pista (ajusta según tu ventana)
+    
+    for (const auto& path : musicPaths) {
         if (backgroundMusic->openFromFile(path)) {
             std::cout << "Música cargada desde: " << path << std::endl;
             backgroundMusic->setLooping(true);
@@ -47,7 +50,7 @@ void Game::loadBackgroundMusic() {
     }
 
     std::cerr << "Advertencia: No se pudo cargar el archivo de música" << std::endl;
-} // <--- ESTA LLAVE CIERRA DEFINITIVAMENTE void Game::loadBackgroundMusic()
+}
 
 Game::Game() : window(sf::VideoMode(sf::Vector2u(1200, 700)), "Fierrolais Racing"), isRunning(true), currentState(GameState::SPLASH), previousState(GameState::SPLASH), pistaSprite(pistaTexture), carroSprite(carroTexture), carro2Sprite(carro2Texture), textoCuentaRegresiva(fuente)
 {
@@ -65,13 +68,13 @@ Game::Game() : window(sf::VideoMode(sf::Vector2u(1200, 700)), "Fierrolais Racing
     textoCuentaRegresiva.setFillColor(sf::Color::Yellow);
     
     // Posición aproximada al centro de la pantalla
-    // (Ajusta los números si tu ventana tiene otro tamaño)
     textoCuentaRegresiva.setPosition(sf::Vector2f(550.0f, 300.0f));
-   // Cargamos la imagen de la pista
+    
+    // Cargamos la imagen de la pista
     if (!pistaTexture.loadFromFile("assets/pista.png")) {
         std::cerr << "Error al cargar pista.png" << std::endl;
     }
-    // 🔥 NUEVO: Cargamos la pista en la memoria para leer el color del pasto
+    // Cargamos la pista en la memoria para leer el color del pasto
     if (!pistaImage.loadFromFile("assets/pista.png")) {
         std::cerr << "Error al cargar pistaImage" << std::endl;
     }
@@ -82,6 +85,7 @@ Game::Game() : window(sf::VideoMode(sf::Vector2u(1200, 700)), "Fierrolais Racing
     // Ajustamos la escala al formato de SFML 3 usando sf::Vector2f
     pistaSprite.setScale(sf::Vector2f(1200.0f / 626.0f, 700.0f / 417.0f));
 }
+
 Game::~Game() {
     if (backgroundMusic) {
         backgroundMusic->stop();
@@ -108,33 +112,33 @@ void Game::handleEvents() {
             handleSplashInput(*event);
         } else if (currentState == GameState::MENU) {
             handleMenuInput(*event);
-      } else if (currentState == GameState::NAME_INPUT_P1 || currentState == GameState::NAME_INPUT_P2) {
+        } else if (currentState == GameState::NAME_INPUT_P1 || currentState == GameState::NAME_INPUT_P2) {
             // 1. Memorizamos el estado actual antes de procesar
             GameState estadoAnterior = currentState;
 
             // 2. Tu función original intacta
             handleNameInput(*event);
 
-            // // 3. Captura dinámica del jugador 1
+            // 3. Captura dinámica del jugador 1
             if (estadoAnterior == GameState::NAME_INPUT_P1 && currentState == GameState::NAME_INPUT_P2) {
                 nombreGuardadoJ1 = nameInputScreen.getPlayerName();
                 if (nombreGuardadoJ1.empty()) nombreGuardadoJ1 = "Jugador 1";
-                player1Name = nombreGuardadoJ1; // <--- AGREGAR ESTA LÍNEA
+                player1Name = nombreGuardadoJ1;
             }
             
-            // // 4. Captura dinámica del jugador 2
+            // 4. Captura dinámica del jugador 2
             else if (estadoAnterior == GameState::NAME_INPUT_P2 && currentState == GameState::CHARACTER_SELECTION) {
                 nombreGuardadoJ2 = nameInputScreen.getPlayerName();
                 if (nombreGuardadoJ2.empty()) nombreGuardadoJ2 = "Jugador 2";
-                player2Name = nombreGuardadoJ2; // <--- AGREGAR ESTA LÍNEA
+                player2Name = nombreGuardadoJ2;
             }
         } else if (currentState == GameState::CHARACTER_SELECTION) {
             handleCharacterSelectionInput(*event);
         } else if (currentState == GameState::CAR_SELECTION) {
             carSelectionScreen.handleInput(*event);
-            if (carSelectionScreen.areBothConfirmed()) 
-            currentState = GameState::COUNTDOWN;
-            relojCuenta.restart();{
+            if (carSelectionScreen.areBothConfirmed()) {
+                currentState = GameState::COUNTDOWN;
+                relojCuenta.restart();
                 std::cout << "Iniciando juego..." << std::endl;
 
                 int p1 = carSelectionScreen.getPlayer1Selection();
@@ -149,9 +153,8 @@ void Game::handleEvents() {
                 };
 
                 // ========================================================
-                // 🛠️ EL MOLDE: AQUÍ SE CONTROLA EL TAMANO UNIFICADO 🛠️
+                // EL MOLDE: AQUÍ SE CONTROLA EL TAMANO UNIFICADO
                 // ========================================================
-                // No importa el archivo, todos se forzarán a estas medidas exactas.
                 float anchoDeseado = 60.0f; 
                 float largoDeseado = 83.0f;
 
@@ -160,17 +163,13 @@ void Game::handleEvents() {
                     carroTexture.loadFromFile(rutasCarros[p2]);
                     carroSprite.setTexture(carroTexture, true);
                     
-                    // Encontramos el centro de la imagen para que gire derecho
                     sf::FloatRect bounds = carroSprite.getLocalBounds();
                     carroSprite.setOrigin(sf::Vector2f(bounds.size.x / 2.0f, bounds.size.y / 2.0f));
                     carroSprite.setRotation(sf::degrees(270.0f));
 
-                    // FÓRMULA DE ESCALA AUTOMÁTICA (Tamaño Deseado / Tamaño Real)
                     float escalaX = anchoDeseado / bounds.size.x;
                     float escalaY = largoDeseado / bounds.size.y;
                     carroSprite.setScale(sf::Vector2f(escalaX, escalaY));
-
-                    // Posición base (Modifícala tú después a tu gusto)
                     carroSprite.setPosition(sf::Vector2f(472.0f, 124.0f));
                 }
 
@@ -179,27 +178,26 @@ void Game::handleEvents() {
                     carro2Texture.loadFromFile(rutasCarros[p1]);
                     carro2Sprite.setTexture(carro2Texture, true);
                     
-                    // Encontramos el centro de la imagen para que gire derecho
                     sf::FloatRect bounds2 = carro2Sprite.getLocalBounds();
                     carro2Sprite.setOrigin(sf::Vector2f(bounds2.size.x / 2.0f, bounds2.size.y / 2.0f));
                     carro2Sprite.setRotation(sf::degrees(270.0f));
 
-                    // FÓRMULA DE ESCALA AUTOMÁTICA (Mismos tamaños exactos del molde)
                     float escalaX2 = anchoDeseado / bounds2.size.x;
                     float escalaY2 = largoDeseado / bounds2.size.y;
                     carro2Sprite.setScale(sf::Vector2f(escalaX2, escalaY2));
-
-                    // Posición base (Modifícala tú después a tu gusto)
                     carro2Sprite.setPosition(sf::Vector2f(472.0f, 161.0f));
                 }
             }
         } else if (currentState == GameState::OPTIONS) {
             handleOptionsInput(*event);
-        currentState = GameState::CREDITS;
+        } else if (currentState == GameState::CREDITS) {
             handleCreditsInput(*event);
+        } else if (currentState == GameState::GAME_OVER) { // <-- NUEVO: Mandamos eventos al menú final
+            gameOver.handleInput(*event);
         }
     }
 }
+
 void Game::handleSplashInput(const sf::Event& event) {
     if (event.getIf<sf::Event::KeyPressed>()) {
         currentState = GameState::MENU;
@@ -282,8 +280,6 @@ void Game::handleNameInput(const sf::Event& event) {
             }
         }
     }
-    
-    // Pasar eventos al input screen
     nameInputScreen.handleInput(event);
 }
 
@@ -291,7 +287,6 @@ void Game::handleCharacterSelectionInput(const sf::Event& event) {
     characterSelectionScreen.handleInput(event);
     
     if (characterSelectionScreen.areBothConfirmed()) {
-        // Ambos jugadores confirmaron - pasamos a seleccionar carros
         currentState = GameState::CAR_SELECTION;
         carSelectionScreen.reset();
         std::cout << "Seleccionando carros..." << std::endl;
@@ -307,7 +302,9 @@ void Game::handleCreditsInput(const sf::Event& event) {
         }
     }
 }
+
 sf::Clock relojCuenta;
+
 void Game::update() {
     switch (currentState) {
         case GameState::SPLASH:
@@ -316,70 +313,60 @@ void Game::update() {
         case GameState::MENU:
             menu.update();
             break;
-       case GameState::NAME_INPUT_P1:
-    // ... tu código anterior ...
-    if (nameInputScreen.isNameConfirmed()) { // 👈 Cambiado a isNameConfirmed()
-        player1Name = nameInputScreen.getPlayerName(); 
-        currentState = GameState::NAME_INPUT_P2;      
-        nameInputScreen.reset(2); // 👈 Le enviamos el '2' como argumento para el siguiente jugador                     
-    }
-    break;
-
-case GameState::NAME_INPUT_P2:
-    // ... tu código anterior ...
-    if (nameInputScreen.isNameConfirmed()) { // 👈 Cambiado a isNameConfirmed()
-        player2Name = nameInputScreen.getPlayerName(); 
-        currentState = GameState::CHARACTER_SELECTION;     
-    }
-    break;
+        case GameState::NAME_INPUT_P1:
+            if (nameInputScreen.isNameConfirmed()) { 
+                player1Name = nameInputScreen.getPlayerName(); 
+                currentState = GameState::NAME_INPUT_P2;      
+                nameInputScreen.reset(2);                      
+            }
+            break;
+        case GameState::NAME_INPUT_P2:
+            if (nameInputScreen.isNameConfirmed()) { 
+                player2Name = nameInputScreen.getPlayerName(); 
+                currentState = GameState::CHARACTER_SELECTION;     
+            }
+            break;
         case GameState::CHARACTER_SELECTION:
             characterSelectionScreen.update();
             break;
         case GameState::CAR_SELECTION:
-            // La pantalla de selección de carros se actualiza mediante inputs, así que aquí no hace falta nada
             break;
         case GameState::OPTIONS:
             optionsMenu.update();
             break;
-            case GameState::COUNTDOWN: {
+        case GameState::COUNTDOWN: {
             float tiempoTranscurrido = relojCuenta.getElapsedTime().asSeconds();
             int cuenta = 3 - static_cast<int>(tiempoTranscurrido);
 
-            // 1. FORZAMOS la fuente y el tamaño para que sea imposible que se vuelva invisible
             textoCuentaRegresiva.setFont(fuenteMarcador);
             textoCuentaRegresiva.setCharacterSize(100);
 
             if (cuenta > 0) {
-                // Muestra 3, 2, 1 en blanco
                 textoCuentaRegresiva.setString(std::to_string(cuenta));
                 textoCuentaRegresiva.setFillColor(sf::Color::White);
                 textoCuentaRegresiva.setPosition(sf::Vector2f(600.f, 300.f));
             } 
             else if (cuenta == 0) {
-                // Muestra ¡YA! en verde
                 textoCuentaRegresiva.setString("Gooooooooooo");
                 textoCuentaRegresiva.setFillColor(sf::Color::Green);
                 textoCuentaRegresiva.setPosition(sf::Vector2f(300.f, 300.f));
             } 
             else if (tiempoTranscurrido > 4.5f) {
-                // Después de 6 segundos pasa al juego
                 currentState = GameState::PLAYING;
-                textoCuentaRegresiva.setString(""); // Limpia el texto
+                textoCuentaRegresiva.setString(""); 
             }
-
-            // ¡ELIMINAMOS EL window.draw QUE ESTABA AQUÍ!
             break;
         }
         case GameState::PLAYING: {
             float dt = 1.0f / 60.0f; 
 
-            // 1. 📍 GUARDAR LAS POSICIONES VIEJAS ANTES DE MOVER
             sf::Vector2f oldPos1 = carroSprite.getPosition();
             sf::Vector2f oldPos2 = carro2Sprite.getPosition();
 
             // ==========================================
-            // 🔥 CONTROL Y MOVIMIENTO JUGADOR 1 (Como ya lo tenías)
+            // CONTROL Y MOVIMIENTO JUGADOR 1
             // ==========================================
+            // NOTA: Asegúrate de tener estas variables (angle, speed, etc.) definidas en tu archivo .h
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) angle -= turnSpeed * dt;
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)) angle += turnSpeed * dt;
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)) {
@@ -395,7 +382,7 @@ case GameState::NAME_INPUT_P2:
             carroSprite.setRotation(sf::degrees(angle + 90.0f));
 
             // ==========================================
-            // 🔥 CONTROL Y MOVIMIENTO JUGADOR 2 (Como ya lo tenías)
+            // CONTROL Y MOVIMIENTO JUGADOR 2
             // ==========================================
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) angle2 -= turnSpeed * dt;
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) angle2 += turnSpeed * dt;
@@ -411,24 +398,19 @@ case GameState::NAME_INPUT_P2:
             carro2Sprite.move(sf::Vector2f(std::cos(radianes2) * speed2 * dt, std::sin(radianes2) * speed2 * dt));
             carro2Sprite.setRotation(sf::degrees(angle2 + 90.0f));
 
-         // =======================================================
-            // 🚧 SISTEMA DE COLISIONES GEMELAS (P1 y P2 IDÉNTICOS) 🚧
+            // =======================================================
+            // SISTEMA DE COLISIONES GEMELAS
             // =======================================================
             
-            // --- JUGADOR 1 (Carro Rojo) ---
+            // --- JUGADOR 1 ---
             sf::Vector2f pos1 = carroSprite.getPosition();
             int imgX1 = static_cast<int>(pos1.x * (626.0f / 1200.0f));
             int imgY1 = static_cast<int>(pos1.y * (417.0f / 700.0f));
 
             if (imgX1 >= 0 && imgX1 < 626 && imgY1 >= 0 && imgY1 < 417) {
                 sf::Color p1 = pistaImage.getPixel(sf::Vector2u(imgX1, imgY1));
-                
-                // REGLAS SÚPER ESTRICTAS DE FUERA DE PISTA:
-                // 1. El pasto real es muy verde, ignoramos cualquier verde mezclado.
                 bool esPasto1 = (p1.g > 150 && p1.r < 140 && p1.b < 120); 
-                // 2. El lago es de un azul muy brillante, ignoramos los bordes azules oscuros.
                 bool esAgua1 = (p1.b > 210 && p1.g > 150 && p1.r < 100);
-                // 3. La arena es beige (tiene azul). Ignoramos el amarillo puro de la pista.
                 bool esArena1 = (p1.r > 190 && p1.g > 160 && p1.g < 230 && p1.b > 130 && p1.b < 180);
 
                 if (esPasto1 || esAgua1 || esArena1) {
@@ -440,15 +422,13 @@ case GameState::NAME_INPUT_P2:
                 speed = speed * -0.2f;
             }
 
-            // --- JUGADOR 2 (Carro Gris) ---
+            // --- JUGADOR 2 ---
             sf::Vector2f pos2 = carro2Sprite.getPosition();
             int imgX2 = static_cast<int>(pos2.x * (626.0f / 1200.0f));
             int imgY2 = static_cast<int>(pos2.y * (417.0f / 700.0f));
 
             if (imgX2 >= 0 && imgX2 < 626 && imgY2 >= 0 && imgY2 < 417) {
                 sf::Color p2 = pistaImage.getPixel(sf::Vector2u(imgX2, imgY2));
-                
-                // REGLAS IDÉNTICAS PARA QUE EL JUGADOR 2 TENGA LA MISMA VENTAJA:
                 bool esPasto2 = (p2.g > 150 && p2.r < 140 && p2.b < 120); 
                 bool esAgua2 = (p2.b > 210 && p2.g > 150 && p2.r < 100);
                 bool esArena2 = (p2.r > 190 && p2.g > 160 && p2.g < 230 && p2.b > 130 && p2.b < 180);
@@ -461,36 +441,67 @@ case GameState::NAME_INPUT_P2:
                 carro2Sprite.setPosition(oldPos2);
                 speed2 = speed2 * -0.2f;
             }
+
             // ==========================================
-        // 🏁 SISTEMA DE VUELTAS Y ANTI-TRAMPAS 🏁
-        // ==========================================
-        // Coordenadas actualizadas para SFML 3: (Posición X, Y), (Ancho, Alto)
-      sf::FloatRect lineaMeta(sf::Vector2f(350.0f, 100.0f), sf::Vector2f(20.0f, 150.0f));   
-        sf::FloatRect checkpoint(sf::Vector2f(500.0f, 600.0f), sf::Vector2f(200.0f, 100.0f));
+            // SISTEMA DE VUELTAS Y ANTI-TRAMPAS
+            // ==========================================
+            sf::FloatRect lineaMeta(sf::Vector2f(350.0f, 100.0f), sf::Vector2f(20.0f, 150.0f));   
+            sf::FloatRect checkpoint(sf::Vector2f(500.0f, 600.0f), sf::Vector2f(200.0f, 100.0f));
 
-        // --- JUGADOR 1 (ROJO) ---
-        if (carroSprite.getGlobalBounds().findIntersection(checkpoint)) {
-            p1PasoMitad = true; 
-        }
-        if (carroSprite.getGlobalBounds().findIntersection(lineaMeta)) {
-            if (p1PasoMitad == true) {
-                vueltasP1++; 
-                p1PasoMitad = false; 
-                std::cout << "¡Jugador 1 completó la vuelta! Llevas: " << vueltasP1 << std::endl;
+            // --- JUGADOR 1 ---
+            if (carroSprite.getGlobalBounds().findIntersection(checkpoint)) {
+                p1PasoMitad = true; 
             }
-        }
+            if (carroSprite.getGlobalBounds().findIntersection(lineaMeta)) {
+                if (p1PasoMitad == true) {
+                    vueltasP1++; 
+                    p1PasoMitad = false; 
+                    std::cout << "¡Jugador 1 completó la vuelta! Llevas: " << vueltasP1 << std::endl;
+                }
+            }
 
-        // --- JUGADOR 2 (GRIS) ---
-        if (carro2Sprite.getGlobalBounds().findIntersection(checkpoint)) {
-            p2PasoMitad = true; 
-        }
-        if (carro2Sprite.getGlobalBounds().findIntersection(lineaMeta)) {
-            if (p2PasoMitad == true) {
-                vueltasP2++; 
-                p2PasoMitad = false; 
-                std::cout << "¡Jugador 2 completó la vuelta! Llevas: " << vueltasP2 << std::endl;
+            // --- JUGADOR 2 ---
+            if (carro2Sprite.getGlobalBounds().findIntersection(checkpoint)) {
+                p2PasoMitad = true; 
             }
+            if (carro2Sprite.getGlobalBounds().findIntersection(lineaMeta)) {
+                if (p2PasoMitad == true) {
+                    vueltasP2++; 
+                    p2PasoMitad = false; 
+                    std::cout << "¡Jugador 2 completó la vuelta! Llevas: " << vueltasP2 << std::endl;
+                }
+            }
+
+            // <-- NUEVO: DETECTAR QUIÉN GANA Y CAMBIAR DE PANTALLA -->
+            if (vueltasP1 >= 3) {
+                gameOver.setWinner(player1Name);
+                currentState = GameState::GAME_OVER;
+            } else if (vueltasP2 >= 3) {
+                gameOver.setWinner(player2Name);
+                currentState = GameState::GAME_OVER;
+            }
+
+            break;
         }
+        case GameState::GAME_OVER: { // <-- NUEVO: Lógica del menú final
+            if (gameOver.isConfirmed()) {
+                if (gameOver.getSelectedOption() == 0) {
+                    // JUGAR DE NUEVO: Reiniciamos todo y volvemos a la selección de carros
+                    gameOver.reset();
+                    carSelectionScreen.reset();
+                    vueltasP1 = 0;
+                    vueltasP2 = 0;
+                    p1PasoMitad = false;
+                    p2PasoMitad = false;
+                    speed = 0.0f; // Detener carros
+                    speed2 = 0.0f;
+                    currentState = GameState::CAR_SELECTION;
+                } else {
+                    // SALIR DEL JUEGO
+                    window.close();
+                    isRunning = false;
+                }
+            }
             break;
         }
         case GameState::CREDITS:
@@ -511,15 +522,12 @@ void Game::render() {
             break;
         case GameState::NAME_INPUT_P1:
         case GameState::NAME_INPUT_P2:
-        nameInputScreen.render(window);
-        break;
             nameInputScreen.render(window);
             break;
         case GameState::CHARACTER_SELECTION:
             characterSelectionScreen.render(window);
             break;
         case GameState::CAR_SELECTION:
-            // Limpiamos, dibujamos la pantalla de carros y mostramos
             window.clear(sf::Color::Black);
             carSelectionScreen.render(window);
             window.display();
@@ -527,15 +535,15 @@ void Game::render() {
         case GameState::OPTIONS:
             optionsMenu.render(window);
             break;
-       case GameState::COUNTDOWN:
-    case GameState::PLAYING: {
+        case GameState::COUNTDOWN:
+        case GameState::PLAYING: {
             window.clear(sf::Color::Black);
             window.draw(pistaSprite);
             window.draw(carroSprite);
             window.draw(carro2Sprite);
             window.draw(textoCuentaRegresiva);
 
-            // --- Marcador Jugador 1 (Lado Derecho - Rojo) ---
+            // --- Marcador Jugador 1 ---
             sf::Text marcadorP1(fuenteMarcador);
             marcadorP1.setCharacterSize(30);
             marcadorP1.setFillColor(sf::Color::Red);
@@ -543,7 +551,7 @@ void Game::render() {
             marcadorP1.setString(player1Name + " lleva: " + std::to_string(vueltasP1) + " / 3 vueltas");
             window.draw(marcadorP1);
 
-            // --- Marcador Jugador 2 (Lado Izquierdo - Azul) ---
+            // --- Marcador Jugador 2 ---
             sf::Text marcadorP2(fuenteMarcador);
             marcadorP2.setCharacterSize(30);
             marcadorP2.setFillColor(sf::Color::Blue);
@@ -551,23 +559,12 @@ void Game::render() {
             marcadorP2.setString(player2Name + " lleva: " + std::to_string(vueltasP2) + " / 3 vueltas");
             window.draw(marcadorP2);
 
-            // --- Anuncio de Ganador Fijo y Centrado ---
-            if (vueltasP1 >= 3 || vueltasP2 >= 3) {
-                sf::Text textoGanador(fuenteMarcador);
-                textoGanador.setCharacterSize(50); // Tamaño destacado para el centro
-                textoGanador.setFillColor(sf::Color::Yellow);
-                
-               if (vueltasP1 >= 3) {
-                textoGanador.setString("\"" + player1Name + "\" ES EL GANADOR DEL JUEGO");
-            } else {
-                textoGanador.setString("\"" + player2Name + "\" ES EL GANADOR DEL JUEGO");
-            }
-                
-                // Posicionamiento en una coordenada fija y segura del centro de la pantalla
-                textoGanador.setPosition(sf::Vector2f(200.f, 300.f));
-                window.draw(textoGanador);
-            }
-
+            window.display();
+            break;
+        }
+        case GameState::GAME_OVER: { // <-- NUEVO: Dibujar menú de fin de juego
+            window.clear(sf::Color::Black);
+            gameOver.render(window);
             window.display();
             break;
         }
