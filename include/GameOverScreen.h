@@ -5,23 +5,28 @@
 #include <SFML/Window.hpp>
 #include <string>
 #include <memory>
-#include <vector> // <-- Nueva libreria para listas de tiempos
+#include <vector>
 
 class GameOverScreen {
 private:
     std::shared_ptr<sf::Font> font;
+    bool fontLoaded; // ESCUDO ANTI-CRASHEOS
+    
     sf::Text titleText;
     sf::Text winnerText;
+    
     std::optional<sf::Sprite> winnerSprite;
+    
+    sf::Texture bgTexture;
+    std::optional<sf::Sprite> bgSprite; 
+    sf::RectangleShape overlay;
 
-    // Nuevos textos para las estadísticas
     sf::Text p1StatsText; 
     sf::Text p2StatsText;
-
     sf::Text playAgainText;
     sf::Text exitText;
 
-    int selectedOption; // 0 = Jugar de nuevo, 1 = Salir
+    int selectedOption;
     bool optionConfirmed;
 
     bool loadFont();
@@ -32,10 +37,7 @@ public:
     ~GameOverScreen();
 
     void setWinner(const std::string& winnerName); 
-    
-    void setWinnerImage(const sf::Texture& texture);
-
-    // Nueva función para pasarle los tiempos de las vueltas
+    void setWinnerImage(const sf::Texture& texture); 
     void setPlayerStats(const std::vector<float>& p1Laps, const std::vector<float>& p2Laps);
     
     void handleInput(const sf::Event& event);
