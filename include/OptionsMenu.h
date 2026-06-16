@@ -2,48 +2,35 @@
 #define OPTIONSMENU_H
 
 #include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
-#include <SFML/Window.hpp>
 #include <vector>
 #include <string>
-#include <memory>
 
 class OptionsMenu {
 private:
-    std::shared_ptr<sf::Font> font;
-    std::vector<sf::Text> optionLabels;
-    std::vector<sf::Text> optionValues;
-    int selectedIndex;
-    sf::Color normalColor;
-    sf::Color selectedColor;
-    std::shared_ptr<sf::Text> titleText;
-    sf::Texture backgroundTexture;
-    sf::Sprite* backgroundSprite;
-    // Volúmenes
-    float masterVolume;      // 0 a 100
-    float musicVolume;       // 0 a 100
+    sf::Font font; // Ahora es un objeto directo
+    sf::Text titleText;
+    std::vector<sf::Text> menuOptions;
     
-    // Referencia a la música compartida del juego
-    std::shared_ptr<sf::Music> sharedBackgroundMusic;
+    int selectedItemIndex;
+    float musicVolume;
+    float sfxVolume;
     
     bool loadFont();
-    void updateDisplay();
-    
+    void updateTextDisplays();
+
 public:
     OptionsMenu();
     ~OptionsMenu();
     
-    void handleInput(const sf::Event& event);
-    void update();
+    void moveUp();
+    void moveDown();
+    void increaseVolume();
+    void decreaseVolume();
+    
+    float getMusicVolume() const;
+    float getSfxVolume() const;
+    
     void render(sf::RenderWindow& window);
-    void reset();
-    
-    void setBackgroundMusic(std::shared_ptr<sf::Music> music);
-    
-    float getMasterVolume() const { return masterVolume; }
-    float getMusicVolume() const { return musicVolume; }
-    void setMasterVolume(float volume);
-    void setMusicVolume(float volume);
 };
 
 #endif // OPTIONSMENU_H

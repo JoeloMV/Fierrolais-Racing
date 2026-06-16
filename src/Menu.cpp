@@ -20,11 +20,6 @@ Menu::Menu() : selectedIndex(0), normalColor(sf::Color::White), selectedColor(sf
         std::cerr << "Advertencia: No se cargó la fuente correctamente" << std::endl;
     }
     
-    // Crear y configurar el título del menú
-    titleText = std::make_shared<sf::Text>(*font, "FIERROLAIS RACING", 60);
-    titleText->setFillColor(selectedColor);
-    titleText->setPosition(sf::Vector2f(150, 100));
-    
     // Opciones del menú
     std::vector<std::string> options = {
         "INICIAR JUEGO",

@@ -71,7 +71,7 @@ Game::Game() : window(sf::VideoMode(sf::Vector2u(1200, 700)), "Fierrolais Racing
 {
     window.setFramerateLimit(60);
     loadBackgroundMusic();
-    optionsMenu.setBackgroundMusic(backgroundMusic);
+    
 
     if (!fuente.openFromFile("assets/arial.ttf")) {
         std::cerr << "Error al cargar la fuente arial.ttf" << std::endl;
@@ -129,7 +129,7 @@ void Game::handleEvents() {
                 player1Name = nombreGuardadoJ1;
             }
             else if (estadoAnterior == GameState::NAME_INPUT_P2 && currentState == GameState::CHARACTER_SELECTION) {
-                nombreGuardadoJ2 = nameInputScreen.getPlayerName();
+                nombreGuardadoJ2 = nameInputScreen.getPlayerName();             
                 if (nombreGuardadoJ2.empty()) nombreGuardadoJ2 = "Jugador 2";
                 player2Name = nombreGuardadoJ2;
             }
@@ -200,6 +200,12 @@ void Game::handleEvents() {
         else if (currentState == GameState::GAME_OVER) {
             gameOver.handleInput(*event); 
         }
+        else if (currentState == GameState::OPTIONS) {
+            handleOptionsInput(*event);
+        } 
+        else if (currentState == GameState::CREDITS) {
+            handleCreditsInput(*event);
+        }
     }
 }
 
@@ -234,7 +240,6 @@ void Game::handleMenuInput(const sf::Event& event) {
                 case 1:
                     previousState = GameState::MENU;
                     currentState = GameState::OPTIONS;
-                    optionsMenu.reset();
                     break;
                 case 2:
                     previousState = GameState::MENU;
@@ -257,12 +262,42 @@ void Game::handleMenuInput(const sf::Event& event) {
 }
 
 void Game::handleOptionsInput(const sf::Event& event) {
-    optionsMenu.handleInput(event);
-    
     if (const auto* keyEvent = event.getIf<sf::Event::KeyPressed>()) {
+        
+        // Salir al menú con ESC
         if (keyEvent->code == sf::Keyboard::Key::Escape) {
-            currentState = previousState;
-            menu.reset();
+            currentState = GameState::MENU;
+        }
+        
+        // Flechas Arriba y Abajo para cambiar de opción
+        else if (keyEvent->code == sf::Keyboard::Key::Up) {
+            optionsMenu.moveUp();
+        }
+        else if (keyEvent->code == sf::Keyboard::Key::Down) {
+            optionsMenu.moveDown();
+        }
+        
+        // Flecha Izquierda para BAJAR volumen
+        else if (keyEvent->code == sf::Keyboard::Key::Left) {
+            optionsMenu.decreaseVolume();
+            
+            // Si la música está sonando, aplicamos el cambio instantáneamente
+            if (backgroundMusic) {
+                backgroundMusic->setVolume(optionsMenu.getMusicVolume());
+            }
+            
+            // Nota: Aquí en el futuro podrás hacer lo mismo con tus efectos de sonido
+            // ej. sonidoMotor.setVolume(optionsMenu.getSfxVolume());
+        }
+        
+        // Flecha Derecha para SUBIR volumen
+        else if (keyEvent->code == sf::Keyboard::Key::Right) {
+            optionsMenu.increaseVolume();
+            
+            // Aplicamos el cambio instantáneamente
+            if (backgroundMusic) {
+                backgroundMusic->setVolume(optionsMenu.getMusicVolume());
+            }
         }
     }
 }
@@ -378,7 +413,6 @@ void Game::update() {
         case GameState::CAR_SELECTION:
             break;
         case GameState::OPTIONS:
-            optionsMenu.update();
             break;
         case GameState::COUNTDOWN: {
             float tiempoTranscurrido = relojCuenta.getElapsedTime().asSeconds();
