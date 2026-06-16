@@ -5,22 +5,16 @@
 
 bool OptionsMenu::loadFont() {
     font = std::make_shared<sf::Font>();
-    std::vector<std::string> fontPaths = {
-        "C:\\Windows\\Fonts\\arial.ttf",
-        "C:\\Windows\\Fonts\\Arial.ttf",
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
-    };
     
-    for (const auto& path : fontPaths) {
-        if (font->openFromFile(path)) {
-            return true;
-        }
+    // Buscar la fuente directamente en tu carpeta de assets
+    if (font->openFromFile("assets/arial.ttf")) {
+        std::cout << "Fuente cargada exitosamente desde: assets/arial.ttf" << std::endl;
+        return true;
     }
     
+    std::cerr << "Error: No se pudo cargar la fuente desde assets." << std::endl;
     return false;
 }
-
-
 
 OptionsMenu::OptionsMenu()
 : selectedIndex(0), normalColor(sf::Color::White), selectedColor(sf::Color::Yellow),
@@ -30,12 +24,14 @@ masterVolume(80.0f), musicVolume(70.0f), sharedBackgroundMusic(nullptr), backgro
     if (!loadFont()) {
         std::cerr << "Error: No se pudo cargar la fuente" << std::endl;
     }
+    
     // === CARGAR EL FONDO ===
-if (!backgroundTexture.loadFromFile("assets/opciones_fondo.png")) {
-    std::cerr << "Error: No se pudo cargar assets/opciones_fondo.png" << std::endl;
-} else {
-    backgroundSprite = new sf::Sprite(backgroundTexture);
-}
+    if (!backgroundTexture.loadFromFile("assets/opciones_fondo.png")) {
+        std::cerr << "Error: No se pudo cargar assets/opciones_fondo.png" << std::endl;
+    } else {
+        backgroundSprite = new sf::Sprite(backgroundTexture);
+    }
+    
     // Título
     titleText = std::make_shared<sf::Text>(*font, "OPCIONES", 60);
     titleText->setFillColor(selectedColor);
@@ -64,6 +60,9 @@ if (!backgroundTexture.loadFromFile("assets/opciones_fondo.png")) {
 }
 
 OptionsMenu::~OptionsMenu() {
+    if (backgroundSprite) {
+        delete backgroundSprite;
+    }
 }
 
 void OptionsMenu::updateDisplay() {
@@ -80,7 +79,8 @@ void OptionsMenu::updateDisplay() {
 
 void OptionsMenu::handleInput(const sf::Event& event) {
     if (const auto* keyEvent = event.getIf<sf::Event::KeyPressed>()) {
-        if (keyEvent->code == sf::Keyboard::Key::Up) {
+        // Navegar arriba (Flecha Arriba o W)
+        if (keyEvent->code == sf::Keyboard::Key::Up || keyEvent->code == sf::Keyboard::Key::W) {
             if (selectedIndex > 0) {
                 optionLabels[selectedIndex].setFillColor(normalColor);
                 optionValues[selectedIndex].setFillColor(normalColor);
@@ -88,7 +88,9 @@ void OptionsMenu::handleInput(const sf::Event& event) {
                 optionLabels[selectedIndex].setFillColor(selectedColor);
                 optionValues[selectedIndex].setFillColor(selectedColor);
             }
-        } else if (keyEvent->code == sf::Keyboard::Key::Down) {
+        } 
+        // Navegar abajo (Flecha Abajo o S)
+        else if (keyEvent->code == sf::Keyboard::Key::Down || keyEvent->code == sf::Keyboard::Key::S) {
             if (selectedIndex < static_cast<int>(optionLabels.size()) - 1) {
                 optionLabels[selectedIndex].setFillColor(normalColor);
                 optionValues[selectedIndex].setFillColor(normalColor);
@@ -96,8 +98,9 @@ void OptionsMenu::handleInput(const sf::Event& event) {
                 optionLabels[selectedIndex].setFillColor(selectedColor);
                 optionValues[selectedIndex].setFillColor(selectedColor);
             }
-        } else if (keyEvent->code == sf::Keyboard::Key::Left) {
-            // Bajar volumen
+        } 
+        // Bajar volumen (Flecha Izquierda o A)
+        else if (keyEvent->code == sf::Keyboard::Key::Left || keyEvent->code == sf::Keyboard::Key::A) {
             if (selectedIndex == 0) {
                 masterVolume = std::max(0.0f, masterVolume - 5.0f);
             } else if (selectedIndex == 1) {
@@ -107,8 +110,9 @@ void OptionsMenu::handleInput(const sf::Event& event) {
                 }
             }
             updateDisplay();
-        } else if (keyEvent->code == sf::Keyboard::Key::Right) {
-            // Subir volumen
+        } 
+        // Subir volumen (Flecha Derecha o D)
+        else if (keyEvent->code == sf::Keyboard::Key::Right || keyEvent->code == sf::Keyboard::Key::D) {
             if (selectedIndex == 0) {
                 masterVolume = std::min(100.0f, masterVolume + 5.0f);
             } else if (selectedIndex == 1) {
@@ -128,15 +132,12 @@ void OptionsMenu::update() {
 
 void OptionsMenu::render(sf::RenderWindow& window) {
     window.clear(sf::Color::Black);
-   // Dibuja el fondo solo si se logró crear correctamente
+    
+    // Dibuja el fondo solo si se logró crear correctamente
     if (backgroundSprite) {
         window.draw(*backgroundSprite);
     }
 
-    if (titleText) {
-        window.draw(*titleText);
-    }
-    
     if (titleText) {
         window.draw(*titleText);
     }
@@ -149,8 +150,8 @@ void OptionsMenu::render(sf::RenderWindow& window) {
         window.draw(value);
     }
     
-    // Mostrar instrucciones
-    sf::Text instructions(*font, "Usa <- -> para cambiar | Usa ^v para navegar | ESC para volver", 20);
+    // Mostrar instrucciones actualizadas para WASD
+    sf::Text instructions(*font, "Usa <- -> o A/D para cambiar | ^v o W/S para navegar | ESC volver", 20);
     instructions.setFillColor(sf::Color::Cyan);
     instructions.setPosition(sf::Vector2f(100, 650));
     window.draw(instructions);
