@@ -142,55 +142,56 @@ void Game::handleEvents() {
                 relojCuenta.restart();
                 std::cout << "Iniciando juego..." << std::endl;
 
-            // Forzamos el intercambio de selección para corregir el cruce de controles y pantallas
-int p1 = carSelectionScreen.getPlayer2Selection();
-int p2 = carSelectionScreen.getPlayer1Selection();
+                int p1 = carSelectionScreen.getPlayer2Selection();
+                int p2 = carSelectionScreen.getPlayer1Selection();
 
-std::cout << "DEBUG - Controles Corregidos -> P1 maneja: " << p1 << " | P2 maneja: " << p2 << std::endl;
+                std::cout << "DEBUG - Controles Corregidos -> P1 maneja: " << p1 << " | P2 maneja: " << p2 << std::endl;
 
-std::vector<std::string> rutasCarros = {
-    "assets/carro1.png", // Índice 0
-    "assets/carro2.png", // Índice 1
-    "assets/carro3.png", // Índice 2
-    "assets/carro4.png", // Índice 3
-    "assets/carro5.png"  // Índice 4
-};
+                std::vector<std::string> rutasCarros = {
+                    "assets/carro1.png",
+                    "assets/carro2.png",
+                    "assets/carro3.png",
+                    "assets/carro4.png",
+                    "assets/carro5.png"
+                };
 
-float anchoDeseado = 60.0f;
-float largoDeseado = 83.0f;
+                float anchoDeseado = 60.0f;
+                float largoDeseado = 83.0f;
 
-// --- CARRO JUGADOR 1 (Carril de arriba) ---
-if (p1 >= 0 && p1 < rutasCarros.size()) {
-    (void)carroTexture.loadFromFile(rutasCarros[p1]);
-    carroSprite.setTexture(carroTexture, true);
-    
-    sf::FloatRect bounds = carroSprite.getLocalBounds();
-    carroSprite.setOrigin(sf::Vector2f(bounds.size.x / 2.0f, bounds.size.y / 2.0f));
-    carroSprite.setRotation(sf::degrees(270.0f));
+                if (p1 >= 0 && p1 < rutasCarros.size()) {
+                    (void)carroTexture.loadFromFile(rutasCarros[p1]);
+                    carroSprite.setTexture(carroTexture, true);
+                    
+                    sf::FloatRect bounds = carroSprite.getLocalBounds();
+                    carroSprite.setOrigin(sf::Vector2f(bounds.size.x / 2.0f, bounds.size.y / 2.0f));
+                    carroSprite.setRotation(sf::degrees(270.0f));
 
-    float escalaX = anchoDeseado / bounds.size.x;
-    float escalaY = largoDeseado / bounds.size.y;
-    carroSprite.setScale(sf::Vector2f(escalaX, escalaY));
-    carroSprite.setPosition(sf::Vector2f(472.0f, 124.0f));
-}
+                    float escalaX = anchoDeseado / bounds.size.x;
+                    float escalaY = largoDeseado / bounds.size.y;
+                    carroSprite.setScale(sf::Vector2f(escalaX, escalaY));
+                    carroSprite.setPosition(sf::Vector2f(472.0f, 124.0f));
+                }
 
-// --- CARRO JUGADOR 2 (Carril de abajo) ---
-if (p2 >= 0 && p2 < rutasCarros.size()) {
-    (void)carro2Texture.loadFromFile(rutasCarros[p2]);
-    carro2Sprite.setTexture(carro2Texture, true);
-    
-    sf::FloatRect bounds2 = carro2Sprite.getLocalBounds();
-    carro2Sprite.setOrigin(sf::Vector2f(bounds2.size.x / 2.0f, bounds2.size.y / 2.0f));
-    carro2Sprite.setRotation(sf::degrees(270.0f));
+                if (p2 >= 0 && p2 < rutasCarros.size()) {
+                    (void)carro2Texture.loadFromFile(rutasCarros[p2]);
+                    carro2Sprite.setTexture(carro2Texture, true);
+                    
+                    sf::FloatRect bounds2 = carro2Sprite.getLocalBounds();
+                    carro2Sprite.setOrigin(sf::Vector2f(bounds2.size.x / 2.0f, bounds2.size.y / 2.0f));
+                    carro2Sprite.setRotation(sf::degrees(270.0f));
 
-    float escalaX2 = anchoDeseado / bounds2.size.x;
-    float escalaY2 = largoDeseado / bounds2.size.y;
-    carro2Sprite.setScale(sf::Vector2f(escalaX2, escalaY2));
-    carro2Sprite.setPosition(sf::Vector2f(472.0f, 161.0f));
-}
-}
-}
-}
+                    float escalaX2 = anchoDeseado / bounds2.size.x;
+                    float escalaY2 = largoDeseado / bounds2.size.y;
+                    carro2Sprite.setScale(sf::Vector2f(escalaX2, escalaY2));
+                    carro2Sprite.setPosition(sf::Vector2f(472.0f, 161.0f));
+                }
+            }
+        } 
+        // Con esto el Game Over por fin escucha el teclado de tu GameOverScreen.cpp
+        else if (currentState == GameState::GAME_OVER) {
+            gameOver.handleInput(*event);
+        }
+    }
 }
 
 void Game::handleSplashInput(const sf::Event& event) {
@@ -490,10 +491,12 @@ void Game::update() {
 
             if (vueltasP1 >= 3) {
                 gameOver.setWinner(player1Name);
+                gameOver.setWinnerImage(hudCharTexP1);
                 gameOver.setPlayerStats(tiemposP1, tiemposP2);
                 currentState = GameState::GAME_OVER;
             } else if (vueltasP2 >= 3) {
                 gameOver.setWinner(player2Name);
+                gameOver.setWinnerImage(hudCharTexP2);
                 gameOver.setPlayerStats(tiemposP1, tiemposP2);
                 currentState = GameState::GAME_OVER;
             }

@@ -120,10 +120,24 @@ void GameOverScreen::render(sf::RenderWindow& window) {
     window.draw(p2StatsText); // Dibujamos tiempos J2
     window.draw(playAgainText);
     window.draw(exitText);
+    if (winnerSprite.has_value()) {
+        window.draw(winnerSprite.value());
+    }
 }
 
 void GameOverScreen::reset() {
     selectedOption = 0;
     optionConfirmed = false;
     updateDisplay();
+}
+void GameOverScreen::setWinnerImage(const sf::Texture& texture) {
+    // emplace construye el Sprite internamente ya con su textura (cumpliendo la regla de SFML 3)
+    winnerSprite.emplace(texture); 
+    
+    sf::FloatRect bounds = winnerSprite->getLocalBounds();
+    if (bounds.size.x > 0 && bounds.size.y > 0) {
+        winnerSprite->setScale(sf::Vector2f(150.0f / bounds.size.x, 150.0f / bounds.size.y));
+    }
+    
+    winnerSprite->setPosition(sf::Vector2f(750.0f, 350.0f)); 
 }
