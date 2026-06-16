@@ -3,21 +3,14 @@
 
 bool Menu::loadFont() {
     font = std::make_shared<sf::Font>();
-    // Intentar cargar una fuente del sistema Windows
-    std::vector<std::string> fontPaths = {
-        "C:\\Windows\\Fonts\\arial.ttf",
-        "C:\\Windows\\Fonts\\Arial.ttf",
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"  // Para Linux
-    };
     
-    for (const auto& path : fontPaths) {
-        if (font->openFromFile(path)) {
-            std::cout << "Fuente cargada desde: " << path << std::endl;
-            return true;
-        }
+    // Ahora busca la fuente directamente en tu carpeta de assets
+    if (font->openFromFile("assets/arial.ttf")) {
+        std::cout << "Fuente cargada exitosamente desde: assets/arial.ttf" << std::endl;
+        return true;
     }
     
-    std::cerr << "No se pudo cargar ninguna fuente. El menú no mostrará texto." << std::endl;
+    std::cerr << "No se pudo cargar la fuente desde assets. El menú no mostrará texto." << std::endl;
     return false;
 }
 
@@ -53,13 +46,16 @@ Menu::~Menu() {
 
 void Menu::handleInput(const sf::Event& event) {
     if (const auto* keyEvent = event.getIf<sf::Event::KeyPressed>()) {
-        if (keyEvent->code == sf::Keyboard::Key::Up) {
+        // Mover hacia arriba (Flecha Arriba o tecla W)
+        if (keyEvent->code == sf::Keyboard::Key::Up || keyEvent->code == sf::Keyboard::Key::W) {
             if (selectedIndex > 0) {
                 menuItems[selectedIndex].setFillColor(normalColor);
                 selectedIndex--;
                 menuItems[selectedIndex].setFillColor(selectedColor);
             }
-        } else if (keyEvent->code == sf::Keyboard::Key::Down) {
+        } 
+        // Mover hacia abajo (Flecha Abajo o tecla S)
+        else if (keyEvent->code == sf::Keyboard::Key::Down || keyEvent->code == sf::Keyboard::Key::S) {
             if (selectedIndex < static_cast<int>(menuItems.size()) - 1) {
                 menuItems[selectedIndex].setFillColor(normalColor);
                 selectedIndex++;
