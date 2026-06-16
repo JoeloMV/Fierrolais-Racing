@@ -2,6 +2,7 @@
 #define SPLASHSCREEN_H
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp> // <-- NUEVA LIBRERÍA DE AUDIO
 #include <SFML/Window.hpp>
 #include <memory>
 
@@ -15,6 +16,8 @@ private:
     float alphaDelta;
     bool fadeIn;
     
+    sf::Music splashMusic; // <-- NUEVO REPRODUCTOR DE MÚSICA
+    
     bool loadFont();
     
 public:
@@ -23,6 +26,8 @@ public:
     
     void update();
     void render(sf::RenderWindow& window);
+    
+    void stopMusic(); // <-- NUEVA FUNCIÓN PARA APAGARLA
 };
 
 #endif // SPLASHSCREEN_H

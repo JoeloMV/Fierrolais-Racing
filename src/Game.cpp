@@ -205,7 +205,14 @@ void Game::handleEvents() {
 
 void Game::handleSplashInput(const sf::Event& event) {
     if (event.getIf<sf::Event::KeyPressed>()) {
+        
+        // 1. Apagamos la música del splash screen antes de cambiar de estado
+        splashScreen.stopMusic(); 
+        
+        // 2. Pasamos al menú principal
         currentState = GameState::MENU;
+        
+        // 3. Iniciamos la música de fondo del juego
         if (backgroundMusic) {
             backgroundMusic->play();
         }

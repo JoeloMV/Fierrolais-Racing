@@ -113,6 +113,9 @@ void CarSelectionScreen::render(sf::RenderWindow& window) {
    static bool texturesLoaded = false;
 if (!texturesLoaded) {
     puercheTexture.loadFromFile("assets/puerche.png");
+    if (!puercheTexture.loadFromFile("assets/puerche.png")) {
+    std::cerr << "Error: No se pudo cargar assets/puerche.png" << std::endl;
+}
     fierrariTexture.loadFromFile("assets/fierrari.png");
     lamborgotaTexture.loadFromFile("assets/lamborgota.png");
     fordTexture.loadFromFile("assets/ford.png");
