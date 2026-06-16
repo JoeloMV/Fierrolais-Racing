@@ -567,7 +567,7 @@ void Game::render() {
             marcadorP2.setCharacterSize(30);
             marcadorP2.setFillColor(sf::Color::Blue);
             marcadorP2.setPosition(sf::Vector2f(80.f, 20.f)); 
-            marcadorP2.setString(player2Name + " lleva: " + std::to_string(vueltasP2) + " / 3 vueltas");
+            marcadorP2.setString(player1Name + " lleva: " + std::to_string(vueltasP2) + " / 3 vueltas");
             window.draw(marcadorP2);
 
             // DIBUJAR MARCADOR DEL JUGADOR 1 (Derecha)
@@ -578,7 +578,7 @@ void Game::render() {
             marcadorP1.setCharacterSize(30);
             marcadorP1.setFillColor(sf::Color::Red);
             marcadorP1.setPosition(sf::Vector2f(840.f, 20.f)); 
-            marcadorP1.setString(player1Name + " lleva: " + std::to_string(vueltasP1) + " / 3 vueltas");
+            marcadorP1.setString(player2Name + " lleva: " + std::to_string(vueltasP1) + " / 3 vueltas");
             window.draw(marcadorP1);
 
             window.display();
