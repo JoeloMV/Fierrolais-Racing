@@ -17,7 +17,8 @@ private:
     sf::Color normalColor;
     sf::Color selectedColor;
     std::shared_ptr<sf::Text> titleText;
-    
+    sf::Texture backgroundTexture;
+    sf::Sprite* backgroundSprite;
     // Volúmenes
     float masterVolume;      // 0 a 100
     float musicVolume;       // 0 a 100

@@ -22,15 +22,20 @@ bool OptionsMenu::loadFont() {
 
 
 
-OptionsMenu::OptionsMenu() 
-    : selectedIndex(0), normalColor(sf::Color::White), selectedColor(sf::Color::Yellow),
-      masterVolume(80.0f), musicVolume(70.0f), sharedBackgroundMusic(nullptr) {
+OptionsMenu::OptionsMenu()
+: selectedIndex(0), normalColor(sf::Color::White), selectedColor(sf::Color::Yellow),
+masterVolume(80.0f), musicVolume(70.0f), sharedBackgroundMusic(nullptr), backgroundSprite(nullptr) {
     
     // Cargar la fuente
     if (!loadFont()) {
         std::cerr << "Error: No se pudo cargar la fuente" << std::endl;
     }
-    
+    // === CARGAR EL FONDO ===
+if (!backgroundTexture.loadFromFile("assets/opciones_fondo.png")) {
+    std::cerr << "Error: No se pudo cargar assets/opciones_fondo.png" << std::endl;
+} else {
+    backgroundSprite = new sf::Sprite(backgroundTexture);
+}
     // Título
     titleText = std::make_shared<sf::Text>(*font, "OPCIONES", 60);
     titleText->setFillColor(selectedColor);
@@ -123,6 +128,14 @@ void OptionsMenu::update() {
 
 void OptionsMenu::render(sf::RenderWindow& window) {
     window.clear(sf::Color::Black);
+   // Dibuja el fondo solo si se logró crear correctamente
+    if (backgroundSprite) {
+        window.draw(*backgroundSprite);
+    }
+
+    if (titleText) {
+        window.draw(*titleText);
+    }
     
     if (titleText) {
         window.draw(*titleText);
