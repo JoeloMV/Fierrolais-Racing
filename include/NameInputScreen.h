@@ -15,6 +15,8 @@ private:
     std::shared_ptr<sf::Text> titleText;
     std::shared_ptr<sf::Text> inputText;
     std::shared_ptr<sf::Text> instructionText;
+    sf::Texture backgroundTexture;
+    sf::Sprite* backgroundSprite = nullptr; // Lo inicializamos en nullptr por seguridad
     
     static const int MAX_NAME_LENGTH = 15;
     

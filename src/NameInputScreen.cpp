@@ -32,18 +32,27 @@ NameInputScreen::NameInputScreen() : currentPlayer(1), enterPressed(false){
     instructionText = std::make_shared<sf::Text>(*font, "Presiona ENTER para confirmar", 25);
     instructionText->setFillColor(sf::Color::Cyan);
     instructionText->setPosition(sf::Vector2f(250, 600));
-}
 
+// === INSTRUCCIÓN PARA CAMBIAR EL FONDO ===
+    if (this->backgroundTexture.loadFromFile("assets/fondo_ingreso_nombre.png")) {
+        if (this->backgroundSprite) {
+            delete this->backgroundSprite;
+        }
+    
+        this->backgroundSprite = new sf::Sprite(this->backgroundTexture);
+    }
+}
 NameInputScreen::~NameInputScreen() {
+    if (this->backgroundSprite) {
+        delete this->backgroundSprite;
+    }
 }
-
 void NameInputScreen::reset(int player) {
     currentPlayer = player;
     playerName.clear();
     enterPressed = false;
     updateDisplay();
 }
-
 void NameInputScreen::updateDisplay() {
     titleText->setString("Jugador " + std::to_string(currentPlayer) + " - Ingresa tu nombre");
     if (currentPlayer == 1) {
@@ -93,7 +102,9 @@ bool NameInputScreen::isNameConfirmed() const {
 
 void NameInputScreen::render(sf::RenderWindow& window) {
     window.clear(sf::Color::Black);
-    
+    if (backgroundSprite) {
+        window.draw(*backgroundSprite);
+    }
     if (titleText) window.draw(*titleText);
     if (inputText) window.draw(*inputText);
     if (instructionText) window.draw(*instructionText);
