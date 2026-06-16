@@ -3,9 +3,11 @@
 
 bool CreditsScreen::loadFont() {
     font = std::make_shared<sf::Font>();
+    
+    // Prioridad 1: Tu carpeta assets. Prioridad 2 y 3: Fuentes del sistema operativo.
     std::vector<std::string> fontPaths = {
-        "C:\\Windows\\Fonts\\arial.ttf",
-        "C:\\Windows\\Fonts\\Arial.ttf",
+        "assets/arial.ttf",
+        "C:/Windows/Fonts/arial.ttf",
         "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
     };
     
@@ -21,7 +23,7 @@ bool CreditsScreen::loadFont() {
 CreditsScreen::CreditsScreen() {
     // Cargar la fuente
     if (!loadFont()) {
-        std::cerr << "Error: No se pudo cargar la fuente" << std::endl;
+        std::cerr << "Error: No se pudo cargar la fuente en la pantalla de créditos" << std::endl;
     }
     
     // Título
@@ -31,8 +33,8 @@ CreditsScreen::CreditsScreen() {
     
     // Créditos
     std::vector<std::pair<std::string, std::string>> credits = {
-        {"Joel Muñoz", "25110302"},
-        {"Luis Hernandez", "22110256"}
+        {"Joel Munoz", "25110302"},
+        {"Luis Hernandez", "25110256"}
     };
     
     for (size_t i = 0; i < credits.size(); ++i) {
