@@ -34,12 +34,18 @@ Menu::Menu() : selectedIndex(0), normalColor(sf::Color::White), selectedColor(sf
         text.setFillColor((i == 0) ? selectedColor : normalColor);
         menuItems.push_back(text);
     }
-
-// === CARGAR EL FONDO DEL MENÚ PRINCIPAL ===
-        if (!backgroundTexture.loadFromFile("assets/fondo_menu.png")) {
-         std::cerr << "Error: No se pudo cargar assets/fondo_menu.png" << std::endl;
-    } else {
+/// === CARGAR LOS FONDOS DEL JUEGO ===
+    // 1. Intentamos cargar primero el fondo para los nombres
+    if (backgroundTexture.loadFromFile("assets/fondo_nombre.png")) {
         backgroundSprite = new sf::Sprite(backgroundTexture);
+    } 
+    // 2. Si no existe, usamos el fondo del Mustang para el menú principal
+    else if (backgroundTexture.loadFromFile("assets/fondo_menu.png")) {
+        backgroundSprite = new sf::Sprite(backgroundTexture);
+    } 
+    // 3. Si no encuentra ninguno, avisa en la consola
+    else {
+        std::cerr << "Error: No se pudo cargar ningún fondo desde assets." << std::endl;
     }
 }
 Menu::~Menu() {
