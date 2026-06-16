@@ -12,6 +12,13 @@ int vueltasP1 = 0;
 int vueltasP2 = 0;
 bool p1PasoMitad = false;
 bool p2PasoMitad = false;
+
+// <-- NUEVO: Variables para los tiempos -->
+std::vector<float> tiemposP1;
+std::vector<float> tiemposP2;
+sf::Clock relojVueltaP1;
+sf::Clock relojVueltaP2;
+
 sf::Font fuenteMarcador;
 std::string nombreGuardadoJ1 = "Jugador 1";
 std::string nombreGuardadoJ2 = "Jugador 2";
@@ -192,7 +199,7 @@ void Game::handleEvents() {
             handleOptionsInput(*event);
         } else if (currentState == GameState::CREDITS) {
             handleCreditsInput(*event);
-        } else if (currentState == GameState::GAME_OVER) { // <-- NUEVO: Mandamos eventos al menú final
+        } else if (currentState == GameState::GAME_OVER) { 
             gameOver.handleInput(*event);
         }
     }
@@ -354,6 +361,10 @@ void Game::update() {
             else if (tiempoTranscurrido > 4.5f) {
                 currentState = GameState::PLAYING;
                 textoCuentaRegresiva.setString(""); 
+
+                // <-- NUEVO: Arrancamos los cronómetros al iniciar -->
+                relojVueltaP1.restart();
+                relojVueltaP2.restart();
             }
             break;
         }
@@ -366,7 +377,6 @@ void Game::update() {
             // ==========================================
             // CONTROL Y MOVIMIENTO JUGADOR 1
             // ==========================================
-            // NOTA: Asegúrate de tener estas variables (angle, speed, etc.) definidas en tu archivo .h
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) angle -= turnSpeed * dt;
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)) angle += turnSpeed * dt;
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)) {
@@ -456,6 +466,11 @@ void Game::update() {
                 if (p1PasoMitad == true) {
                     vueltasP1++; 
                     p1PasoMitad = false; 
+                    
+                    // <-- NUEVO: Guardar tiempo J1 y reiniciar su reloj -->
+                    float tiempoVuelta = relojVueltaP1.restart().asSeconds();
+                    tiemposP1.push_back(tiempoVuelta);
+
                     std::cout << "¡Jugador 1 completó la vuelta! Llevas: " << vueltasP1 << std::endl;
                 }
             }
@@ -468,6 +483,11 @@ void Game::update() {
                 if (p2PasoMitad == true) {
                     vueltasP2++; 
                     p2PasoMitad = false; 
+                    
+                    // <-- NUEVO: Guardar tiempo J2 y reiniciar su reloj -->
+                    float tiempoVuelta = relojVueltaP2.restart().asSeconds();
+                    tiemposP2.push_back(tiempoVuelta);
+
                     std::cout << "¡Jugador 2 completó la vuelta! Llevas: " << vueltasP2 << std::endl;
                 }
             }
@@ -475,9 +495,11 @@ void Game::update() {
             // <-- NUEVO: DETECTAR QUIÉN GANA Y CAMBIAR DE PANTALLA -->
             if (vueltasP1 >= 3) {
                 gameOver.setWinner(player1Name);
+                gameOver.setPlayerStats(tiemposP1, tiemposP2);
                 currentState = GameState::GAME_OVER;
             } else if (vueltasP2 >= 3) {
                 gameOver.setWinner(player2Name);
+                gameOver.setPlayerStats(tiemposP1, tiemposP2);
                 currentState = GameState::GAME_OVER;
             }
 
@@ -493,6 +515,11 @@ void Game::update() {
                     vueltasP2 = 0;
                     p1PasoMitad = false;
                     p2PasoMitad = false;
+
+                    // <-- NUEVO: Borramos los tiempos de la carrera anterior -->
+                    tiemposP1.clear();
+                    tiemposP2.clear();
+
                     speed = 0.0f; // Detener carros
                     speed2 = 0.0f;
                     currentState = GameState::CAR_SELECTION;
@@ -562,7 +589,7 @@ void Game::render() {
             window.display();
             break;
         }
-        case GameState::GAME_OVER: { // <-- NUEVO: Dibujar menú de fin de juego
+        case GameState::GAME_OVER: { 
             window.clear(sf::Color::Black);
             gameOver.render(window);
             window.display();

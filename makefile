@@ -29,7 +29,7 @@ $(BIN_DIR)/%.o: $(SRC_DIR)/%.cpp
 
 # Ejecutar el juego
 run: $(EXECUTABLE)
-	./$(EXECUTABLE)
+	.\bin\game.exe
 
 # Limpiar archivos generados
 clean:
