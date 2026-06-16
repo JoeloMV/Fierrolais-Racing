@@ -188,8 +188,17 @@ void Game::handleEvents() {
             }
         } 
         // Con esto el Game Over por fin escucha el teclado de tu GameOverScreen.cpp
+        else if (currentState == GameState::CAR_SELECTION) {
+            carSelectionScreen.handleInput(*event);
+            if (carSelectionScreen.areBothConfirmed()) {
+                // ... todo el código donde cargas los carritos ...
+            }
+        } 
+        // =========================================================
+        // ¡ESTO ES LO QUE SEGURAMENTE TE FALTA EN GAME.CPP!
+        // =========================================================
         else if (currentState == GameState::GAME_OVER) {
-            gameOver.handleInput(*event);
+            gameOver.handleInput(*event); 
         }
     }
 }

@@ -136,8 +136,8 @@ void GameOverScreen::setWinnerImage(const sf::Texture& texture) {
     
     sf::FloatRect bounds = winnerSprite->getLocalBounds();
     if (bounds.size.x > 0 && bounds.size.y > 0) {
-        winnerSprite->setScale(sf::Vector2f(150.0f / bounds.size.x, 150.0f / bounds.size.y));
+        winnerSprite->setScale(sf::Vector2f(250.0f / bounds.size.x, 250.0f / bounds.size.y));
     }
     
-    winnerSprite->setPosition(sf::Vector2f(750.0f, 350.0f)); 
+    winnerSprite->setPosition(sf::Vector2f(800.0f, 180.0f)); 
 }
