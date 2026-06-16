@@ -3,18 +3,14 @@
 
 bool SplashScreen::loadFont() {
     font = std::make_shared<sf::Font>();
-    std::vector<std::string> fontPaths = {
-        "C:\\Windows\\Fonts\\arial.ttf",
-        "C:\\Windows\\Fonts\\Arial.ttf",
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
-    };
     
-    for (const auto& path : fontPaths) {
-        if (font->openFromFile(path)) {
-            return true;
-        }
+    // Buscar la fuente directamente en tu carpeta de assets
+    if (font->openFromFile("assets/arial.ttf")) {
+        std::cout << "Fuente cargada exitosamente desde: assets/arial.ttf" << std::endl;
+        return true;
     }
     
+    std::cerr << "Error: No se pudo cargar la fuente desde assets." << std::endl;
     return false;
 }
 
