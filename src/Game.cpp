@@ -142,56 +142,55 @@ void Game::handleEvents() {
                 relojCuenta.restart();
                 std::cout << "Iniciando juego..." << std::endl;
 
-                int p1 = carSelectionScreen.getPlayer1Selection();
-                int p2 = carSelectionScreen.getPlayer2Selection();
+            // Forzamos el intercambio de selección para corregir el cruce de controles y pantallas
+int p1 = carSelectionScreen.getPlayer2Selection();
+int p2 = carSelectionScreen.getPlayer1Selection();
 
-                std::vector<std::string> rutasCarros = {
-                    "assets/carro1.png",
-                    "assets/carro2.png",
-                    "assets/carro3.png",
-                    "assets/carro4.png",
-                    "assets/carro5.png"
-                };
+std::cout << "DEBUG - Controles Corregidos -> P1 maneja: " << p1 << " | P2 maneja: " << p2 << std::endl;
 
-                float anchoDeseado = 60.0f; 
-                float largoDeseado = 83.0f;
+std::vector<std::string> rutasCarros = {
+    "assets/carro1.png", // Índice 0
+    "assets/carro2.png", // Índice 1
+    "assets/carro3.png", // Índice 2
+    "assets/carro4.png", // Índice 3
+    "assets/carro5.png"  // Índice 4
+};
 
-                if (p1 >= 0 && p1 < rutasCarros.size()) {
-                    (void)carroTexture.loadFromFile(rutasCarros[p2]);
-                    carroSprite.setTexture(carroTexture, true);
-                    
-                    sf::FloatRect bounds = carroSprite.getLocalBounds();
-                    carroSprite.setOrigin(sf::Vector2f(bounds.size.x / 2.0f, bounds.size.y / 2.0f));
-                    carroSprite.setRotation(sf::degrees(270.0f));
+float anchoDeseado = 60.0f;
+float largoDeseado = 83.0f;
 
-                    float escalaX = anchoDeseado / bounds.size.x;
-                    float escalaY = largoDeseado / bounds.size.y;
-                    carroSprite.setScale(sf::Vector2f(escalaX, escalaY));
-                    carroSprite.setPosition(sf::Vector2f(472.0f, 124.0f));
-                }
+// --- CARRO JUGADOR 1 (Carril de arriba) ---
+if (p1 >= 0 && p1 < rutasCarros.size()) {
+    (void)carroTexture.loadFromFile(rutasCarros[p1]);
+    carroSprite.setTexture(carroTexture, true);
+    
+    sf::FloatRect bounds = carroSprite.getLocalBounds();
+    carroSprite.setOrigin(sf::Vector2f(bounds.size.x / 2.0f, bounds.size.y / 2.0f));
+    carroSprite.setRotation(sf::degrees(270.0f));
 
-                if (p2 >= 0 && p2 < rutasCarros.size()) {
-                    (void)carro2Texture.loadFromFile(rutasCarros[p1]);
-                    carro2Sprite.setTexture(carro2Texture, true);
-                    
-                    sf::FloatRect bounds2 = carro2Sprite.getLocalBounds();
-                    carro2Sprite.setOrigin(sf::Vector2f(bounds2.size.x / 2.0f, bounds2.size.y / 2.0f));
-                    carro2Sprite.setRotation(sf::degrees(270.0f));
+    float escalaX = anchoDeseado / bounds.size.x;
+    float escalaY = largoDeseado / bounds.size.y;
+    carroSprite.setScale(sf::Vector2f(escalaX, escalaY));
+    carroSprite.setPosition(sf::Vector2f(472.0f, 124.0f));
+}
 
-                    float escalaX2 = anchoDeseado / bounds2.size.x;
-                    float escalaY2 = largoDeseado / bounds2.size.y;
-                    carro2Sprite.setScale(sf::Vector2f(escalaX2, escalaY2));
-                    carro2Sprite.setPosition(sf::Vector2f(472.0f, 161.0f));
-                }
-            }
-        } else if (currentState == GameState::OPTIONS) {
-            handleOptionsInput(*event);
-        } else if (currentState == GameState::CREDITS) {
-            handleCreditsInput(*event);
-        } else if (currentState == GameState::GAME_OVER) { 
-            gameOver.handleInput(*event);
-        }
-    }
+// --- CARRO JUGADOR 2 (Carril de abajo) ---
+if (p2 >= 0 && p2 < rutasCarros.size()) {
+    (void)carro2Texture.loadFromFile(rutasCarros[p2]);
+    carro2Sprite.setTexture(carro2Texture, true);
+    
+    sf::FloatRect bounds2 = carro2Sprite.getLocalBounds();
+    carro2Sprite.setOrigin(sf::Vector2f(bounds2.size.x / 2.0f, bounds2.size.y / 2.0f));
+    carro2Sprite.setRotation(sf::degrees(270.0f));
+
+    float escalaX2 = anchoDeseado / bounds2.size.x;
+    float escalaY2 = largoDeseado / bounds2.size.y;
+    carro2Sprite.setScale(sf::Vector2f(escalaX2, escalaY2));
+    carro2Sprite.setPosition(sf::Vector2f(472.0f, 161.0f));
+}
+}
+}
+}
 }
 
 void Game::handleSplashInput(const sf::Event& event) {
@@ -278,30 +277,31 @@ void Game::handleCharacterSelectionInput(const sf::Event& event) {
         currentState = GameState::CAR_SELECTION;
         carSelectionScreen.reset();
         
-        int charP1 = characterSelectionScreen.getPlayer1Selection();
-        int charP2 = characterSelectionScreen.getPlayer2Selection();
-
-        std::cout << "DEBUG Selección - P1 eligio indice: " << charP1 << " | P2 eligio indice: " << charP2 << std::endl;
+        // --- TRUCO: Intercambiamos las lecturas para romper la inversión ---
+        int charP1 = characterSelectionScreen.getPlayer2Selection();
+        int charP2 = characterSelectionScreen.getPlayer1Selection();
 
         std::vector<std::string> rutasPersonajes = {
-            "assets/poeta.png", 
-            "assets/mecha corta.jpeg",
-            "assets/licenciado.png",
-            "assets/mamado.png",
-            "assets/programador.png",
-            "assets/Salta montes.jpeg",
-            "assets/Vaquero.png",
-            "assets/fierrolais.jpeg"
+            "assets/poeta.png",         // 0
+            "assets/mecha corta.jpeg",  // 1
+            "assets/licenciado.png",    // 2
+            "assets/mamado.png",        // 3
+            "assets/programador.png",   // 4
+            "assets/Salta montes.jpeg", // 5
+            "assets/Vaquero.png",       // 6
+            "assets/fierrolais.jpeg",   // 7
+            "assets/alucin.png",        // 8
+            "assets/checo perez.png"    // 9
         };
 
-        // --- PROCESAR TEXTURA JUGADOR 1 ---
-        std::string rutaFinalP1 = "assets/poeta.png"; 
-        if (charP1 >= 0 && charP1 < rutasPersonajes.size()) {
-            rutaFinalP1 = rutasPersonajes[charP1];
-        }
-        
+        if (charP1 >= rutasPersonajes.size()) charP1 = rutasPersonajes.size() - 1;
+        if (charP2 >= rutasPersonajes.size()) charP2 = rutasPersonajes.size() - 1;
+        if (charP1 < 0) charP1 = 0;
+        if (charP2 < 0) charP2 = 0;
+
+        // Procesar foto de la izquierda (Ahora será el verdadero P1)
+        std::string rutaFinalP1 = rutasPersonajes[charP1];
         if (!hudCharTexP1.loadFromFile(rutaFinalP1)) {
-            std::cout << "ADVERTENCIA: No se pudo cargar " << rutaFinalP1 << ". Usando respaldo." << std::endl;
             (void)hudCharTexP1.loadFromFile("assets/poeta.png"); 
         }
         hudCharSprP1.setTexture(hudCharTexP1, true);
@@ -310,14 +310,9 @@ void Game::handleCharacterSelectionInput(const sf::Event& event) {
             hudCharSprP1.setScale(sf::Vector2f(50.0f / boundsP1.size.x, 50.0f / boundsP1.size.y));
         }
 
-        // --- PROCESAR TEXTURA JUGADOR 2 ---
-        std::string rutaFinalP2 = "assets/poeta.png"; 
-        if (charP2 >= 0 && charP2 < rutasPersonajes.size()) {
-            rutaFinalP2 = rutasPersonajes[charP2];
-        }
-        
+        // Procesar foto de la derecha (Ahora será el verdadero P2)
+        std::string rutaFinalP2 = rutasPersonajes[charP2];
         if (!hudCharTexP2.loadFromFile(rutaFinalP2)) {
-            std::cout << "ADVERTENCIA: No se pudo cargar " << rutaFinalP2 << ". Usando respaldo." << std::endl;
             (void)hudCharTexP2.loadFromFile("assets/poeta.png");
         }
         hudCharSprP2.setTexture(hudCharTexP2, true);
@@ -325,8 +320,6 @@ void Game::handleCharacterSelectionInput(const sf::Event& event) {
         if (boundsP2.size.x > 0 && boundsP2.size.y > 0) {
             hudCharSprP2.setScale(sf::Vector2f(50.0f / boundsP2.size.x, 50.0f / boundsP2.size.y));
         }
-
-        std::cout << "Seleccionando carros..." << std::endl;
     }
 }
 
