@@ -282,16 +282,16 @@ void Game::handleCharacterSelectionInput(const sf::Event& event) {
         int charP2 = characterSelectionScreen.getPlayer1Selection();
 
         std::vector<std::string> rutasPersonajes = {
-            "assets/poeta.png",         // 0
-            "assets/mecha corta.jpeg",  // 1
-            "assets/licenciado.png",    // 2
-            "assets/mamado.png",        // 3
-            "assets/programador.png",   // 4
-            "assets/Salta montes.jpeg", // 5
-            "assets/Vaquero.png",       // 6
-            "assets/fierrolais.jpeg",   // 7
-            "assets/alucin.png",        // 8
-            "assets/checo perez.png"    // 9
+            "assets/mecha corta.jpeg",         // 0
+            "assets/alucin.png",         // 1
+            "assets/checo perez.png" ,    // 2
+            "assets/licenciado.png",        // 3
+            "assets/poeta.png",   // 4
+            "assets/programador.png", // 5
+            "assets/Salta montes.jpeg",       // 6
+            "assets/Vaquero.png",   // 7
+            "assets/mamado.png",        // 8
+            "assets/fierrolais.jpeg"   // 9
         };
 
         if (charP1 >= rutasPersonajes.size()) charP1 = rutasPersonajes.size() - 1;
