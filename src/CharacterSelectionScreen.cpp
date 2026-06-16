@@ -3,15 +3,15 @@
 #include <sstream>
 
 bool CharacterSelectionScreen::loadFont() {
-    font = std::make_shared<sf::Font>();
     std::vector<std::string> fontPaths = {
+        "assets/arial.ttf", // Siempre es bueno buscar en tu carpeta primero
         "C:\\Windows\\Fonts\\arial.ttf",
         "C:\\Windows\\Fonts\\Arial.ttf",
         "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
     };
     
     for (const auto& path : fontPaths) {
-        if (font->openFromFile(path)) {
+        if (font.openFromFile(path)) {
             return true;
         }
     }
@@ -21,10 +21,9 @@ bool CharacterSelectionScreen::loadFont() {
 
 void CharacterSelectionScreen::initializeCharacters() {
     characters.clear();
-    // 1. Aquí están los 10 nombres de los personajes
     std::vector<std::string> names = {"Mecha\nCorta", "Alucin", "Checo\nPerez", "Licenciado", "Poeta", "Programador", "Salta\nmontes", "Vaquero", "Chenms\nMamado", "Fierrolais"};
     
-    for (int i = 0; i < 10; ++i) { // Cambiado a 10
+    for (int i = 0; i < 10; ++i) { 
         Character c;
         c.id = i;
         c.name = names[i];
@@ -32,9 +31,11 @@ void CharacterSelectionScreen::initializeCharacters() {
     }
 }
 
+// ¡Magia aquí! Le pasamos la 'font' a los textos justo antes de que el constructor arranque
 CharacterSelectionScreen::CharacterSelectionScreen() 
     : player1Selection(0), player2Selection(0), 
-      player1Confirmed(false), player2Confirmed(false) {
+      player1Confirmed(false), player2Confirmed(false),
+      titleText(font), player1StatusText(font), player2StatusText(font) {
     
     if (!loadFont()) {
         std::cerr << "Error: No se pudo cargar la fuente" << std::endl;
@@ -42,29 +43,33 @@ CharacterSelectionScreen::CharacterSelectionScreen()
     
     initializeCharacters();
     
-    titleText = std::make_shared<sf::Text>(*font, "SELECCIONA TU PERSONAJE", 40);
-    titleText->setFillColor(sf::Color::White);
-    titleText->setPosition(sf::Vector2f(250, 50));
+    titleText.setString("SELECCIONA TU PERSONAJE");
+    titleText.setCharacterSize(40);
+    titleText.setFillColor(sf::Color::White);
+    titleText.setPosition(sf::Vector2f(250, 50));
     
     // Crear textos para cada personaje acomodados en la cuadrícula
     for (int i = 0; i < 10; ++i) {
-        sf::Text charText(*font, characters[i].name, 18); // Letra un poco más chica para que quepa
-        float posX = 100.0f + (i % 5) * 140.0f; // 5 columnas
-        float posY = 150.0f + (i / 5) * 180.0f; // 2 filas
+        characterTexts.emplace_back(font); // Nace pegado a la fuente
+        characterTexts[i].setString(characters[i].name);
+        characterTexts[i].setCharacterSize(18); 
+        float posX = 100.0f + (i % 5) * 140.0f; 
+        float posY = 150.0f + (i / 5) * 180.0f; 
         
-        charText.setPosition(sf::Vector2f(posX, posY + 110.0f)); // Texto abajito del cuadro
-        charText.setFillColor(sf::Color::White);
-        characterTexts.push_back(charText);
+        characterTexts[i].setPosition(sf::Vector2f(posX, posY + 110.0f)); 
+        characterTexts[i].setFillColor(sf::Color::White);
     }
     
     // Textos de estado
-    player1StatusText = std::make_shared<sf::Text>(*font, "", 20);
-    player1StatusText->setFillColor(sf::Color::Blue);
-    player1StatusText->setPosition(sf::Vector2f(50, 550)); // Movido más abajo para que no estorbe
+    player1StatusText.setString("");
+    player1StatusText.setCharacterSize(20);
+    player1StatusText.setFillColor(sf::Color::Blue);
+    player1StatusText.setPosition(sf::Vector2f(50, 550)); 
     
-    player2StatusText = std::make_shared<sf::Text>(*font, "", 20);
-    player2StatusText->setFillColor(sf::Color::Red);
-    player2StatusText->setPosition(sf::Vector2f(800, 550)); // Movido más abajo
+    player2StatusText.setString("");
+    player2StatusText.setCharacterSize(20);
+    player2StatusText.setFillColor(sf::Color::Red);
+    player2StatusText.setPosition(sf::Vector2f(800, 550)); 
     
     updateDisplay();
 }
@@ -87,8 +92,7 @@ void CharacterSelectionScreen::reset() {
 }
 
 void CharacterSelectionScreen::updateDisplay() {
-    // Actualizar colores de personajes basado en selección
-    for (int i = 0; i < 10; ++i) { // Cambiado a 10
+    for (int i = 0; i < 10; ++i) { 
         if (i == player1Selection || i == player2Selection) {
             if (i == player1Selection && i == player2Selection) {
                 characterTexts[i].setFillColor(sf::Color::Cyan);
@@ -103,25 +107,25 @@ void CharacterSelectionScreen::updateDisplay() {
     }
     
     std::string p1Status = player1Name + (player1Confirmed ? " (Confirmado)" : "");
-    player1StatusText->setString(p1Status);
+    player1StatusText.setString(p1Status);
     
     std::string p2Status = player2Name + (player2Confirmed ? " (Confirmado)" : "");
-    player2StatusText->setString(p2Status);
+    player2StatusText.setString(p2Status);
 }
 
 void CharacterSelectionScreen::handleInput(const sf::Event& event) {
     if (const auto* keyEvent = event.getIf<sf::Event::KeyPressed>()) {
         
-        // Controles Jugador 1 (WASD) - Ahora en cuadrícula
+        // Controles Jugador 1 (WASD) 
         if (!player1Confirmed) {
-            if (keyEvent->code == sf::Keyboard::Key::W && player1Selection >= 5) player1Selection -= 5; // Sube fila
-            if (keyEvent->code == sf::Keyboard::Key::S && player1Selection < 5) player1Selection += 5;  // Baja fila
-            if (keyEvent->code == sf::Keyboard::Key::A && (player1Selection % 5) > 0) player1Selection--; // Izquierda
-            if (keyEvent->code == sf::Keyboard::Key::D && (player1Selection % 5) < 4) player1Selection++; // Derecha
+            if (keyEvent->code == sf::Keyboard::Key::W && player1Selection >= 5) player1Selection -= 5; 
+            if (keyEvent->code == sf::Keyboard::Key::S && player1Selection < 5) player1Selection += 5;  
+            if (keyEvent->code == sf::Keyboard::Key::A && (player1Selection % 5) > 0) player1Selection--; 
+            if (keyEvent->code == sf::Keyboard::Key::D && (player1Selection % 5) < 4) player1Selection++; 
             updateDisplay();
         }
         
-        // Controles Jugador 2 (Flechas) - Ahora en cuadrícula
+        // Controles Jugador 2 (Flechas) 
         if (!player2Confirmed) {
             if (keyEvent->code == sf::Keyboard::Key::Up && player2Selection >= 5) player2Selection -= 5;
             if (keyEvent->code == sf::Keyboard::Key::Down && player2Selection < 5) player2Selection += 5;
@@ -148,20 +152,20 @@ bool CharacterSelectionScreen::areBothConfirmed() const {
 }
 
 void CharacterSelectionScreen::render(sf::RenderWindow& window) {
-   static sf::Texture alucinTexture; // Eliminamos el static sf::Sprite de aquí
-   static sf::Texture mechaTexture; // Nueva textura para Mecha Corta
-   static sf::Texture checoTexture; // <- ¡Agrega esta nueva textura para Checo Pérez!
-   static sf::Texture licenciadoTexture; // <- ¡El Licenciado se une al equipo!
-   static sf::Texture poetaTexture; // <- ¡Llegó el Poeta!
-   static sf::Texture programadorTexture; // <- ¡El Programador entra en acción!
-   static sf::Texture saltamontesTexture; // <- ¡Salta montes al volante!
-   static sf::Texture vaqueroTexture; // <- ¡Llegó el Vaquero!
-   static sf::Texture mamadoTexture; // <- ¡Llegó el músculo a la carrera!
-   static sf::Texture fierrolaisTexture; // <- ¡El protagonista entra a la pista!
+    static sf::Texture alucinTexture; 
+    static sf::Texture mechaTexture; 
+    static sf::Texture checoTexture; 
+    static sf::Texture licenciadoTexture; 
+    static sf::Texture poetaTexture; 
+    static sf::Texture programadorTexture; 
+    static sf::Texture saltamontesTexture; 
+    static sf::Texture vaqueroTexture; 
+    static sf::Texture mamadoTexture; 
+    static sf::Texture fierrolaisTexture; 
     static bool textureLoaded = false;
 
     if (!textureLoaded) {
-     alucinTexture.loadFromFile("assets/alucin.png");
+        alucinTexture.loadFromFile("assets/alucin.png");
         mechaTexture.loadFromFile("assets/mecha corta.jpeg");  
         checoTexture.loadFromFile("assets/checo perez.png"); 
         licenciadoTexture.loadFromFile("assets/licenciado.jpeg"); 
@@ -171,120 +175,109 @@ void CharacterSelectionScreen::render(sf::RenderWindow& window) {
         vaqueroTexture.loadFromFile("assets/Vaquero.png");
         mamadoTexture.loadFromFile("assets/mamado.png");
         fierrolaisTexture.loadFromFile("assets/fierrolais.jpeg");
-            textureLoaded = true;
-        
+        textureLoaded = true;
     }
+    
     window.clear(sf::Color::Black);
     
-    if (titleText) {
-        window.draw(*titleText);
-    }
+    // Ahora los textos se dibujan directo, sin asterisco (*)
+    window.draw(titleText);
     
-    // Dibujar los 10 personajes en cuadrícula
-    for (int i = 0; i < 10; ++i) { // Cambiado a 10
-        float posX = 100.0f + (i % 5) * 140.0f; // Matemáticas de las columnas
-        float posY = 150.0f + (i / 5) * 180.0f; // Matemáticas de las filas
+    for (int i = 0; i < 10; ++i) { 
+        float posX = 100.0f + (i % 5) * 140.0f; 
+        float posY = 150.0f + (i / 5) * 180.0f; 
         
-        sf::RectangleShape box(sf::Vector2f(100.0f, 100.0f)); // Tamaño fijo del cuadro
+        sf::RectangleShape box(sf::Vector2f(100.0f, 100.0f)); 
         box.setPosition(sf::Vector2f(posX, posY));
         
-        // Color según selección
         if (i == player1Selection && i == player2Selection) {
-            box.setFillColor(sf::Color::Cyan);  // Ambos apuntan
+            box.setFillColor(sf::Color::Cyan);  
         } else if (i == player1Selection) {
-            box.setFillColor(sf::Color::Blue);  // Solo P1
+            box.setFillColor(sf::Color::Blue);  
         } else if (i == player2Selection) {
-            box.setFillColor(sf::Color::Red);   // Solo P2
+            box.setFillColor(sf::Color::Red);   
         } else {
-            box.setFillColor(sf::Color(50, 50, 50));  // Gris oscuro para los no seleccionados
+            box.setFillColor(sf::Color(50, 50, 50));  
         }
         
         box.setOutlineThickness(2.f);
         box.setOutlineColor(sf::Color::White);
         
         window.draw(box);
-    // Si es el cuadro 0 (Mecha Corta) y la textura cargó bien
-    if (i == 0 && textureLoaded) {
-        sf::Sprite mechaSprite(mechaTexture); 
-        mechaSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
-        mechaSprite.setPosition(sf::Vector2f(posX, posY)); 
-        window.draw(mechaSprite);
+        
+        if (i == 0 && textureLoaded) {
+            sf::Sprite mechaSprite(mechaTexture); 
+            mechaSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
+            mechaSprite.setPosition(sf::Vector2f(posX, posY)); 
+            window.draw(mechaSprite);
+        }
+        if (i == 1 && textureLoaded) {
+            sf::Sprite alucinSprite(alucinTexture); 
+            alucinSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
+            alucinSprite.setPosition(sf::Vector2f(posX, posY)); 
+            window.draw(alucinSprite);
+        }
+        if (i == 2 && textureLoaded) {
+            sf::Sprite checoSprite(checoTexture); 
+            checoSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
+            checoSprite.setPosition(sf::Vector2f(posX, posY)); 
+            window.draw(checoSprite);
+        }
+        if (i == 3 && textureLoaded) {
+            sf::Sprite licenciadoSprite(licenciadoTexture); 
+            licenciadoSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
+            licenciadoSprite.setPosition(sf::Vector2f(posX, posY)); 
+            window.draw(licenciadoSprite);
+        }
+        if (i == 4 && textureLoaded) {
+            sf::Sprite poetaSprite(poetaTexture); 
+            poetaSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
+            poetaSprite.setPosition(sf::Vector2f(posX, posY)); 
+            window.draw(poetaSprite);
+        }
+        if (i == 5 && textureLoaded) {
+            sf::Sprite programadorSprite(programadorTexture); 
+            programadorSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
+            programadorSprite.setPosition(sf::Vector2f(posX, posY)); 
+            window.draw(programadorSprite);
+        }
+        if (i == 6 && textureLoaded) {
+            sf::Sprite saltamontesSprite(saltamontesTexture); 
+            saltamontesSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
+            saltamontesSprite.setPosition(sf::Vector2f(posX, posY)); 
+            window.draw(saltamontesSprite);
+        }
+        if (i == 7 && textureLoaded) {
+            sf::Sprite vaqueroSprite(vaqueroTexture); 
+            vaqueroSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
+            vaqueroSprite.setPosition(sf::Vector2f(posX, posY)); 
+            window.draw(vaqueroSprite);
+        }
+        if (i == 8 && textureLoaded) {
+            sf::Sprite mamadoSprite(mamadoTexture); 
+            mamadoSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
+            mamadoSprite.setPosition(sf::Vector2f(posX, posY)); 
+            window.draw(mamadoSprite);
+        }
+        if (i == 9 && textureLoaded) {
+            sf::Sprite fierrolaisSprite(fierrolaisTexture); 
+            fierrolaisSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
+            fierrolaisSprite.setPosition(sf::Vector2f(posX, posY)); 
+            window.draw(fierrolaisSprite);
+        }  
     }
-    // Si es el cuadro 1 (Alucin) y la textura cargó bien, lo dibujamos
-    if (i == 1 && textureLoaded) {
-        sf::Sprite alucinSprite(alucinTexture); // Creamos el sprite directamente con su textura
-        alucinSprite.setScale(sf::Vector2f(0.5f, 0.5f)); // Usamos sf::Vector2f para la escala
-        alucinSprite.setPosition(sf::Vector2f(posX, posY)); // Usamos sf::Vector2f para la posición
-        window.draw(alucinSprite);
-    }
-    // Si es el cuadro 2 (Checo Pérez) y la textura cargó bien
-    if (i == 2 && textureLoaded) {
-        sf::Sprite checoSprite(checoTexture); 
-        checoSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
-        checoSprite.setPosition(sf::Vector2f(posX, posY)); 
-        window.draw(checoSprite);
-    }
-    // Si es el cuadro 3 (Licenciado) y la textura cargó bien
-    if (i == 3 && textureLoaded) {
-        sf::Sprite licenciadoSprite(licenciadoTexture); 
-        licenciadoSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
-        licenciadoSprite.setPosition(sf::Vector2f(posX, posY)); 
-        window.draw(licenciadoSprite);
-    }
-    // Si es el cuadro 4 (Poeta) y la textura cargó bien
-    if (i == 4 && textureLoaded) {
-        sf::Sprite poetaSprite(poetaTexture); 
-        poetaSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
-        poetaSprite.setPosition(sf::Vector2f(posX, posY)); 
-        window.draw(poetaSprite);
-    }
-    // Si es el cuadro 5 (Programador) y la textura cargó bien
-    if (i == 5 && textureLoaded) {
-        sf::Sprite programadorSprite(programadorTexture); 
-        programadorSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
-        programadorSprite.setPosition(sf::Vector2f(posX, posY)); 
-        window.draw(programadorSprite);
-    }
-    // Si es el cuadro 6 (Salta montes) y la textura cargó bien
-    if (i == 6 && textureLoaded) {
-        sf::Sprite saltamontesSprite(saltamontesTexture); 
-        saltamontesSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
-        saltamontesSprite.setPosition(sf::Vector2f(posX, posY)); 
-        window.draw(saltamontesSprite);
-    }
-    // Si es el cuadro 7 (Vaquero) y la textura cargó bien
-    if (i == 7 && textureLoaded) {
-        sf::Sprite vaqueroSprite(vaqueroTexture); 
-        vaqueroSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
-        vaqueroSprite.setPosition(sf::Vector2f(posX, posY)); 
-        window.draw(vaqueroSprite);
-    }
-    // Si es el cuadro 8 (Chenms Mamado) y la textura cargó bien
-    if (i == 8 && textureLoaded) {
-        sf::Sprite mamadoSprite(mamadoTexture); 
-        mamadoSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
-        mamadoSprite.setPosition(sf::Vector2f(posX, posY)); 
-        window.draw(mamadoSprite);
-    }
-    // Si es el cuadro 9 (Fierrolais) y la textura cargó bien
-    if (i == 9 && textureLoaded) {
-        sf::Sprite fierrolaisSprite(fierrolaisTexture); 
-        fierrolaisSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
-        fierrolaisSprite.setPosition(sf::Vector2f(posX, posY)); 
-        window.draw(fierrolaisSprite);
-    }  
- }
     
-    // Dibujar texto de personajes
     for (const auto& charText : characterTexts) {
         window.draw(charText);
     }
     
-    if (player1StatusText) window.draw(*player1StatusText);
-    if (player2StatusText) window.draw(*player2StatusText);
+    window.draw(player1StatusText);
+    window.draw(player2StatusText);
     
     // Instrucciones
-    sf::Text instructions(*font, "P1: WASD/Enter | P2: Flechas/Enter", 20);
+    sf::Text instructions(font);
+    instructions.setString("P1: WASD/Enter | P2: Flechas/Enter");
+    instructions.setCharacterSize(20);
     instructions.setFillColor(sf::Color::Green);
     instructions.setPosition(sf::Vector2f(250, 650));
     window.draw(instructions);

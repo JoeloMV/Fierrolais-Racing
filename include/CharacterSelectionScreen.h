@@ -5,7 +5,6 @@
 #include <SFML/Window.hpp>
 #include <string>
 #include <vector>
-#include <memory>
 
 struct Character {
     int id;
@@ -14,7 +13,7 @@ struct Character {
 
 class CharacterSelectionScreen {
 private:
-    std::shared_ptr<sf::Font> font;
+    sf::Font font; // Ahora la fuente es un objeto directo
     sf::Texture puercheTexture;
     std::vector<Character> characters;
     
@@ -26,10 +25,11 @@ private:
     std::string player1Name;
     std::string player2Name;
     
-    std::shared_ptr<sf::Text> titleText;
+    // Quitamos los shared_ptr de los textos
+    sf::Text titleText;
     std::vector<sf::Text> characterTexts;
-    std::shared_ptr<sf::Text> player1StatusText;
-    std::shared_ptr<sf::Text> player2StatusText;
+    sf::Text player1StatusText;
+    sf::Text player2StatusText;
     
     static const int NUM_CHARACTERS = 5;
     static const int CHARACTER_BOX_SIZE = 60;
