@@ -21,7 +21,7 @@ bool Menu::loadFont() {
     return false;
 }
 
-Menu::Menu() : selectedIndex(0), normalColor(sf::Color::White), selectedColor(sf::Color::Yellow) {
+Menu::Menu() : selectedIndex(0), normalColor(sf::Color::White), selectedColor(sf::Color::Yellow), backgroundSprite(nullptr) {
     // Cargar la fuente
     if (!loadFont()) {
         std::cerr << "Advertencia: No se cargó la fuente correctamente" << std::endl;
@@ -46,11 +46,16 @@ Menu::Menu() : selectedIndex(0), normalColor(sf::Color::White), selectedColor(sf
         text.setFillColor((i == 0) ? selectedColor : normalColor);
         menuItems.push_back(text);
     }
-}
 
+// === CARGAR EL FONDO DEL MENÚ PRINCIPAL ===
+        if (!backgroundTexture.loadFromFile("assets/fondo_menu.png")) {
+         std::cerr << "Error: No se pudo cargar assets/fondo_menu.png" << std::endl;
+    } else {
+        backgroundSprite = new sf::Sprite(backgroundTexture);
+    }
+}
 Menu::~Menu() {
 }
-
 void Menu::handleInput(const sf::Event& event) {
     if (const auto* keyEvent = event.getIf<sf::Event::KeyPressed>()) {
         if (keyEvent->code == sf::Keyboard::Key::Up) {
@@ -75,7 +80,10 @@ void Menu::update() {
 
 void Menu::render(sf::RenderWindow& window) {
     window.clear(sf::Color::Black);
-    
+    // Dibujar el fondo espectacular del Mustang
+    if (backgroundSprite) {
+        window.draw(*backgroundSprite);
+    }
     if (titleText) {
         window.draw(*titleText);
     }

@@ -15,7 +15,9 @@ private:
     sf::Color normalColor;
     sf::Color selectedColor;
     std::shared_ptr<sf::Text> titleText;
-    
+    // --- NUEVAS VARIABLES PARA EL FONDO ---
+    sf::Texture backgroundTexture;
+    sf::Sprite* backgroundSprite;
     bool loadFont();
     
 public:
