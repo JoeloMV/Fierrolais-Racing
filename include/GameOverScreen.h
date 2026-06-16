@@ -1,6 +1,6 @@
 #ifndef GAMEOVERSCREEN_H
 #define GAMEOVERSCREEN_H
-
+#include <optional>
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <string>
@@ -12,7 +12,8 @@ private:
     std::shared_ptr<sf::Font> font;
     sf::Text titleText;
     sf::Text winnerText;
-    
+    std::optional<sf::Sprite> winnerSprite;
+
     // Nuevos textos para las estadísticas
     sf::Text p1StatsText; 
     sf::Text p2StatsText;
@@ -32,6 +33,8 @@ public:
 
     void setWinner(const std::string& winnerName); 
     
+    void setWinnerImage(const sf::Texture& texture);
+
     // Nueva función para pasarle los tiempos de las vueltas
     void setPlayerStats(const std::vector<float>& p1Laps, const std::vector<float>& p2Laps);
     
