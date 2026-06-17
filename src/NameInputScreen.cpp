@@ -3,9 +3,11 @@
 
 bool NameInputScreen::loadFont() {
     font = std::make_shared<sf::Font>();
+    
     std::vector<std::string> fontPaths = {
+        "assets/fonts/arial.ttf", // <-- CAMBIA ESTO POR EL NOMBRE DE TU ARCHIVO .TTF
+        "assets/arial.ttf",           // Fallback de tu carpeta
         "C:\\Windows\\Fonts\\arial.ttf",
-        "C:\\Windows\\Fonts\\Arial.ttf",
         "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
     };
     
@@ -18,22 +20,29 @@ bool NameInputScreen::loadFont() {
     return false;
 }
 
-NameInputScreen::NameInputScreen() : currentPlayer(1), enterPressed(false){
+NameInputScreen::NameInputScreen() : currentPlayer(1), enterPressed(false) {
     if (!loadFont()) {
         std::cerr << "Error: No se pudo cargar la fuente" << std::endl;
     }
     
+darkPanel.setSize(sf::Vector2f({900.0f, 550.0f})); 
+    // Posición en la pantalla (X, Y) para que abarque los textos
+    darkPanel.setPosition(sf::Vector2f({150.0f, 100.0f}));
+    // Color Negro (0,0,0) con opacidad de 180
+    darkPanel.setFillColor(sf::Color(0, 0, 0, 180));
+
+    // Le pasamos la fuente (*font), el string inicial ("") y el tamaño directamente
     titleText = std::make_shared<sf::Text>(*font, "", 50);
-    titleText->setPosition(sf::Vector2f(250, 150));
+    titleText->setPosition(sf::Vector2f({250.0f, 150.0f}));
     
     inputText = std::make_shared<sf::Text>(*font, "", 40);
-    inputText->setPosition(sf::Vector2f(300, 300));
+    inputText->setPosition(sf::Vector2f({300.0f, 300.0f}));
     
     instructionText = std::make_shared<sf::Text>(*font, "Presiona ENTER para confirmar", 25);
     instructionText->setFillColor(sf::Color::Cyan);
-    instructionText->setPosition(sf::Vector2f(250, 600));
+    instructionText->setPosition(sf::Vector2f({250.0f, 600.0f}));
 
-// === INSTRUCCIÓN PARA CAMBIAR EL FONDO ===
+    // === INSTRUCCIÓN PARA CAMBIAR EL FONDO ===
     if (this->backgroundTexture.loadFromFile("assets/images/fondos/fondo_ingreso_nombre.png")) {
         if (this->backgroundSprite) {
             delete this->backgroundSprite;
@@ -42,17 +51,20 @@ NameInputScreen::NameInputScreen() : currentPlayer(1), enterPressed(false){
         this->backgroundSprite = new sf::Sprite(this->backgroundTexture);
     }
 }
+
 NameInputScreen::~NameInputScreen() {
     if (this->backgroundSprite) {
         delete this->backgroundSprite;
     }
 }
+
 void NameInputScreen::reset(int player) {
     currentPlayer = player;
     playerName.clear();
     enterPressed = false;
     updateDisplay();
 }
+
 void NameInputScreen::updateDisplay() {
     titleText->setString("Jugador " + std::to_string(currentPlayer) + " - Ingresa tu nombre");
     if (currentPlayer == 1) {
@@ -105,6 +117,9 @@ void NameInputScreen::render(sf::RenderWindow& window) {
     if (backgroundSprite) {
         window.draw(*backgroundSprite);
     }
+
+    window.draw(darkPanel);
+
     if (titleText) window.draw(*titleText);
     if (inputText) window.draw(*inputText);
     if (instructionText) window.draw(*instructionText);
