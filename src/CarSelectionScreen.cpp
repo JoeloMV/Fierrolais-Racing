@@ -2,30 +2,18 @@
 #include <iostream>
 
 CarSelectionScreen::CarSelectionScreen() {
-    // === CARGAR EL FONDO ===
-    if (bgTexture.loadFromFile("assets/bg_car_selection.jpg")) {
-        bgSprite.emplace(bgTexture);
-        
-        sf::FloatRect bounds = bgSprite->getLocalBounds();
-        bgSprite->setScale(sf::Vector2f(1200.0f / bounds.size.x, 700.0f / bounds.size.y));
-    } else {
-        std::cerr << "Advertencia: No se pudo cargar assets/bg_car_selection.jpg\n";
-    }
-    // =======================
-
     player1Selection = 0;
     player2Selection = 1;
     player1Confirmed = false;
     player2Confirmed = false;
 
     font = std::make_shared<sf::Font>();
-    loadFont(); 
+    loadFont();
 
     titleText = std::make_shared<sf::Text>(*font);
     player1StatusText = std::make_shared<sf::Text>(*font);
     player2StatusText = std::make_shared<sf::Text>(*font);
 
-    // Asignamos los textos principales de forma segura
     titleText->setString("SELECCIONA TU NAVE PARA LA CARRERA");
     titleText->setCharacterSize(50);
     titleText->setFillColor(sf::Color::Blue);
@@ -39,14 +27,17 @@ CarSelectionScreen::CarSelectionScreen() {
     player2StatusText->setPosition({600.0f, 500.0f});
     player2StatusText->setFillColor(sf::Color::Red);
 
-    initializeCars();
+    initializeCars(); // Aquí solo creamos los textos
     updateDisplay();
 }
 
 bool CarSelectionScreen::loadFont() {
-    if (!font->openFromFile("C:\\Windows\\Fonts\\arial.ttf")) {
-        std::cerr << "Error al cargar la fuente\n";
-        return false;
+    if (!font->openFromFile("assets/arial.ttf")) { 
+        std::cerr << "Advertencia: No se encontró en assets, intentando usar la de Windows...\n";
+        if (!font->openFromFile("C:\\Windows\\Fonts\\arial.ttf")) {
+            std::cerr << "Error crítico: Definitivamente no se pudo cargar arial.ttf\n";
+            return false;
+        }
     }
     return true;
 }
@@ -57,8 +48,8 @@ void CarSelectionScreen::initializeCars() {
         {3, "Puerche 9-Once"}, {4, "Dodge Chanclenger"}
     };
 
-    carTexts.clear(); // Limpiamos la memoria por si acaso
-    // Usamos cars.size() en lugar de NUM_CARS para evitar el Segmentation Fault
+    carTexts.clear(); 
+    
     for (size_t i = 0; i < cars.size(); ++i) {
         sf::Text text(*font); 
         text.setString(cars[i].name);
@@ -68,17 +59,16 @@ void CarSelectionScreen::initializeCars() {
         float x = 0.0f;
         float y = 0.0f;
 
-        // Posiciones manuales fijas para que todo quede centrado y arriba
+        // Posiciones manuales fijas
         switch(i) {
-            case 0: x = 120.0f; y = 180.0f; break; // Fierrari (Arriba Izquierda)
-            case 1: x = 440.0f; y = 180.0f; break; // Lamborgota (Arriba Centro)
-            case 2: x = 760.0f; y = 180.0f; break; // Ford (Arriba Derecha)
-            case 3: x = 280.0f; y = 380.0f; break; // Puerche (Abajo Izquierda centrado)
-            case 4: x = 600.0f; y = 380.0f; break; // Dodge (Abajo Derecha centrado)
+            case 0: x = 120.0f; y = 180.0f; break; // Fierrari 
+            case 1: x = 440.0f; y = 180.0f; break; // Lamborgota 
+            case 2: x = 760.0f; y = 180.0f; break; // Ford 
+            case 3: x = 280.0f; y = 380.0f; break; // Puerche 
+            case 4: x = 600.0f; y = 380.0f; break; // Dodge 
         }
 
         text.setPosition(sf::Vector2f(x, y));
-        
         carTexts.push_back(text);
     }
 }
@@ -97,7 +87,7 @@ void CarSelectionScreen::updateDisplay() {
 
 void CarSelectionScreen::handleInput(const sf::Event& event) {
     if (const auto* keyEvent = event.getIf<sf::Event::KeyPressed>()) {
-        int maxCars = cars.size(); // Tope dinámico seguro
+        int maxCars = cars.size(); 
         if (maxCars == 0) return;
 
         // JUGADOR 1 (WASD)
@@ -123,69 +113,65 @@ void CarSelectionScreen::handleInput(const sf::Event& event) {
 
 void CarSelectionScreen::render(sf::RenderWindow& window) {
     static bool texturesLoaded = false;
+    
+    // === CARGA SEGURA: Solo se ejecuta cuando la ventana ya existe ===
     if (!texturesLoaded) {
-        puercheTexture.loadFromFile("assets/puerche.png");
-        if (!puercheTexture.loadFromFile("assets/puerche.png")) {
-            std::cerr << "Error: No se pudo cargar assets/puerche.png" << std::endl;
+        
+        // 1. Cargar fondo
+        if (bgTexture.loadFromFile("assets/bg_car_selection.jpg")) {
+            bgSprite.emplace(bgTexture);
+            sf::FloatRect bounds = bgSprite->getLocalBounds();
+            bgSprite->setScale(sf::Vector2f(1200.0f / bounds.size.x, 700.0f / bounds.size.y));
         }
+
+        // 2. Cargar texturas de los carros
         fierrariTexture.loadFromFile("assets/fierrari.png");
         lamborgotaTexture.loadFromFile("assets/lamborgota.png");
         fordTexture.loadFromFile("assets/ford.png");
+        puercheTexture.loadFromFile("assets/puerche.png");
         dodgeTexture.loadFromFile("assets/dodge.png");
+
+        // 3. Crear los sprites de los carros estacionados
+        stationaryCarSprites.clear();
+        for (size_t i = 0; i < carTexts.size(); ++i) {
+            sf::Texture* carTexture = nullptr;
+            switch(i) {
+                case 0: carTexture = &fierrariTexture; break;
+                case 1: carTexture = &lamborgotaTexture; break;
+                case 2: carTexture = &fordTexture; break;
+                case 3: carTexture = &puercheTexture; break;
+                case 4: carTexture = &dodgeTexture; break;
+            }
+
+            if (carTexture) {
+                sf::Sprite carSprite(*carTexture);
+                carSprite.setScale(sf::Vector2f(0.4f, 0.4f)); 
+                float x = carTexts[i].getPosition().x;
+                float y = carTexts[i].getPosition().y - 120;
+                carSprite.setPosition(sf::Vector2f(x, y));
+                stationaryCarSprites.push_back(carSprite);
+            }
+        }
         texturesLoaded = true;
     }
 
-    // === DIBUJAR FONDO ===
+    // === DIBUJO EN PANTALLA ===
     if (bgSprite.has_value()) {
         window.draw(bgSprite.value());
     }    
 
-    // 2. Dibujar los textos originales
+    // Dibujar los carros fijos
+    for (const auto& carSprite : stationaryCarSprites) {
+        window.draw(carSprite);
+    }
+
+    // Dibujar los textos
     window.draw(*titleText);
     window.draw(*player1StatusText);
     window.draw(*player2StatusText);
 
     for (const auto& text : carTexts) {
         window.draw(text);
-    }
-
-    // 3. ¡Dibujar los carros dinámicos sobre el texto seleccionado!
-    if (texturesLoaded && !carTexts.empty()) {
-        
-        // --- JUGADOR 1 ---
-        // 1. Primero creamos un "puntero" para elegir qué textura usar
-        sf::Texture* p1Texture = &puercheTexture; 
-        if (player1Selection == 0) p1Texture = &fierrariTexture;
-        else if (player1Selection == 1) p1Texture = &lamborgotaTexture;
-        else if (player1Selection == 2) p1Texture = &fordTexture;
-        else if (player1Selection == 3) p1Texture = &puercheTexture;
-        else if (player1Selection == 4) p1Texture = &dodgeTexture;
-
-        // 2. Ahora sí, creamos el sprite dándole la textura de golpe. ¡Así SFML no se queja!
-        sf::Sprite p1CarSprite(*p1Texture);
-        p1CarSprite.setScale(sf::Vector2f(0.4f, 0.4f)); 
-        float p1CarX = carTexts[player1Selection].getPosition().x;
-        float p1CarY = carTexts[player1Selection].getPosition().y - 120;
-        p1CarSprite.setPosition(sf::Vector2f(p1CarX, p1CarY));
-        window.draw(p1CarSprite);
-
-
-        // --- JUGADOR 2 ---
-        // 1. Hacemos lo mismo para el Jugador 2
-        sf::Texture* p2Texture = &lamborgotaTexture; 
-        if (player2Selection == 0) p2Texture = &fierrariTexture;
-        else if (player2Selection == 1) p2Texture = &lamborgotaTexture;
-        else if (player2Selection == 2) p2Texture = &fordTexture;
-        else if (player2Selection == 3) p2Texture = &puercheTexture;
-        else if (player2Selection == 4) p2Texture = &dodgeTexture;
-
-        // 2. Creamos el sprite del Jugador 2 con su textura directa
-        sf::Sprite p2CarSprite(*p2Texture);
-        p2CarSprite.setScale(sf::Vector2f(0.4f, 0.4f));
-        float p2CarX = carTexts[player2Selection].getPosition().x;
-        float p2CarY = carTexts[player2Selection].getPosition().y - 120;
-        p2CarSprite.setPosition(sf::Vector2f(p2CarX, p2CarY));
-        window.draw(p2CarSprite);
     }
 }
 

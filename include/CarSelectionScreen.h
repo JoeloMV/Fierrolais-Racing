@@ -17,13 +17,18 @@ class CarSelectionScreen {
 private:
     std::shared_ptr<sf::Font> font;
     std::vector<Car> cars;
+    
+    // Texturas
     sf::Texture puercheTexture;
     sf::Texture fierrariTexture;   
     sf::Texture lamborgotaTexture; 
     sf::Texture fordTexture;       
     sf::Texture dodgeTexture;      
     
-    // Aquí está el fondo ya limpio y sin duplicados
+    // Vector para guardar los sprites fijos de los carros
+    std::vector<sf::Sprite> stationaryCarSprites;
+
+    // Fondo
     sf::Texture bgTexture;
     std::optional<sf::Sprite> bgSprite;
 
@@ -37,7 +42,6 @@ private:
     std::shared_ptr<sf::Text> player1StatusText;
     std::shared_ptr<sf::Text> player2StatusText;
 
-    // Vamos a poner 6 carros para elegir
     static const int NUM_CARS = 5;
     static const int CAR_BOX_WIDTH = 120;
     static const int CAR_BOX_HEIGHT = 80;
