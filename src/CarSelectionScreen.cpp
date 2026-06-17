@@ -7,6 +7,10 @@ CarSelectionScreen::CarSelectionScreen() {
     player1Confirmed = false;
     player2Confirmed = false;
 
+    darkOverlay.setSize(sf::Vector2f(1200.0f, 700.0f));
+    darkOverlay.setPosition(sf::Vector2f(0.0f, 0.0f));
+    darkOverlay.setFillColor(sf::Color(0, 0, 0, 150));
+
     font = std::make_shared<sf::Font>();
     loadFont();
 
@@ -20,11 +24,11 @@ CarSelectionScreen::CarSelectionScreen() {
     titleText->setPosition({75.0f, 5.0f}); 
 
     player1StatusText->setCharacterSize(24);
-    player1StatusText->setPosition({50.0f, 500.0f});
+    player1StatusText->setPosition({150.0f, 630.0f});
     player1StatusText->setFillColor(sf::Color::Blue);
 
     player2StatusText->setCharacterSize(24);
-    player2StatusText->setPosition({600.0f, 500.0f});
+    player2StatusText->setPosition({850.0f, 630.0f});
     player2StatusText->setFillColor(sf::Color::Red);
 
     initializeCars(); // Aquí solo creamos los textos
@@ -43,30 +47,38 @@ bool CarSelectionScreen::loadFont() {
 }
 
 void CarSelectionScreen::initializeCars() {
+    // Current data (los nombres de tus carros)
     cars = {
         {0, "Fierrari F-Ocho"}, {1, "Lamborgota veneno"}, {2, "Ford Firulais"},
         {3, "Puerche 9-Once"}, {4, "Dodge Chanclenger"}
     };
+    carTexts.clear(); // Limpiamos el vector.
 
-    carTexts.clear(); 
-    
+    // === LÓGICA DE CENTRADO Y REUBICACIÓN EN CUADRÍCULA ===
+    // Configuración para centrar la cuadrícula de carros (3x2).
+    int numCols = 3;
+    float screenWidth = 1200.0f;
+    float colWidth = 333.0f; // 1000px de área de selección / 3 columnas.
+    float gridOffset = 100.0f; // El área oscura empieza 100px desde la izquierda.
+
     for (size_t i = 0; i < cars.size(); ++i) {
-        sf::Text text(*font); 
+        sf::Text text(*font);
         text.setString(cars[i].name);
         text.setCharacterSize(20);
         text.setFillColor(sf::Color::White);
-        
-        float x = 0.0f;
-        float y = 0.0f;
 
-        // Posiciones manuales fijas
-        switch(i) {
-            case 0: x = 120.0f; y = 180.0f; break; // Fierrari 
-            case 1: x = 440.0f; y = 180.0f; break; // Lamborgota 
-            case 2: x = 760.0f; y = 180.0f; break; // Ford 
-            case 3: x = 280.0f; y = 380.0f; break; // Puerche 
-            case 4: x = 600.0f; y = 380.0f; break; // Dodge 
-        }
+        int col = i % numCols; // Calcula columna (0, 1, 2)
+        int row = i / numCols; // Calcula fila (0, 1)
+
+        // --- CÁLCULO DE POSICIONES CENTRADAS ---
+        // X: Centramos el texto horizontalmente bajo su columna.
+        float textWidth = text.getLocalBounds().size.x;
+        float x = gridOffset + (col * colWidth) + (colWidth - textWidth) / 2.0f;
+
+        // Y: Posicionamos verticalmente para dejar espacio para los carros arriba.
+        // Los carros se centran alrededor de la posición grid (125px horizontally centered on screen).
+        float carSelectionAreaStartY = 125.0f;
+        float y = carSelectionAreaStartY + (row * 225.0f) + 160.0f; // Centramos el texto en la altura de la fila.
 
         text.setPosition(sf::Vector2f(x, y));
         carTexts.push_back(text);
@@ -114,65 +126,70 @@ void CarSelectionScreen::handleInput(const sf::Event& event) {
 void CarSelectionScreen::render(sf::RenderWindow& window) {
     static bool texturesLoaded = false;
     
-    // === CARGA SEGURA: Solo se ejecuta cuando la ventana ya existe ===
+    // 1. CARGA DE RECURSOS
     if (!texturesLoaded) {
-        
-        // 1. Cargar fondo
         if (bgTexture.loadFromFile("assets/bg_car_selection.jpg")) {
             bgSprite.emplace(bgTexture);
             sf::FloatRect bounds = bgSprite->getLocalBounds();
-            bgSprite->setScale(sf::Vector2f(1200.0f / bounds.size.x, 700.0f / bounds.size.y));
+            bgSprite->setScale(sf::Vector2f({1200.0f / bounds.size.x, 700.0f / bounds.size.y}));
         }
-
-        // 2. Cargar texturas de los carros
         fierrariTexture.loadFromFile("assets/fierrari.png");
         lamborgotaTexture.loadFromFile("assets/lamborgota.png");
         fordTexture.loadFromFile("assets/ford.png");
         puercheTexture.loadFromFile("assets/puerche.png");
         dodgeTexture.loadFromFile("assets/dodge.png");
-
-        // 3. Crear los sprites de los carros estacionados
-        stationaryCarSprites.clear();
-        for (size_t i = 0; i < carTexts.size(); ++i) {
-            sf::Texture* carTexture = nullptr;
-            switch(i) {
-                case 0: carTexture = &fierrariTexture; break;
-                case 1: carTexture = &lamborgotaTexture; break;
-                case 2: carTexture = &fordTexture; break;
-                case 3: carTexture = &puercheTexture; break;
-                case 4: carTexture = &dodgeTexture; break;
-            }
-
-            if (carTexture) {
-                sf::Sprite carSprite(*carTexture);
-                carSprite.setScale(sf::Vector2f(0.4f, 0.4f)); 
-                float x = carTexts[i].getPosition().x;
-                float y = carTexts[i].getPosition().y - 120;
-                carSprite.setPosition(sf::Vector2f(x, y));
-                stationaryCarSprites.push_back(carSprite);
-            }
-        }
         texturesLoaded = true;
     }
 
-    // === DIBUJO EN PANTALLA ===
+    // 2. DIBUJAR FONDO
     if (bgSprite.has_value()) {
         window.draw(bgSprite.value());
-    }    
-
-    // Dibujar los carros fijos
-    for (const auto& carSprite : stationaryCarSprites) {
-        window.draw(carSprite);
     }
 
-    // Dibujar los textos
-    window.draw(*titleText);
-    window.draw(*player1StatusText);
-    window.draw(*player2StatusText);
+    // 3. DIBUJAR PANEL CENTRAL OSCURO
+    sf::RectangleShape carSelectionBox;
+    carSelectionBox.setSize(sf::Vector2f({900.0f, 450.0f}));
+    carSelectionBox.setPosition(sf::Vector2f({150.0f, 150.0f})); 
+    carSelectionBox.setFillColor(sf::Color(0, 0, 0, 180));
+    window.draw(carSelectionBox);
 
+    // 4. DIBUJAR TÍTULO
+    float titleWidth = titleText->getLocalBounds().size.x;
+    titleText->setPosition(sf::Vector2f({(1200.0f - titleWidth) / 2.0f, 60.0f}));
+    window.draw(*titleText);
+
+    // 5. DIBUJAR CARROS (Centrados automáticamente con sus nombres)
+    sf::Texture* textures[] = {&fierrariTexture, &lamborgotaTexture, &fordTexture, &puercheTexture, &dodgeTexture};
+    
+    for (size_t i = 0; i < 5; ++i) {
+        sf::Sprite sprite(*textures[i]);
+        sprite.setScale(sf::Vector2f({0.25f, 0.25f})); 
+        
+        // Obtenemos la posición y tamaño del TEXTO de este carro
+        sf::Vector2f textPos = carTexts[i].getPosition();
+        float textWidth = carTexts[i].getLocalBounds().size.x;
+        
+        // Obtenemos el tamaño real del SPRITE (ya escalado a 0.25)
+        float spriteWidth = sprite.getLocalBounds().size.x * 0.25f;
+        float spriteHeight = sprite.getLocalBounds().size.y * 0.25f;
+        
+        // Matemáticas para centrar: X del texto + mitad del ancho del texto - mitad del ancho del sprite
+        float x = textPos.x + (textWidth / 2.0f) - (spriteWidth / 2.0f);
+        // Y: Lo ponemos justo arriba del texto (con 15 pixeles de separación)
+        float y = textPos.y - spriteHeight - 15.0f; 
+        
+        sprite.setPosition(sf::Vector2f({x, y}));
+        window.draw(sprite);
+    }
+
+    // 6. DIBUJAR TEXTOS DE LOS NOMBRES
     for (const auto& text : carTexts) {
         window.draw(text);
     }
+
+    // 7. DIBUJAR ESTADOS (Ahora en la parte de abajo de la pantalla)
+    window.draw(*player1StatusText);
+    window.draw(*player2StatusText);
 }
 
 bool CarSelectionScreen::areBothConfirmed() const {

@@ -17,7 +17,7 @@ class CarSelectionScreen {
 private:
     std::shared_ptr<sf::Font> font;
     std::vector<Car> cars;
-    
+    sf::RectangleShape darkOverlay;
     // Texturas
     sf::Texture puercheTexture;
     sf::Texture fierrariTexture;   
