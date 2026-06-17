@@ -36,7 +36,7 @@ CarSelectionScreen::CarSelectionScreen() {
 }
 
 bool CarSelectionScreen::loadFont() {
-    if (!font->openFromFile("assets/arial.ttf")) { 
+    if (!font->openFromFile("assets/fonts/arial.ttf")) { 
         std::cerr << "Advertencia: No se encontró en assets, intentando usar la de Windows...\n";
         if (!font->openFromFile("C:\\Windows\\Fonts\\arial.ttf")) {
             std::cerr << "Error crítico: Definitivamente no se pudo cargar arial.ttf\n";

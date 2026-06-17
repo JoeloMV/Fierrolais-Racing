@@ -66,8 +66,8 @@ GameOverScreen::GameOverScreen()
 GameOverScreen::~GameOverScreen() {}
 
 bool GameOverScreen::loadFont() {
-    if (!font->openFromFile("assets/arial.ttf")) {
-        std::cerr << "Aviso: No se encontro assets/arial.ttf. El texto no se dibujara, pero no crasheara.\n";
+    if (!font->openFromFile("assets/fonts/arial.ttf")) {
+        std::cerr << "Aviso: No se encontro assets/fonts/arial.ttf. El texto no se dibujara, pero no crasheara.\n";
         return false;
     }
     return true;

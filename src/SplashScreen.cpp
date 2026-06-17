@@ -4,7 +4,7 @@
 bool SplashScreen::loadFont() {
     font = std::make_shared<sf::Font>();
     
-    if (font->openFromFile("assets/arial.ttf")) {
+    if (font->openFromFile("assets/fonts/arial.ttf")) {
         return true;
     }
     

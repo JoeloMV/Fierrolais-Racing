@@ -5,8 +5,8 @@ bool Menu::loadFont() {
     font = std::make_shared<sf::Font>();
     
     // Ahora busca la fuente directamente en tu carpeta de assets
-    if (font->openFromFile("assets/arial.ttf")) {
-        std::cout << "Fuente cargada exitosamente desde: assets/arial.ttf" << std::endl;
+    if (font->openFromFile("assets/fonts/arial.ttf")) {
+        std::cout << "Fuente cargada exitosamente desde: assets/fonts/arial.ttf" << std::endl;
         return true;
     }
     

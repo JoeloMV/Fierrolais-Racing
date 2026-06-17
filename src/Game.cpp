@@ -48,7 +48,7 @@ void Game::loadBackgroundMusic() {
     };
     
     if (!fuenteMarcador.openFromFile("C:/Windows/Fonts/arial.ttf")) {
-        (void)fuenteMarcador.openFromFile("assets/arial.ttf");
+        (void)fuenteMarcador.openFromFile("assets/fonts/arial.ttf");
     }
     textoCuentaRegresiva.setFont(fuenteMarcador);
     textoCuentaRegresiva.setCharacterSize(100); 
@@ -73,7 +73,7 @@ Game::Game() : window(sf::VideoMode(sf::Vector2u(1200, 700)), "Fierrolais Racing
     loadBackgroundMusic();
     
 
-    if (!fuente.openFromFile("assets/arial.ttf")) {
+    if (!fuente.openFromFile("assets/fonts/arial.ttf")) {
         std::cerr << "Error al cargar la fuente arial.ttf" << std::endl;
     }
     

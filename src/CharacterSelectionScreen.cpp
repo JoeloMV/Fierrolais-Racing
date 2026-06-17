@@ -5,7 +5,7 @@
 
 bool CharacterSelectionScreen::loadFont() {
     std::vector<std::string> fontPaths = {
-        "assets/arial.ttf", // Siempre es bueno buscar en tu carpeta primero
+        "assets/fonts/arial.ttf", // Siempre es bueno buscar en tu carpeta primero
         "C:\\Windows\\Fonts\\arial.ttf",
         "C:\\Windows\\Fonts\\Arial.ttf",
         "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"

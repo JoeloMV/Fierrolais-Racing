@@ -3,7 +3,7 @@
 
 bool OptionsMenu::loadFont() {
     std::vector<std::string> fontPaths = {
-        "assets/arial.ttf",
+        "assets/fonts/arial.ttf",
         "C:/Windows/Fonts/arial.ttf",
         "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
     };

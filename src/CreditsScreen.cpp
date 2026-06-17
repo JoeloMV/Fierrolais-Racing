@@ -6,7 +6,7 @@ bool CreditsScreen::loadFont() {
     
     // Prioridad 1: Tu carpeta assets. Prioridad 2 y 3: Fuentes del sistema operativo.
     std::vector<std::string> fontPaths = {
-        "assets/arial.ttf",
+        "assets/fonts/arial.ttf",
         "C:/Windows/Fonts/arial.ttf",
         "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
     };
