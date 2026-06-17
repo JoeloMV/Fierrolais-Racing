@@ -82,10 +82,10 @@ Game::Game() : window(sf::VideoMode(sf::Vector2u(1200, 700)), "Fierrolais Racing
     textoCuentaRegresiva.setFillColor(sf::Color::Yellow);
     textoCuentaRegresiva.setPosition(sf::Vector2f(550.0f, 300.0f));
     
-    if (!pistaTexture.loadFromFile("assets/pista.png")) {
+    if (!pistaTexture.loadFromFile("assets/images/fondos/pista.png")) {
         std::cerr << "Error al cargar pista.png" << std::endl;
     }
-    if (!pistaImage.loadFromFile("assets/pista.png")) {
+    if (!pistaImage.loadFromFile("assets/images/fondos/pista.png")) {
         std::cerr << "Error al cargar pistaImage" << std::endl;
     }
 

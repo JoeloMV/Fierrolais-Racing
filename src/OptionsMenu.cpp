@@ -100,7 +100,7 @@ void OptionsMenu::render(sf::RenderWindow& window) {
     static bool bgLoaded = false;
 
     if (!bgLoaded) {
-        if (bgTexture.loadFromFile("assets/bg_options.jpg")) {
+        if (bgTexture.loadFromFile("assets/images/fondos/bg_options.jpg")) {
             bgSprite.emplace(bgTexture);
             sf::FloatRect bounds = bgSprite->getLocalBounds();
             // Ajustar a 1200x700

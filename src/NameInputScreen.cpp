@@ -34,7 +34,7 @@ NameInputScreen::NameInputScreen() : currentPlayer(1), enterPressed(false){
     instructionText->setPosition(sf::Vector2f(250, 600));
 
 // === INSTRUCCIÓN PARA CAMBIAR EL FONDO ===
-    if (this->backgroundTexture.loadFromFile("assets/fondo_ingreso_nombre.png")) {
+    if (this->backgroundTexture.loadFromFile("assets/images/fondos/fondo_ingreso_nombre.png")) {
         if (this->backgroundSprite) {
             delete this->backgroundSprite;
         }

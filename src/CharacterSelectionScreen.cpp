@@ -161,7 +161,7 @@ void CharacterSelectionScreen::render(sf::RenderWindow& window) {
     static bool bgLoaded = false;
 
     if (!bgLoaded) {
-        if (bgTexture.loadFromFile("assets/bg_characters.jpg")) { 
+        if (bgTexture.loadFromFile("assets/images/fondos/bg_characters.jpg")) { 
             bgSprite.emplace(bgTexture);
             sf::FloatRect bounds = bgSprite->getLocalBounds();
             bgSprite->setScale(sf::Vector2f({1200.0f / bounds.size.x, 700.0f / bounds.size.y}));

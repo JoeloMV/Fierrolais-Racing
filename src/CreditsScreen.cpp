@@ -69,7 +69,7 @@ void CreditsScreen::render(sf::RenderWindow& window) {
 
     if (!bgLoaded) {
         // Intenta cargar la imagen
-        if (bgTexture.loadFromFile("assets/bg_credits.jpg")) { 
+        if (bgTexture.loadFromFile("assets/images/fondos/bg_credits.jpg")) { 
             bgSprite.emplace(bgTexture);
             sf::FloatRect bounds = bgSprite->getLocalBounds();
             bgSprite->setScale(sf::Vector2f({1200.0f / bounds.size.x, 700.0f / bounds.size.y}));

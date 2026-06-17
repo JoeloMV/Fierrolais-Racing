@@ -19,7 +19,7 @@ SplashScreen::SplashScreen() : textAlpha(0), alphaDelta(3), fadeIn(true) {
     }
     
     // Cargar la textura
-    if (!texture.loadFromFile("assets/images/pantalla_de_carga.png")) {
+    if (!texture.loadFromFile("assets/images/fondos/pantalla_de_carga.png")) {
         std::cerr << "Error: No se pudo cargar la imagen de splash" << std::endl;
     }
     

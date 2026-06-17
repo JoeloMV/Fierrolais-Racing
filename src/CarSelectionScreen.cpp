@@ -128,7 +128,7 @@ void CarSelectionScreen::render(sf::RenderWindow& window) {
     
     // 1. CARGA DE RECURSOS
     if (!texturesLoaded) {
-        if (bgTexture.loadFromFile("assets/bg_car_selection.jpg")) {
+        if (bgTexture.loadFromFile("assets/images/fondos/bg_car_selection.jpg")) {
             bgSprite.emplace(bgTexture);
             sf::FloatRect bounds = bgSprite->getLocalBounds();
             bgSprite->setScale(sf::Vector2f({1200.0f / bounds.size.x, 700.0f / bounds.size.y}));
