@@ -1,56 +1,42 @@
-# Fierrolais-Racing
+## 📝 Descripción del Proyecto
 
+**Fierrolais Racing** es un arcade de carreras frenético donde los memes caninos más icónicos de internet toman el control de superdeportivos de alto rendimiento. Enfréntate a un amigo en intensos duelos locales 1 vs 1, domina las curvas más cerradas y demuestra quién es el verdadero rey del asfalto logrando los mejores tiempos en el cronómetro. ¡Pisa el acelerador y deja a tus rivales comiendo polvo!
 
-🏎️ Fierrolais Racing
-🎯 Objetivo del Juego
-Ser el piloto más rápido y habilidoso en un frenético juego de carreras arcade. El objetivo principal es seleccionar a tu personaje, navegar por los menús y competir en pistas desafiantes para cruzar la meta en primer lugar, demostrando dominio sobre el asfalto.
+### 🎯 Objetivo del Juego
 
-🎮 Controles
-Jugador 1:
+El objetivo es completar 3 vueltas al circuito antes que tu oponente, manteniendo el mejor ritmo posible. Al finalizar, el sistema registra los tiempos exactos por vuelta para determinar quién es el piloto más veloz y preciso.
 
-W/A/S/D: Navegación en menús y movimiento.
+### 🎮 Controles
 
-Enter / Espacio: Confirmar selección de personaje.
+- **Jugador 1:** Flechas de dirección (Arriba, Abajo, Izquierda, Derecha)
+- **Jugador 2:** Teclas W, A, S, D
+- **Menú:** Enter para seleccionar, Escape para salir
 
-Jugador 2:
+### ⚙️ Mecánicas
 
-Flechas (↑/↓/←/→): Navegación en menús y movimiento.
+- **Duelos 1 vs 1:** Competencia directa en pantalla dividida o fija.
+- **Sistema de Tiempos:** Cronometraje preciso por cada vuelta completada.
+- **Selector de Personajes:** Elige a tu "Leyenda" (El Licenciado, El Mamado, etc.) con estadísticas personalizadas.
+- **Control Arcade:** Física de conducción diseñada para derrapes rápidos y control intuitivo.
 
-Enter: Confirmar selección de personaje.
+### 🏆 Características
 
-⚙️ Mecánicas
-Selección de Personajes: Sistema interactivo de cuadrícula con vista previa de avatares y nombres.
+- Selección de pilotos basados en cultura de memes.
+- Contador de tiempo en tiempo real para cada jugador.
+- Interfaz de "Game Over" dinámica con anuncio de ganador.
+- Soporte para jugabilidad local competitiva.
 
-Confirmación Dual: Lógica de estado para asegurar que ambos jugadores hayan validado su elección antes de iniciar la carrera.
+### 👥 Equipo
 
-Feedback Visual: Cambio de colores en tiempo real (Azul, Rojo, Cian) según la selección de cada jugador para evitar colisiones en la elección.
+- **Líder/Desarrollador**: Joel Morales (@JoeloMV)
 
-Gestión de Recursos: Sistema de carga de texturas, fuentes y música optimizado para cada pantalla del juego.
+### 🛠️ Tecnologías
 
-🏆 Características
-Pantalla de Selección Dinámica: Interfaz elegante con soporte para 10 personajes únicos.
+- **Motor/Framework**: SFML (Simple and Fast Multimedia Library)
+- **Lenguaje**: C++
+- **Librerías adicionales**: SFML Graphics, SFML Audio, SFML Window
 
-Sistema de Menús Multiestado: Navegación fluida entre pantallas (Splash, Menú Principal, Selección, Créditos).
+### 📜 Créditos
 
-Arquitectura Orientada a Objetos: Código modular que facilita la expansión a nuevas pistas o personajes.
-
-👥 Equipo
-Líder: Joel Muñoz (@[TuUsuarioGithub])
-
-Integrante 2: Luis Hernandez (@[UsuarioGithubLuis])
-
-Integrante 3: [Nombre Completo] (@[UsuarioGithub])
-
-🛠️ Tecnologías
-Motor/Framework: SFML (Simple and Fast Multimedia Library)
-
-Lenguaje: C++
-
-Librerías adicionales: <optional>, <iostream>, <sstream>, <vector>
-
-📜 Créditos
-Assets: Personajes y fondos personalizados.
-
-Referencias: Inspirado en los clásicos juegos de carreras de arcade de los 90s.
-
-Agradecimientos: A la comunidad de SFML por la documentación y soporte técnico.
+- **Inspiración**: La comunidad de memes "Fierrolais" y la cultura automotriz.
+- **Agradecimientos**: Agradecimiento especial a la comunidad de desarrollo en C++ por el soporte en la implementación de las librerías gráficas.
