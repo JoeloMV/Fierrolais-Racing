@@ -72,6 +72,20 @@ Game::Game() : window(sf::VideoMode(sf::Vector2u(1200, 700)), "Fierrolais Racing
     window.setFramerateLimit(60);
     loadBackgroundMusic();
     
+    // === CREACIÓN DE LOS PANELES DEL HUD ===
+    for(int i = 0; i < 2; ++i) {
+        sf::RectangleShape panel;
+        // Ancho: 400 (para que quepan nombres largos), Alto: 60 (cubre avatar y texto)
+        panel.setSize(sf::Vector2f(400.0f, 60.0f)); 
+        panel.setFillColor(sf::Color(0, 0, 0, 150)); 
+        
+        // Panel 0 (Izquierda/P2) en X:10, Y:5
+        // Panel 1 (Derecha/P1) en X:770, Y:5
+        float posX = (i == 0) ? 10.0f : 770.0f; 
+        panel.setPosition(sf::Vector2f(posX, 5.0f));
+        
+        hudPanels.push_back(panel); 
+    }
 
     if (!fuente.openFromFile("assets/fonts/arial.ttf")) {
         std::cerr << "Error al cargar la fuente arial.ttf" << std::endl;
@@ -611,12 +625,23 @@ void Game::render() {
         case GameState::COUNTDOWN:
         case GameState::PLAYING: {
             window.clear(sf::Color::Black);
+            
+            // 1. Dibujar fondo de pista
             window.draw(pistaSprite);
+            
+            // 2. Dibujar vehículos
             window.draw(carroSprite);
             window.draw(carro2Sprite);
+            
+            // 3. Dibujar textos del juego
             window.draw(textoCuentaRegresiva);
 
-            // DIBUJAR MARCADOR DEL JUGADOR 2 (Izquierda)
+            // 4. Dibujar paneles del HUD
+            for (const auto& panel : hudPanels) {
+                window.draw(panel);
+            }
+
+            // --- HUD JUGADOR 2 (Izquierda) ---
             hudCharSprP2.setPosition(sf::Vector2f(20.f, 10.f)); 
             window.draw(hudCharSprP2);
 
@@ -627,7 +652,7 @@ void Game::render() {
             marcadorP2.setString(player1Name + " lleva: " + std::to_string(vueltasP2) + " / 3 vueltas");
             window.draw(marcadorP2);
 
-            // DIBUJAR MARCADOR DEL JUGADOR 1 (Derecha)
+            // --- HUD JUGADOR 1 (Derecha) ---
             hudCharSprP1.setPosition(sf::Vector2f(780.f, 10.f)); 
             window.draw(hudCharSprP1);
 

@@ -30,7 +30,7 @@ SplashScreen::SplashScreen() : textAlpha(0), alphaDelta(3), fadeIn(true) {
     sprite->setScale(sf::Vector2f(scaleX, scaleY));
     
     // Configurar el texto
-    continueText = std::make_shared<sf::Text>(*font, "Presiona cualquier tecla para continuar", 30);
+    continueText = std::make_shared<sf::Text>(*font, "Presiona enter para continuar", 30);
     continueText->setFillColor(sf::Color::White);
     float textWidth = continueText->getLocalBounds().size.x;
     continueText->setPosition(sf::Vector2f((1200 - textWidth) / 2, 600));
