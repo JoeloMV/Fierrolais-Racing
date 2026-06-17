@@ -554,20 +554,24 @@ void Game::update() {
                 }
             }
 
-            if (vueltasP1 >= 3) {
-            // El código cree que ganó el Carro 1, pero en la vida real este es el Jugador 2
-            gameOver.setWinner(player2Name);
-            gameOver.setWinnerImage(hudCharTexP2);
-            gameOver.setPlayerStats(tiemposP2, tiemposP1); // Mandamos los tiempos reales del J1 a la izquierda y los del J2 a la derecha
-            currentState = GameState::GAME_OVER;
-            
-        } else if (vueltasP2 >= 3) {
-            // El código cree que ganó el Carro 2, pero en la vida real este es el Jugador 1
-            gameOver.setWinner(player1Name);
-            gameOver.setWinnerImage(hudCharTexP1);
-            gameOver.setPlayerStats(tiemposP2, tiemposP1); // Mandamos los tiempos reales del J1 a la izquierda y los del J2 a la derecha
-            currentState = GameState::GAME_OVER;
-        }
+          if (vueltasP1 >= 3) {
+    gameOver.setWinner(player2Name); 
+    gameOver.setWinnerImage(hudCharSprP1.getTexture()); 
+    
+    // ¡EL TOQUE MAESTRO! Pasamos primero tiemposP2 y luego tiemposP1
+    gameOver.setPlayerStats(tiemposP2, tiemposP1); 
+    
+    currentState = GameState::GAME_OVER; 
+} 
+else if (vueltasP2 >= 3) {
+    gameOver.setWinner(player1Name); 
+    gameOver.setWinnerImage(hudCharSprP2.getTexture());
+    
+    // LOS INVERTIMOS AQUÍ TAMBIÉN
+    gameOver.setPlayerStats(tiemposP2, tiemposP1); 
+    
+    currentState = GameState::GAME_OVER; 
+}
             break;
         }
         case GameState::GAME_OVER: { 

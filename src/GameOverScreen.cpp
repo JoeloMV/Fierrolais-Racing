@@ -2,6 +2,7 @@
 #include <iostream>
 #include <sstream> 
 #include <iomanip> 
+#include <memory>
 
 GameOverScreen::GameOverScreen() 
     : font(std::make_shared<sf::Font>()), 
@@ -126,11 +127,14 @@ void GameOverScreen::handleInput(const sf::Event& event) {
 }
 
 void GameOverScreen::render(sf::RenderWindow& window) {
+    // 1. Fondo de pantalla
     if (bgSprite.has_value()) {
         window.draw(bgSprite.value());
     }
+    // 2. Panel oscuro
     window.draw(overlay);
 
+    // 3. Textos
     if (fontLoaded) {
         window.draw(titleText);
         window.draw(winnerText);
@@ -140,6 +144,7 @@ void GameOverScreen::render(sf::RenderWindow& window) {
         window.draw(exitText);
     }
     
+    // 4. Imagen del ganador (DIBUJAR SIEMPRE SI EXISTE)
     if (winnerSprite.has_value()) {
         window.draw(winnerSprite.value());
     }
@@ -152,12 +157,14 @@ void GameOverScreen::reset() {
 }
 
 void GameOverScreen::setWinnerImage(const sf::Texture& texture) {
+    // Si ya existe un sprite, lo reemplazamos
     winnerSprite.emplace(texture); 
     
+    // Escalar la imagen del ganador para que se vea bien en el panel
     sf::FloatRect bounds = winnerSprite->getLocalBounds();
-    if (bounds.size.x > 0 && bounds.size.y > 0) {
-        winnerSprite->setScale(sf::Vector2f(250.0f / bounds.size.x, 250.0f / bounds.size.y));
-    }
+    float targetSize = 200.0f; // Tamaño cuadrado del icono
+    winnerSprite->setScale(sf::Vector2f(targetSize / bounds.size.x, targetSize / bounds.size.y));
     
-    winnerSprite->setPosition(sf::Vector2f(800.0f, 180.0f)); 
+    // Posición fija para que aparezca dentro del overlay
+    winnerSprite->setPosition(sf::Vector2f(850.0f, 200.0f)); 
 }
