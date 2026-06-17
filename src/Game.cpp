@@ -210,8 +210,8 @@ void Game::handleEvents() {
 }
 
 void Game::handleSplashInput(const sf::Event& event) {
-    if (event.getIf<sf::Event::KeyPressed>()) {
-        
+    if (const auto* keyEvent = event.getIf<sf::Event::KeyPressed>()) {
+        if (keyEvent->code == sf::Keyboard::Key::Enter) {
         // 1. Apagamos la música del splash screen antes de cambiar de estado
         splashScreen.stopMusic(); 
         
@@ -224,6 +224,7 @@ void Game::handleSplashInput(const sf::Event& event) {
         }
         std::cout << "Pasando al menú..." << std::endl;
     }
+}
 }
 
 void Game::handleMenuInput(const sf::Event& event) {
