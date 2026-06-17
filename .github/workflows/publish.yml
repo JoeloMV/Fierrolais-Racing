@@ -1,0 +1,28 @@
+name: Publicar Fierrolais Racing
+
+on:
+  push:
+    tags:
+      - 'v*' # Esto significa que se activará cuando crees una versión (ej. v1.0)
+
+jobs:
+  crear-lanzamiento:
+    runs-on: windows-latest
+    
+    steps:
+      - name: 📥 Descargar el código del repositorio
+        uses: actions/checkout@v3
+
+      - name: 📦 Empaquetar el juego
+        # Comprime la carpeta bin, assets y tu readme en un solo ZIP
+        run: Compress-Archive -Path bin, assets, readme.md -DestinationPath FierrolaisRacing_Windows.zip
+
+      - name: 🚀 Publicar en GitHub Releases
+        uses: softprops/action-gh-release@v1
+        with:
+          files: FierrolaisRacing_Windows.zip
+          name: Fierrolais Racing ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
