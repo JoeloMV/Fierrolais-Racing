@@ -59,22 +59,49 @@ void CreditsScreen::update() {
     // Lógica de actualización si es necesaria
 }
 
+#include <optional>
+
 void CreditsScreen::render(sf::RenderWindow& window) {
-    window.clear(sf::Color::Black);
-    
-    if (titleText) {
-        window.draw(*titleText);
+    // 1. CARGA DE RECURSOS
+    static sf::Texture bgTexture;
+    static std::optional<sf::Sprite> bgSprite;
+    static bool bgLoaded = false;
+
+    if (!bgLoaded) {
+        // Intenta cargar la imagen
+        if (bgTexture.loadFromFile("assets/bg_credits.jpg")) { 
+            bgSprite.emplace(bgTexture);
+            sf::FloatRect bounds = bgSprite->getLocalBounds();
+            bgSprite->setScale(sf::Vector2f({1200.0f / bounds.size.x, 700.0f / bounds.size.y}));
+        } else {
+            // 🚨 SI FALLA, TE AVISARÁ AQUÍ EN LA TERMINAL
+            std::cout << "ERROR: No se encontro 'assets/bg_credits.jpeg'. Revisa el nombre y extension." << std::endl;
+        }
+        bgLoaded = true;
     }
+
+    // 2. DIBUJO DE FONDO
+    if (bgSprite.has_value()) {
+        window.clear(sf::Color::Black);
+        window.draw(bgSprite.value());
+    } else {
+        // Si no cargo la imagen, pintamos un fondo gris oscuro para poder ver el recuadro
+        window.clear(sf::Color(50, 50, 50)); 
+    }
+
+    // 3. DIBUJAR RECUADRO OSCURO
+    sf::RectangleShape creditsBox;
+    creditsBox.setSize(sf::Vector2f({800.0f, 500.0f}));
+    creditsBox.setPosition(sf::Vector2f({200.0f, 100.0f})); 
+    creditsBox.setFillColor(sf::Color(0, 0, 0, 180)); 
+    window.draw(creditsBox);
+    
+    // 4. DIBUJAR TEXTOS DE CRÉDITOS
+    window.draw(*titleText); 
     
     for (const auto& credit : creditTexts) {
         window.draw(credit);
     }
-    
-    // Mostrar instrucciones
-    sf::Text instructions(*font, "Presiona ESC para volver al menu", 20);
-    instructions.setFillColor(sf::Color::Green);
-    instructions.setPosition(sf::Vector2f(350, 650));
-    window.draw(instructions);
     
     window.display();
 }
