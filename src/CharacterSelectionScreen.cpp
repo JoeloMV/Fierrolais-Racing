@@ -1,6 +1,7 @@
 #include "CharacterSelectionScreen.h"
 #include <iostream>
 #include <sstream>
+#include <optional> // Necesario para std::optional en el render
 
 bool CharacterSelectionScreen::loadFont() {
     std::vector<std::string> fontPaths = {
@@ -31,7 +32,6 @@ void CharacterSelectionScreen::initializeCharacters() {
     }
 }
 
-// ¡Magia aquí! Le pasamos la 'font' a los textos justo antes de que el constructor arranque
 CharacterSelectionScreen::CharacterSelectionScreen() 
     : player1Selection(0), player2Selection(0), 
       player1Confirmed(false), player2Confirmed(false),
@@ -42,21 +42,24 @@ CharacterSelectionScreen::CharacterSelectionScreen()
     }
     
     initializeCharacters();
-    
+
     titleText.setString("SELECCIONA TU PERSONAJE");
     titleText.setCharacterSize(40);
     titleText.setFillColor(sf::Color::White);
-    titleText.setPosition(sf::Vector2f(250, 50));
+    titleText.setPosition(sf::Vector2f({250.0f, 50.0f}));
     
-    // Crear textos para cada personaje acomodados en la cuadrícula
+    // Crear textos para cada personaje y acomodarlos en la NUEVA cuadrícula
     for (int i = 0; i < 10; ++i) {
-        characterTexts.emplace_back(font); // Nace pegado a la fuente
+        characterTexts.emplace_back(font); 
         characterTexts[i].setString(characters[i].name);
         characterTexts[i].setCharacterSize(18); 
-        float posX = 100.0f + (i % 5) * 140.0f; 
-        float posY = 150.0f + (i / 5) * 180.0f; 
         
-        characterTexts[i].setPosition(sf::Vector2f(posX, posY + 110.0f)); 
+        // Coordenadas actualizadas (iguales a las del render)
+        float posX = 240.0f + (i % 5) * 150.0f; 
+        float posY = 170.0f + (i / 5) * 180.0f; 
+        
+        // Posicionamos justo debajo del recuadro
+        characterTexts[i].setPosition(sf::Vector2f({posX + 20.0f, posY + 110.0f})); 
         characterTexts[i].setFillColor(sf::Color::White);
     }
     
@@ -64,12 +67,12 @@ CharacterSelectionScreen::CharacterSelectionScreen()
     player1StatusText.setString("");
     player1StatusText.setCharacterSize(20);
     player1StatusText.setFillColor(sf::Color::Blue);
-    player1StatusText.setPosition(sf::Vector2f(50, 550)); 
+    player1StatusText.setPosition(sf::Vector2f({50.0f, 550.0f})); 
     
     player2StatusText.setString("");
     player2StatusText.setCharacterSize(20);
     player2StatusText.setFillColor(sf::Color::Red);
-    player2StatusText.setPosition(sf::Vector2f(800, 550)); 
+    player2StatusText.setPosition(sf::Vector2f({800.0f, 550.0f})); 
     
     updateDisplay();
 }
@@ -152,6 +155,23 @@ bool CharacterSelectionScreen::areBothConfirmed() const {
 }
 
 void CharacterSelectionScreen::render(sf::RenderWindow& window) {
+    // --- 1. CARGAR FONDO ---
+    static sf::Texture bgTexture;
+    static std::optional<sf::Sprite> bgSprite;
+    static bool bgLoaded = false;
+
+    if (!bgLoaded) {
+        if (bgTexture.loadFromFile("assets/bg_characters.jpg")) { 
+            bgSprite.emplace(bgTexture);
+            sf::FloatRect bounds = bgSprite->getLocalBounds();
+            bgSprite->setScale(sf::Vector2f({1200.0f / bounds.size.x, 700.0f / bounds.size.y}));
+        } else {
+            std::cout << "ERROR: No se encontro la imagen de fondo de personajes." << std::endl;
+        }
+        bgLoaded = true;
+    }
+
+    // --- 2. CARGAR TEXTURAS DE PERSONAJES ---
     static sf::Texture alucinTexture; 
     static sf::Texture mechaTexture; 
     static sf::Texture checoTexture; 
@@ -178,17 +198,28 @@ void CharacterSelectionScreen::render(sf::RenderWindow& window) {
         textureLoaded = true;
     }
     
+    // --- 3. DIBUJAR FONDO Y RECUADRO OSCURO ---
     window.clear(sf::Color::Black);
     
-    // Ahora los textos se dibujan directo, sin asterisco (*)
+    if (bgSprite.has_value()) {
+        window.draw(bgSprite.value());
+    }
+
+    sf::RectangleShape darkBox(sf::Vector2f({900.0f, 500.0f}));
+    darkBox.setPosition(sf::Vector2f({150.0f, 100.0f})); 
+    darkBox.setFillColor(sf::Color(0, 0, 0, 180));
+    window.draw(darkBox);
+    
+    // --- 4. DIBUJAR INTERFAZ PRINCIPAL ---
     window.draw(titleText);
     
+    // --- 5. CUADRÍCULA DE PERSONAJES ---
     for (int i = 0; i < 10; ++i) { 
-        float posX = 100.0f + (i % 5) * 140.0f; 
-        float posY = 150.0f + (i / 5) * 180.0f; 
+        float posX = 240.0f + (i % 5) * 150.0f; 
+        float posY = 170.0f + (i / 5) * 180.0f; 
         
-        sf::RectangleShape box(sf::Vector2f(100.0f, 100.0f)); 
-        box.setPosition(sf::Vector2f(posX, posY));
+        sf::RectangleShape box(sf::Vector2f({100.0f, 100.0f})); 
+        box.setPosition(sf::Vector2f({posX, posY}));
         
         if (i == player1Selection && i == player2Selection) {
             box.setFillColor(sf::Color::Cyan);  
@@ -207,66 +238,67 @@ void CharacterSelectionScreen::render(sf::RenderWindow& window) {
         
         if (i == 0 && textureLoaded) {
             sf::Sprite mechaSprite(mechaTexture); 
-            mechaSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
-            mechaSprite.setPosition(sf::Vector2f(posX, posY)); 
+            mechaSprite.setScale(sf::Vector2f({0.5f, 0.5f})); 
+            mechaSprite.setPosition(sf::Vector2f({posX, posY})); 
             window.draw(mechaSprite);
         }
         if (i == 1 && textureLoaded) {
             sf::Sprite alucinSprite(alucinTexture); 
-            alucinSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
-            alucinSprite.setPosition(sf::Vector2f(posX, posY)); 
+            alucinSprite.setScale(sf::Vector2f({0.5f, 0.5f})); 
+            alucinSprite.setPosition(sf::Vector2f({posX, posY})); 
             window.draw(alucinSprite);
         }
         if (i == 2 && textureLoaded) {
             sf::Sprite checoSprite(checoTexture); 
-            checoSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
-            checoSprite.setPosition(sf::Vector2f(posX, posY)); 
+            checoSprite.setScale(sf::Vector2f({0.5f, 0.5f})); 
+            checoSprite.setPosition(sf::Vector2f({posX, posY})); 
             window.draw(checoSprite);
         }
         if (i == 3 && textureLoaded) {
             sf::Sprite licenciadoSprite(licenciadoTexture); 
-            licenciadoSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
-            licenciadoSprite.setPosition(sf::Vector2f(posX, posY)); 
+            licenciadoSprite.setScale(sf::Vector2f({0.5f, 0.5f})); 
+            licenciadoSprite.setPosition(sf::Vector2f({posX, posY})); 
             window.draw(licenciadoSprite);
         }
         if (i == 4 && textureLoaded) {
             sf::Sprite poetaSprite(poetaTexture); 
-            poetaSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
-            poetaSprite.setPosition(sf::Vector2f(posX, posY)); 
+            poetaSprite.setScale(sf::Vector2f({0.5f, 0.5f})); 
+            poetaSprite.setPosition(sf::Vector2f({posX, posY})); 
             window.draw(poetaSprite);
         }
         if (i == 5 && textureLoaded) {
             sf::Sprite programadorSprite(programadorTexture); 
-            programadorSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
-            programadorSprite.setPosition(sf::Vector2f(posX, posY)); 
+            programadorSprite.setScale(sf::Vector2f({0.5f, 0.5f})); 
+            programadorSprite.setPosition(sf::Vector2f({posX, posY})); 
             window.draw(programadorSprite);
         }
         if (i == 6 && textureLoaded) {
             sf::Sprite saltamontesSprite(saltamontesTexture); 
-            saltamontesSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
-            saltamontesSprite.setPosition(sf::Vector2f(posX, posY)); 
+            saltamontesSprite.setScale(sf::Vector2f({0.5f, 0.5f})); 
+            saltamontesSprite.setPosition(sf::Vector2f({posX, posY})); 
             window.draw(saltamontesSprite);
         }
         if (i == 7 && textureLoaded) {
             sf::Sprite vaqueroSprite(vaqueroTexture); 
-            vaqueroSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
-            vaqueroSprite.setPosition(sf::Vector2f(posX, posY)); 
+            vaqueroSprite.setScale(sf::Vector2f({0.5f, 0.5f})); 
+            vaqueroSprite.setPosition(sf::Vector2f({posX, posY})); 
             window.draw(vaqueroSprite);
         }
         if (i == 8 && textureLoaded) {
             sf::Sprite mamadoSprite(mamadoTexture); 
-            mamadoSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
-            mamadoSprite.setPosition(sf::Vector2f(posX, posY)); 
+            mamadoSprite.setScale(sf::Vector2f({0.5f, 0.5f})); 
+            mamadoSprite.setPosition(sf::Vector2f({posX, posY})); 
             window.draw(mamadoSprite);
         }
         if (i == 9 && textureLoaded) {
             sf::Sprite fierrolaisSprite(fierrolaisTexture); 
-            fierrolaisSprite.setScale(sf::Vector2f(0.5f, 0.5f)); 
-            fierrolaisSprite.setPosition(sf::Vector2f(posX, posY)); 
+            fierrolaisSprite.setScale(sf::Vector2f({0.5f, 0.5f})); 
+            fierrolaisSprite.setPosition(sf::Vector2f({posX, posY})); 
             window.draw(fierrolaisSprite);
         }  
     }
     
+    // --- 6. TEXTOS FINALES ---
     for (const auto& charText : characterTexts) {
         window.draw(charText);
     }
@@ -279,7 +311,7 @@ void CharacterSelectionScreen::render(sf::RenderWindow& window) {
     instructions.setString("P1: WASD/Enter | P2: Flechas/Enter");
     instructions.setCharacterSize(20);
     instructions.setFillColor(sf::Color::Green);
-    instructions.setPosition(sf::Vector2f(250, 650));
+    instructions.setPosition(sf::Vector2f({420.0f, 640.0f}));
     window.draw(instructions);
     
     window.display();
