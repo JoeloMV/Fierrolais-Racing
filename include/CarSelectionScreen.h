@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <optional>
 
 struct Car {
     int id;
@@ -17,10 +18,14 @@ private:
     std::shared_ptr<sf::Font> font;
     std::vector<Car> cars;
     sf::Texture puercheTexture;
-    sf::Texture fierrariTexture;   // <-- Nueva
-    sf::Texture lamborgotaTexture; // <-- Nueva
-    sf::Texture fordTexture;       // <-- Nueva
-    sf::Texture dodgeTexture;      // <-- Nueva
+    sf::Texture fierrariTexture;   
+    sf::Texture lamborgotaTexture; 
+    sf::Texture fordTexture;       
+    sf::Texture dodgeTexture;      
+    
+    // Aquí está el fondo ya limpio y sin duplicados
+    sf::Texture bgTexture;
+    std::optional<sf::Sprite> bgSprite;
 
     int player1Selection;
     int player2Selection;

@@ -2,6 +2,17 @@
 #include <iostream>
 
 CarSelectionScreen::CarSelectionScreen() {
+    // === CARGAR EL FONDO ===
+    if (bgTexture.loadFromFile("assets/bg_car_selection.jpg")) {
+        bgSprite.emplace(bgTexture);
+        
+        sf::FloatRect bounds = bgSprite->getLocalBounds();
+        bgSprite->setScale(sf::Vector2f(1200.0f / bounds.size.x, 700.0f / bounds.size.y));
+    } else {
+        std::cerr << "Advertencia: No se pudo cargar assets/bg_car_selection.jpg\n";
+    }
+    // =======================
+
     player1Selection = 0;
     player2Selection = 1;
     player1Confirmed = false;
@@ -54,7 +65,7 @@ void CarSelectionScreen::initializeCars() {
         text.setCharacterSize(20);
         text.setFillColor(sf::Color::White);
         
-      float x = 0.0f;
+        float x = 0.0f;
         float y = 0.0f;
 
         // Posiciones manuales fijas para que todo quede centrado y arriba
@@ -109,19 +120,25 @@ void CarSelectionScreen::handleInput(const sf::Event& event) {
     }
     updateDisplay();
 }
+
 void CarSelectionScreen::render(sf::RenderWindow& window) {
-   static bool texturesLoaded = false;
-if (!texturesLoaded) {
-    puercheTexture.loadFromFile("assets/puerche.png");
-    if (!puercheTexture.loadFromFile("assets/puerche.png")) {
-    std::cerr << "Error: No se pudo cargar assets/puerche.png" << std::endl;
-}
-    fierrariTexture.loadFromFile("assets/fierrari.png");
-    lamborgotaTexture.loadFromFile("assets/lamborgota.png");
-    fordTexture.loadFromFile("assets/ford.png");
-    dodgeTexture.loadFromFile("assets/dodge.png");
-    texturesLoaded = true;
-}
+    static bool texturesLoaded = false;
+    if (!texturesLoaded) {
+        puercheTexture.loadFromFile("assets/puerche.png");
+        if (!puercheTexture.loadFromFile("assets/puerche.png")) {
+            std::cerr << "Error: No se pudo cargar assets/puerche.png" << std::endl;
+        }
+        fierrariTexture.loadFromFile("assets/fierrari.png");
+        lamborgotaTexture.loadFromFile("assets/lamborgota.png");
+        fordTexture.loadFromFile("assets/ford.png");
+        dodgeTexture.loadFromFile("assets/dodge.png");
+        texturesLoaded = true;
+    }
+
+    // === DIBUJAR FONDO ===
+    if (bgSprite.has_value()) {
+        window.draw(bgSprite.value());
+    }    
 
     // 2. Dibujar los textos originales
     window.draw(*titleText);
@@ -131,7 +148,8 @@ if (!texturesLoaded) {
     for (const auto& text : carTexts) {
         window.draw(text);
     }
-// 3. ¡Dibujar los carros dinámicos sobre el texto seleccionado!
+
+    // 3. ¡Dibujar los carros dinámicos sobre el texto seleccionado!
     if (texturesLoaded && !carTexts.empty()) {
         
         // --- JUGADOR 1 ---
@@ -170,7 +188,8 @@ if (!texturesLoaded) {
         window.draw(p2CarSprite);
     }
 }
-    bool CarSelectionScreen::areBothConfirmed() const {
+
+bool CarSelectionScreen::areBothConfirmed() const {
     return player1Confirmed && player2Confirmed;
 }
 
