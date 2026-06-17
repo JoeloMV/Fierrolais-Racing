@@ -145,7 +145,7 @@ void Game::handleEvents() {
                 int p1 = carSelectionScreen.getPlayer2Selection();
                 int p2 = carSelectionScreen.getPlayer1Selection();
 
-                std::cout << "DEBUG - Controles Corregidos -> P1 maneja: " << p1 << " | P2 maneja: " << p2 << std::endl;
+                std::cout << "DEBUG - Controles Corregidos -> P1 maneja: " << p2 << " | P2 maneja: " << p1 << std::endl;
 
                 std::vector<std::string> rutasCarros = {
                     "assets/carro1.png",
@@ -540,16 +540,19 @@ void Game::update() {
             }
 
             if (vueltasP1 >= 3) {
-                gameOver.setWinner(player1Name);
-                gameOver.setWinnerImage(hudCharTexP1);
-                gameOver.setPlayerStats(tiemposP1, tiemposP2);
-                currentState = GameState::GAME_OVER;
-            } else if (vueltasP2 >= 3) {
-                gameOver.setWinner(player2Name);
-                gameOver.setWinnerImage(hudCharTexP2);
-                gameOver.setPlayerStats(tiemposP1, tiemposP2);
-                currentState = GameState::GAME_OVER;
-            }
+            // El código cree que ganó el Carro 1, pero en la vida real este es el Jugador 2
+            gameOver.setWinner(player2Name);
+            gameOver.setWinnerImage(hudCharTexP2);
+            gameOver.setPlayerStats(tiemposP2, tiemposP1); // Mandamos los tiempos reales del J1 a la izquierda y los del J2 a la derecha
+            currentState = GameState::GAME_OVER;
+            
+        } else if (vueltasP2 >= 3) {
+            // El código cree que ganó el Carro 2, pero en la vida real este es el Jugador 1
+            gameOver.setWinner(player1Name);
+            gameOver.setWinnerImage(hudCharTexP1);
+            gameOver.setPlayerStats(tiemposP2, tiemposP1); // Mandamos los tiempos reales del J1 a la izquierda y los del J2 a la derecha
+            currentState = GameState::GAME_OVER;
+        }
             break;
         }
         case GameState::GAME_OVER: { 
