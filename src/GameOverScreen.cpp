@@ -17,7 +17,7 @@ GameOverScreen::GameOverScreen()
     
     fontLoaded = loadFont();
 
-    if (bgTexture.loadFromFile("assets/bg_gameover.jpg")) {
+    if (bgTexture.loadFromFile("assets/images/fondos/bg_gameover.jpg")) {
         bgSprite.emplace(bgTexture);
         
         sf::FloatRect bounds = bgSprite->getLocalBounds();

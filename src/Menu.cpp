@@ -40,7 +40,7 @@ Menu::Menu() : selectedIndex(0), normalColor(sf::Color::White), selectedColor(sf
         backgroundSprite = new sf::Sprite(backgroundTexture);
     } 
     // 2. Si no existe, usamos el fondo del Mustang para el menú principal
-    else if (backgroundTexture.loadFromFile("assets/fondo_menu.png")) {
+    else if (backgroundTexture.loadFromFile("assets/images/fondos/fondo_menu.png")) {
         backgroundSprite = new sf::Sprite(backgroundTexture);
     } 
     // 3. Si no encuentra ninguno, avisa en la consola

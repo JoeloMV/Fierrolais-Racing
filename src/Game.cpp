@@ -82,10 +82,10 @@ Game::Game() : window(sf::VideoMode(sf::Vector2u(1200, 700)), "Fierrolais Racing
     textoCuentaRegresiva.setFillColor(sf::Color::Yellow);
     textoCuentaRegresiva.setPosition(sf::Vector2f(550.0f, 300.0f));
     
-    if (!pistaTexture.loadFromFile("assets/pista.png")) {
+    if (!pistaTexture.loadFromFile("assets/images/fondos/pista.png")) {
         std::cerr << "Error al cargar pista.png" << std::endl;
     }
-    if (!pistaImage.loadFromFile("assets/pista.png")) {
+    if (!pistaImage.loadFromFile("assets/images/fondos/pista.png")) {
         std::cerr << "Error al cargar pistaImage" << std::endl;
     }
 
@@ -148,11 +148,11 @@ void Game::handleEvents() {
                 std::cout << "DEBUG - Controles Corregidos -> P1 maneja: " << p2 << " | P2 maneja: " << p1 << std::endl;
 
                 std::vector<std::string> rutasCarros = {
-                    "assets/carro1.png",
-                    "assets/carro2.png",
-                    "assets/carro3.png",
-                    "assets/carro4.png",
-                    "assets/carro5.png"
+                    "assets/images/carros/carro1.png",
+                    "assets/images/carros/carro2.png",
+                    "assets/images/carros/carro3.png",
+                    "assets/images/carros/carro4.png",
+                    "assets/images/carros/carro5.png"
                 };
 
                 float anchoDeseado = 60.0f;
@@ -335,16 +335,16 @@ void Game::handleCharacterSelectionInput(const sf::Event& event) {
         int charP2 = characterSelectionScreen.getPlayer1Selection();
 
         std::vector<std::string> rutasPersonajes = {
-            "assets/mecha corta.jpeg",         // 0
-            "assets/alucin.png",         // 1
-            "assets/checo perez.png" ,    // 2
-            "assets/licenciado.png",        // 3
-            "assets/poeta.png",   // 4
-            "assets/programador.png", // 5
-            "assets/Salta montes.jpeg",       // 6
-            "assets/Vaquero.png",   // 7
-            "assets/mamado.png",        // 8
-            "assets/fierrolais.jpeg"   // 9
+            "assets/images/personajes/mecha corta.jpeg",         // 0
+            "assets/images/personajes/alucin.png",         // 1
+            "assets/images/personajes/checo perez.png" ,    // 2
+            "assets/images/personajes/licenciado.jpeg",        // 3
+            "assets/images/personajes/poeta.png",   // 4
+            "assets/images/personajes/programador.png", // 5
+            "assets/images/personajes/Salta Montes.jpeg",       // 6
+            "assets/images/personajes/Vaquero.png",   // 7
+            "assets/images/personajes/mamado.png",        // 8
+            "assets/images/personajes/fierrolais.jpeg"   // 9
         };
 
         if (charP1 >= rutasPersonajes.size()) charP1 = rutasPersonajes.size() - 1;

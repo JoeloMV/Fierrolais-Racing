@@ -17,12 +17,12 @@ Player::Player(int id, float x, float y, const std::string& playerName, int carS
     std::string archivoCarro;
     
     switch (carSelection) {
-        case 0: archivoCarro = "assets/fierrari.png"; break;
-        case 1: archivoCarro = "assets/lamborgota.png"; break;
-        case 2: archivoCarro = "assets/ford.png"; break;
-        case 3: archivoCarro = "assets/puerche.png"; break;
-        case 4: archivoCarro = "assets/dodge.png"; break;
-        default: archivoCarro = "assets/carro1.png"; break; // Por seguridad
+        case 0: archivoCarro = "assets/images/carros/fierrari.png"; break;
+        case 1: archivoCarro = "assets/images/carros/lamborgota.png"; break;
+        case 2: archivoCarro = "assets/images/carros/ford.png"; break;
+        case 3: archivoCarro = "assets/images/carros/puerche.png"; break;
+        case 4: archivoCarro = "assets/images/carros/dodge.png"; break;
+        default: archivoCarro = "assets/images/carros/carro1.png"; break; // Por seguridad
     }
     if (!carTexture.loadFromFile(archivoCarro)) {
         std::cerr << "Error al cargar " << archivoCarro << std::endl;

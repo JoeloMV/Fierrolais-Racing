@@ -161,7 +161,7 @@ void CharacterSelectionScreen::render(sf::RenderWindow& window) {
     static bool bgLoaded = false;
 
     if (!bgLoaded) {
-        if (bgTexture.loadFromFile("assets/bg_characters.jpg")) { 
+        if (bgTexture.loadFromFile("assets/images/fondos/bg_characters.jpg")) { 
             bgSprite.emplace(bgTexture);
             sf::FloatRect bounds = bgSprite->getLocalBounds();
             bgSprite->setScale(sf::Vector2f({1200.0f / bounds.size.x, 700.0f / bounds.size.y}));
@@ -185,16 +185,16 @@ void CharacterSelectionScreen::render(sf::RenderWindow& window) {
     static bool textureLoaded = false;
 
     if (!textureLoaded) {
-        alucinTexture.loadFromFile("assets/alucin.png");
-        mechaTexture.loadFromFile("assets/mecha corta.jpeg");  
-        checoTexture.loadFromFile("assets/checo perez.png"); 
-        licenciadoTexture.loadFromFile("assets/licenciado.jpeg"); 
-        poetaTexture.loadFromFile("assets/poeta.png");
-        programadorTexture.loadFromFile("assets/programador.png");
-        saltamontesTexture.loadFromFile("assets/Salta Montes.jpeg");
-        vaqueroTexture.loadFromFile("assets/Vaquero.png");
-        mamadoTexture.loadFromFile("assets/mamado.png");
-        fierrolaisTexture.loadFromFile("assets/fierrolais.jpeg");
+        alucinTexture.loadFromFile("assets/images/personajes/alucin.png");
+        mechaTexture.loadFromFile("assets/images/personajes/mecha corta.jpeg");  
+        checoTexture.loadFromFile("assets/images/personajes/checo perez.png"); 
+        licenciadoTexture.loadFromFile("assets/images/personajes/licenciado.jpeg"); 
+        poetaTexture.loadFromFile("assets/images/personajes/poeta.png");
+        programadorTexture.loadFromFile("assets/images/personajes/programador.png");
+        saltamontesTexture.loadFromFile("assets/images/personajes/Salta Montes.jpeg");
+        vaqueroTexture.loadFromFile("assets/images/personajes/Vaquero.png");
+        mamadoTexture.loadFromFile("assets/images/personajes/mamado.png");
+        fierrolaisTexture.loadFromFile("assets/images/personajes/fierrolais.jpeg");
         textureLoaded = true;
     }
     
