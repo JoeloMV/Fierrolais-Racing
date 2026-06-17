@@ -148,11 +148,11 @@ void Game::handleEvents() {
                 std::cout << "DEBUG - Controles Corregidos -> P1 maneja: " << p2 << " | P2 maneja: " << p1 << std::endl;
 
                 std::vector<std::string> rutasCarros = {
-                    "assets/carro1.png",
-                    "assets/carro2.png",
-                    "assets/carro3.png",
-                    "assets/carro4.png",
-                    "assets/carro5.png"
+                    "assets/images/carros/carro1.png",
+                    "assets/images/carros/carro2.png",
+                    "assets/images/carros/carro3.png",
+                    "assets/images/carros/carro4.png",
+                    "assets/images/carros/carro5.png"
                 };
 
                 float anchoDeseado = 60.0f;

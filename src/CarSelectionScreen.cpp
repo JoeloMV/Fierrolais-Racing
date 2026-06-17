@@ -133,11 +133,11 @@ void CarSelectionScreen::render(sf::RenderWindow& window) {
             sf::FloatRect bounds = bgSprite->getLocalBounds();
             bgSprite->setScale(sf::Vector2f({1200.0f / bounds.size.x, 700.0f / bounds.size.y}));
         }
-        fierrariTexture.loadFromFile("assets/fierrari.png");
-        lamborgotaTexture.loadFromFile("assets/lamborgota.png");
-        fordTexture.loadFromFile("assets/ford.png");
-        puercheTexture.loadFromFile("assets/puerche.png");
-        dodgeTexture.loadFromFile("assets/dodge.png");
+        fierrariTexture.loadFromFile("assets/images/carros/fierrari.png");
+        lamborgotaTexture.loadFromFile("assets/images/carros/lamborgota.png");
+        fordTexture.loadFromFile("assets/images/carros/ford.png");
+        puercheTexture.loadFromFile("assets/images/carros/puerche.png");
+        dodgeTexture.loadFromFile("assets/images/carros/dodge.png");
         texturesLoaded = true;
     }
 
