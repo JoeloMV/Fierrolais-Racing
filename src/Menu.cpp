@@ -20,6 +20,11 @@ Menu::Menu() : selectedIndex(0), normalColor(sf::Color::White), selectedColor(sf
         std::cerr << "Advertencia: No se cargó la fuente correctamente" << std::endl;
     }
     
+    // Configuración del recuadro oscuro
+    darkPanel.setSize(sf::Vector2f({400.0f, 300.0f})); 
+    darkPanel.setPosition(sf::Vector2f({200.0f, 250.0f})); 
+    darkPanel.setFillColor(sf::Color(0, 0, 0, 150)); 
+
     // Opciones del menú
     std::vector<std::string> options = {
         "INICIAR JUEGO",
@@ -30,13 +35,14 @@ Menu::Menu() : selectedIndex(0), normalColor(sf::Color::White), selectedColor(sf
     
     for (size_t i = 0; i < options.size(); ++i) {
         sf::Text text(*font, options[i], 40);
-        text.setPosition(sf::Vector2f(250, 250 + i * 80));
+        text.setPosition(sf::Vector2f(250.0f, 250.0f + i * 80.0f));
         text.setFillColor((i == 0) ? selectedColor : normalColor);
         menuItems.push_back(text);
     }
-/// === CARGAR LOS FONDOS DEL JUEGO ===
+
+    /// === CARGAR LOS FONDOS DEL JUEGO ===
     // 1. Intentamos cargar primero el fondo para los nombres
-    if (backgroundTexture.loadFromFile("assets/fondo_nombre.png")) {
+    if (backgroundTexture.loadFromFile("assets/images/fondos/fondo_nombre.png")) {
         backgroundSprite = new sf::Sprite(backgroundTexture);
     } 
     // 2. Si no existe, usamos el fondo del Mustang para el menú principal
@@ -46,10 +52,18 @@ Menu::Menu() : selectedIndex(0), normalColor(sf::Color::White), selectedColor(sf
     // 3. Si no encuentra ninguno, avisa en la consola
     else {
         std::cerr << "Error: No se pudo cargar ningún fondo desde assets." << std::endl;
+        backgroundSprite = nullptr; // Aseguramos que sea nullptr si falla
     }
 }
+
 Menu::~Menu() {
+    // Liberamos la memoria del sprite dinámico para evitar fugas de memoria
+    if (backgroundSprite) {
+        delete backgroundSprite;
+        backgroundSprite = nullptr;
+    }
 }
+
 void Menu::handleInput(const sf::Event& event) {
     if (const auto* keyEvent = event.getIf<sf::Event::KeyPressed>()) {
         // Mover hacia arriba (Flecha Arriba o tecla W)
@@ -77,14 +91,16 @@ void Menu::update() {
 
 void Menu::render(sf::RenderWindow& window) {
     window.clear(sf::Color::Black);
-    // Dibujar el fondo espectacular del Mustang
+
+    // 1. Dibujar el fondo espectacular del Mustang
     if (backgroundSprite) {
         window.draw(*backgroundSprite);
     }
-    if (titleText) {
-        window.draw(*titleText);
-    }
     
+    // 2. Dibujar el panel oscuro
+    window.draw(darkPanel);
+    
+    // 3. Dibujar las opciones del menú
     for (const auto& item : menuItems) {
         window.draw(item);
     }
