@@ -32,7 +32,8 @@ enum class GameState {
 
 class Game {
 private:
-    sf::RenderWindow window;
+std::vector<sf::RectangleShape> hudPanels;
+sf::RenderWindow window;
     bool isRunning;
     GameState currentState;
     GameState previousState;
