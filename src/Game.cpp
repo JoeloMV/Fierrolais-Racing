@@ -37,14 +37,14 @@ void Game::loadBackgroundMusic() {
     backgroundMusic = std::make_shared<sf::Music>();
     
     std::vector<std::string> musicPaths = {
-        "assets/sounds/Musica1.mp3",
-        "assets/sounds/Musica2.mp3",
-        "assets/sounds/background.ogg",
-        "assets/sounds/background.wav",
-        "assets/sounds/background.flac",
-        "assets/sounds/musica.ogg",
-        "assets/sounds/musica.wav",
-        "assets/sounds/musica.flac"
+        "assets/music/Musica1.mp3",
+        "assets/music/Musica2.mp3",
+        "assets/music/background.ogg",
+        "assets/music/background.wav",
+        "assets/music/background.flac",
+        "assets/music/musica.ogg",
+        "assets/music/musica.wav",
+        "assets/music/musica.flac"
     };
     
     if (!fuenteMarcador.openFromFile("C:/Windows/Fonts/arial.ttf")) {

@@ -37,8 +37,8 @@ SplashScreen::SplashScreen() : textAlpha(0), alphaDelta(3), fadeIn(true) {
     
     // === CARGAR Y REPRODUCIR LA MÚSICA ===
     // IMPORTANTE: Pon tu canción en la carpeta assets
-    if (!splashMusic.openFromFile("assets/sounds/splash_music.ogg")) {
-        std::cerr << "Error: No se pudo cargar assets/sounds/splash_music.ogg" << std::endl;
+    if (!splashMusic.openFromFile("assets/music/splash_music.ogg")) {
+        std::cerr << "Error: No se pudo cargar assets/music/splash_music.ogg" << std::endl;
     } else {
         splashMusic.setLooping(true);         // Para que se repita infinitamente
         splashMusic.setVolume(70.0f);      // Volumen del 0 al 100
