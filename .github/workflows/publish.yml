@@ -1,31 +1,98 @@
-name: Publicar Fierrolais Racing
+name: Publicar Fierrolais Racing en CETUS
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  crear-lanzamiento:
-    runs-on: windows-latest
+  publish:
+    runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Descargar el código del repositorio
+      - name: Checkout código
         uses: actions/checkout@v4
 
-      - name: 📦 Empaquetar el juego
-        run: Compress-Archive -Path bin, assets, README.md -DestinationPath FierrolaisRacing_Windows.zip
+      - name: Generar versión
+        id: version
+        run: |
+          VERSION="v1.0.${{ github.run_number }}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Versión generada: $VERSION"
 
-      - name: 🚀 Publicar en GitHub Releases
+      - name: Empaquetar ejecutable
+        run: |
+          echo "Empaquetando bin/ y assets/ en un ZIP..."
+          mkdir -p release-package
+
+          if [ -d "bin" ]; then
+            cp -r bin/* release-package/ 2>/dev/null || echo "Carpeta bin/ vacía o no existe"
+          fi
+
+          if [ -d "assets" ]; then
+            cp -r assets release-package/ 2>/dev/null || echo "Carpeta assets/ vacía o no existe"
+          fi
+
+          cd release-package
+          zip -r ../juego-proyecto-252.zip .
+          cd ..
+
+          SIZE=$(du -h juego-proyecto-252.zip | cut -f1)
+          echo "ZIP creado: $SIZE"
+
+      - name: Crear Release
+        id: create_release
         uses: softprops/action-gh-release@v2
-        with:
-          files: FierrolaisRacing_Windows.zip
-          name: Fierrolais Racing ${{ github.ref_name }}
-          draft: false
-          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: Release ${{ steps.version.outputs.version }}
+          body: |
+            ## Fierrolais Racing - Release ${{ steps.version.outputs.version }}
+
+            *Commit:* ${{ github.sha }}
+
+            ### Contenido
+            - Ejecutable del juego
+            - Assets necesarios
+
+            Descarga juego-proyecto-252.zip para jugar.
+          draft: false
+          prerelease: false
+          files: |
+            juego-proyecto-252.zip
+
+      - name: Notificar a CETUS
+        run: |
+          echo "Enviando notificación a CETUS..."
+
+          RELEASE_URL="https://github.com/${{ github.repository }}/releases/tag/${{ steps.version.outputs.version }}"
+          DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.version }}/juego-proyecto-252.zip"
+
+          cat > payload.json <<EOF
+          {
+            "repository": "${{ github.repository }}",
+            "commit": "${{ github.sha }}",
+            "version": "${{ steps.version.outputs.version }}",
+            "release_url": "$RELEASE_URL",
+            "download_url": "$DOWNLOAD_URL"
+          }
+          EOF
+
+          curl -X POST "https://cetus.logiasimbolica.com/api/github-webhook" \
+            -H "Content-Type: application/json" \
+            -d @payload.json || echo "No se pudo notificar a CETUS"
+
+      - name: Resumen
+        run: |
+          echo "## Publicación completada" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- *Versión:* ${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- *Commit:* ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- *Descarga:* https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.version }}/juego-proyecto-252.zip" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Tu proyecto se actualizará en la galería CETUS en unos momentos." >> $GITHUB_STEP_SUMMARY
